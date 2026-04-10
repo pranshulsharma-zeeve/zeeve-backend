@@ -1,0 +1,1719 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data noupdate="1">
+  <!-- When Rollup Created -->
+    <record id="mail_template_rollup_subscription_created" model="mail.template">
+      <field name="name">Rollup Subscription - Customer Created</field>
+      <field name="model_id" ref="rollup_management.model_rollup_service"/>
+      <field name="subject">Welcome to Zeeve’s {{ (ctx.get('rollup_subscription_ctx') or {}).get('protocol_name') or object.type_id.name or 'Rollup' }} Rollup – Your Subscription Details</field>
+      <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+      <field name="email_to">{{ (ctx.get('rollup_subscription_ctx') or {}).get('email_to') or object.customer_id.email or (object.customer_id.user_ids[:1].partner_id.email) or '' }}</field>
+      <field name="auto_delete" eval="False"/>
+      <field name="body_html"><![CDATA[
+<t t-set="mail_ctx" t-value="ctx.get('rollup_subscription_ctx') or {}"/>
+<t t-set="cfg" t-value="env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="company" t-value="object.env.user.company_id or object.env['res.company'].sudo().search([], limit=1)"/>
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/')"/>
+<t t-set="company_logo" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+<t t-set="customer_name" t-value="mail_ctx.get('customer_name') or (object.customer_id.display_name or '')"/>
+<t t-set="name_parts" t-value="(customer_name or '').split(' ', 1)"/>
+<t t-set="customer_firstname" t-value="mail_ctx.get('customer_firstname') or (name_parts[0] or 'there')"/>
+<t t-set="customer_lastname" t-value="mail_ctx.get('customer_lastname') or (name_parts[1] if len(name_parts) &gt; 1 else '')"/>
+<t t-set="subscription_details" t-value="mail_ctx.get('subscription_details') or {}"/>
+<t t-set="rollup_status" t-value="mail_ctx.get('rollup_status') or subscription_details.get('rollup_status') or subscription_details.get('rollupStatus') or {}"/>
+<t t-set="plan_name" t-value="mail_ctx.get('plan_name') or subscription_details.get('plan_name') or subscription_details.get('planName') or mail_ctx.get('protocol_name') or (object.type_id.name or 'Rollup')"/>
+<t t-set="protocol_name" t-value="mail_ctx.get('protocol_name') or subscription_details.get('protocol_name') or subscription_details.get('protocolName') or object.type_id.name or 'Rollup'"/>
+<t t-set="network_name" t-value="mail_ctx.get('network_name') or subscription_details.get('network_name') or subscription_details.get('networkName') or object.service_id or object.name or 'Your Rollup'"/>
+<t t-set="subscription_start" t-value="mail_ctx.get('subscription_start') or subscription_details.get('start_date') or subscription_details.get('startDate') or ''"/>
+<t t-set="subscription_end" t-value="mail_ctx.get('subscription_end') or subscription_details.get('end_date') or subscription_details.get('endDate') or ''"/>
+<t t-set="renewal_date" t-value="mail_ctx.get('next_billing_date') or subscription_details.get('next_billing_date') or subscription_details.get('renewalDate') or ''"/>
+<t t-set="status_text" t-value="mail_ctx.get('status_text') or rollup_status.get('status_text') or rollup_status.get('message') or 'Provisioning (We will email you once the Rollup is up and running)'"/>
+<t t-set="eta" t-value="mail_ctx.get('eta') or rollup_status.get('eta') or 'Soon'"/>
+<t t-set="dashboard_url" t-value="mail_ctx.get('dashboard_url') or 'https://app.zeeve.io/arbitrum-orbit'"/>
+<t t-set="docs_url" t-value="mail_ctx.get('docs_url') or 'https://www.zeeve.io/docs'"/>
+<t t-set="support_email" t-value="(cfg and cfg.support_email)   or 'support@zeeve.io'"/>
+<t t-set="support_url" t-value="mail_ctx.get('support_url') or 'https://www.zeeve.io/talk-to-an-expert/'"/>
+<t t-set="signature_name" t-value="mail_ctx.get('signature_name') or 'Yuvraj Singh Negi'"/>
+<t t-set="signature_title" t-value="mail_ctx.get('signature_title') or 'Lead, Customer Success'"/>
+<t t-set="static_base" t-value="base_url + '/zeeve_base/static/src/img'"/>
+<t t-set="twitter_icon" t-value="static_base + '/x.png'"/>
+<t t-set="telegram_icon" t-value="static_base + '/telegram.png'"/>
+<t t-set="linkedIn_icon" t-value="static_base + '/linkedIn.png'"/>
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid rgb(233, 233, 233); background: #ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://www.zeeve.io/">
+                    <t t-if="company_logo">
+                      <img t-att-src="company_logo" alt="Zeeve" height="100"/>
+                    </t>
+                    <t t-else="">
+                      <img src="https://demo.studiobrahma.in/zeeve/mailer/images/zeeve-logo2.png" alt="Zeeve" height="100"/>
+                    </t>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:10px 0 16px;">
+                  <p style="font-size:20px; line-height:30px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                    <strong>Hi <t t-out="customer_firstname"/> <t t-out="customer_lastname"/>,</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                    <strong>Thank you for choosing Zeeve to power your <t t-out="protocol_name"/> Rollup!</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">
+                    <strong>We’re excited to support your journey in building scalable, efficient, and secure rollups.</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Below are the details of your subscription:</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 0 30px;">
+                  <p style="font-size:16px; color:#FF9653; line-height:26px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Subscription Details:</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 24px;">
+                  <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Plan Type: <t t-out="plan_name"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Protocol: <t t-out="protocol_name"/> Rollup</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Network ID: <t t-out="object.service_id or 'N/A'"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Subscription Period: <t t-out="format_date(object.create_date) if object.create_date else 'TBA'"/> to <t t-out="format_date(object.next_billing_date) if object.next_billing_date else 'TBA'"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Next Renewal Date: <t t-out="format_date(object.next_billing_date) if object.next_billing_date else 'TBA'"/></p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 0 30px;">
+                  <p style="font-size:16px; color:#FF9653; line-height:26px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Rollup Status:</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 24px;">
+                  <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Current Status: <t t-out="status_text"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">ETA: <t t-out="eta or 'Soon'"/></p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 0 30px;">
+                  <p style="font-size:16px; color:#FF9653; line-height:26px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Next Steps &amp; Resources:</p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Manage Your Rollup: Access your Zeeve dashboard to monitor and configure your rollup.<br/><a t-att-href="dashboard_url" style="color:#FF9653; text-decoration:none;">👉 Zeeve Dashboard</a></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Developer Documentation: Get all the technical insights and guides you need.<br/><a t-att-href="docs_url" style="color:#FF9653; text-decoration:none;">👉 Docs</a></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Need Help? Our team is here for you. Reach out anytime at <a t-att-href="'mailto:%s' % support_email" style="color:#FF9653; text-decoration:none;"><t t-out="support_email"/></a> or schedule a call for assistance.<br/><a t-att-href="support_url" style="color:#FF9653; text-decoration:none;">👉 Talk to an Expert</a></p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 24px 0 0; text-align:left;">
+                  <p style="font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">We appreciate your trust in Zeeve, and we look forward to helping you scale your rollup with ease.</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 24px 20px 0; text-align:left;">
+                  <p style="font-size:18px; color:#232323; line-height:28px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                    Best regards,<br/>
+                    <strong><t t-out="signature_name"/></strong><br/>
+                    <t t-out="signature_title"/><br/>
+                    Zeeve Team
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table bgcolor="#ffffff" width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="background-color:#ffffff;">
+              <tr>
+                <td style="padding:40px 24px 15px; text-align:center;">
+                  <p style="font-size:16px; line-height:26px; font-weight:600; color:#FF9653; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Follow us at</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 24px; text-align:center;">
+                  <a href="https://x.com/0xZeeve"><img t-att-src="twitter_icon" alt="twitter" style="width:24px; height:24px;margin-right:20px;"/></a>
+                  <a href="https://www.linkedin.com/company/0xzeeve/"><img t-att-src="linkedIn_icon" alt="linkedIn" style="width:23px; height:23px;margin-right:20px;"/></a>
+                  <a href="https://t.me/ZeeveDeeptech"><img t-att-src="telegram_icon" alt="telegram" style="width:24px; height:24px;"/></a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 24px 48px; text-align:center;">
+                  <p style="font-size:14px; color:#232323; line-height:24px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">@ 2025 Zeeve. All Rights Reserved</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+]]>      </field>
+    </record>
+<!-- When Rollup Node Moves to Active -->
+    <record id="mail_template_rollup_subscription_active" model="mail.template">
+      <field name="name">Rollup Subscription - Customer Active</field>
+      <field name="model_id" ref="rollup_management.model_rollup_service"/>
+      <field name="subject">Your Rollup is ready: {{ (ctx.get('rollup_subscription_ctx') or {}).get('protocol_name') or object.type_id.name or 'Rollup' }} L3 - {{ (ctx.get('rollup_subscription_ctx') or {}).get('environment_name') or (ctx.get('rollup_subscription_ctx') or {}).get('network_name') or object.service_id or 'Testnet' }}</field>
+      <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+      <field name="email_to">{{ (ctx.get('rollup_subscription_ctx') or {}).get('email_to') or object.customer_id.email or (object.customer_id.user_ids[:1].partner_id.email) or '' }}</field>
+      <field name="auto_delete" eval="False"/>
+      <field name="body_html"><![CDATA[
+<t t-set="mail_ctx" t-value="ctx.get('rollup_subscription_ctx') or {}"/>
+<t t-set="cfg" t-value="env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="company" t-value="object.env.user.company_id or object.env['res.company'].sudo().search([], limit=1)"/>
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://your-domain.example'"/>
+<t t-set="company_logo" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+<t t-set="customer_name" t-value="mail_ctx.get('customer_name') or (object.customer_id.display_name or '')"/>
+<t t-set="name_parts" t-value="(customer_name or '').split(' ', 1)"/>
+<t t-set="customer_firstname" t-value="mail_ctx.get('customer_firstname') or (name_parts[0] or 'there')"/>
+<t t-set="customer_lastname" t-value="mail_ctx.get('customer_lastname') or (name_parts[1] if len(name_parts) &gt; 1 else '')"/>
+<t t-set="protocol_name" t-value="mail_ctx.get('protocol_name') or (mail_ctx.get('subscription_details') or {}).get('protocol_name') or (mail_ctx.get('subscription_details') or {}).get('protocolName') or object.type_id.name or 'Rollup'"/>
+<t t-set="environment_name" t-value="mail_ctx.get('environment_name') or mail_ctx.get('network_name') or (mail_ctx.get('subscription_details') or {}).get('network_name') or (mail_ctx.get('subscription_details') or {}).get('networkName') or object.chain_id or 'Testnet'"/>
+<t t-set="dashboard_url" t-value="mail_ctx.get('dashboard_url') or 'https://app.zeeve.io/arbitrum-orbit'"/>
+<t t-set="docs_url" t-value="mail_ctx.get('docs_url') or 'https://www.zeeve.io/docs'"/>
+<t t-set="support_email" t-value="(cfg and cfg.support_email)   or 'support@zeeve.io'"/>
+<t t-set="support_url" t-value="mail_ctx.get('support_url') or 'https://www.zeeve.io/talk-to-an-expert/'"/>
+<t t-set="signature_name" t-value="mail_ctx.get('signature_name') or 'Yuvraj Singh Negi'"/>
+<t t-set="signature_title" t-value="mail_ctx.get('signature_title') or 'Lead, Customer Success'"/>
+<t t-set="static_base" t-value="base_url + '/zeeve_base/static/src/img'"/>
+<t t-set="twitter_icon" t-value="static_base + '/x.png'"/>
+<t t-set="telegram_icon" t-value="static_base + '/telegram.png'"/>
+<t t-set="linkedIn_icon" t-value="static_base + '/linkedIn.png'"/>
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid rgb(233, 233, 233); background: #ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://www.zeeve.io/">
+                    <t t-if="company_logo">
+                      <img t-att-src="company_logo" alt="Zeeve" height="100"/>
+                    </t>
+                    <t t-else="">
+                      <img src="https://demo.studiobrahma.in/zeeve/mailer/images/zeeve-logo2.png" alt="Zeeve" height="100"/>
+                    </t>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:10px 0 16px;">
+                  <p style="font-size:20px; line-height:30px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                    <strong>Hi <t t-out="customer_firstname"/> <t t-out="customer_lastname"/>,</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                    <strong>Thank you for choosing Zeeve to power your <t t-out="protocol_name"/> Rollup.</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">
+                    <strong>Your <t t-out="protocol_name"/> L3 Rollup <t t-out="environment_name"/> is up and running. You can now deploy smart contracts, dApps, and manage your network.</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 0 30px;">
+                  <p style="font-size:16px; color:#FF9653; line-height:26px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Subscription Details:</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 24px;">
+                  <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Network ID: <t t-out="object.service_id or 'N/A'"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Subscription Period: <t t-out="format_date(object.create_date) if object.create_date else 'TBA'"/> to <t t-out="format_date(object.next_billing_date) if object.next_billing_date else 'TBA'"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 0 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 0 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Next Renewal Date: <t t-out="format_date(object.next_billing_date) if object.next_billing_date else 'TBA'"/></p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 0 30px;">
+                  <p style="font-size:16px; color:#FF9653; line-height:26px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Rollup Status:</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 24px;">
+                  <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Current Status: Ready</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 0 30px;">
+                  <p style="font-size:16px; color:#FF9653; line-height:26px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Next Steps &amp; Resources:</p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Manage Your Rollup: Access your Zeeve dashboard to monitor and configure your rollup.<br/><a t-att-href="dashboard_url" style="color:#FF9653; text-decoration:none;">👉 Zeeve Dashboard</a></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Developer Documentation: Get all the technical insights and guides you need.<br/><a t-att-href="docs_url" style="color:#FF9653; text-decoration:none;">👉 Docs</a></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Need Help? Our team is here for you. Reach out anytime at <a t-att-href="'mailto:%s' % support_email" style="color:#FF9653; text-decoration:none;"><t t-out="support_email"/></a> or schedule a call for assistance.<br/><a t-att-href="support_url" style="color:#FF9653; text-decoration:none;">👉 Talk to an Expert</a></p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 24px 0 0; text-align:left;">
+                  <p style="font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">We appreciate your trust in Zeeve, and we look forward to helping you scale your rollup with ease.</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 24px 20px 0; text-align:left;">
+                  <p style="font-size:18px; color:#232323; line-height:28px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                    Best regards,<br/>
+                    <strong><t t-out="signature_name"/></strong><br/>
+                    <t t-out="signature_title"/><br/>
+                    Zeeve Team
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table bgcolor="#ffffff" width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="background-color:#ffffff;">
+              <tr>
+                <td style="padding:40px 24px 15px; text-align:center;">
+                  <p style="font-size:16px; line-height:26px; font-weight:600; color:#FF9653; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Follow us at</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 24px; text-align:center;">
+                  <a href="https://x.com/0xZeeve"><img t-att-src="twitter_icon" alt="twitter" style="width:24px; height:24px;margin-right:20px;"/></a>
+                  <a href="https://www.linkedin.com/company/0xzeeve/"><img t-att-src="linkedIn_icon" alt="linkedIn" style="width:23px; height:23px;margin-right:20px;"/></a>
+                  <a href="https://t.me/ZeeveDeeptech"><img t-att-src="telegram_icon" alt="telegram" style="width:24px; height:24px;"/></a></td>
+              </tr>
+              <tr>
+                <td style="padding:30px 24px 48px; text-align:center;">
+                  <p style="font-size:14px; color:#232323; line-height:24px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">@ 2025 Zeeve. All Rights Reserved</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+]]>      </field>
+    </record>
+<!-- TO Admin When Rollup Created -->
+    <record id="mail_template_rollup_subscription_admin" model="mail.template">
+      <field name="name">Rollup Subscription - Admin Notification</field>
+      <field name="model_id" ref="rollup_management.model_rollup_service"/>
+      <field name="subject">New Rollup subscription created: {{ (ctx.get('rollup_subscription_ctx') or {}).get('service_name') or object.name }}</field>
+      <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+      <field name="email_to">{{ (ctx.get('rollup_subscription_ctx') or {}).get('email_to') or (ctx.get('default_email_to') or object.env.company.email or 'support@zeeve.io') }}</field>
+      <field name="auto_delete" eval="False"/>
+      <field name="body_html"><![CDATA[
+<t t-set="mail_ctx" t-value="ctx.get('rollup_subscription_ctx') or {}"/>
+<t t-set="company" t-value="object.env.user.company_id or object.env['res.company'].sudo().search([], limit=1)"/>
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://your-domain.example'"/>
+<t t-set="company_logo" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+<t t-set="company_name" t-value="mail_ctx.get('company_name') or company.name or 'Zeeve'"/>
+<t t-set="service_name" t-value="mail_ctx.get('service_name') or object.name"/>
+<t t-set="protocol_name" t-value="mail_ctx.get('protocol_name') or (mail_ctx.get('subscription_details') or {}).get('protocol_name') or (mail_ctx.get('subscription_details') or {}).get('protocolName') or object.type_id.name or 'Rollup'"/>
+<t t-set="plan_name" t-value="mail_ctx.get('plan_name') or (mail_ctx.get('subscription_details') or {}).get('plan_name') or (mail_ctx.get('subscription_details') or {}).get('planName') or protocol_name"/>
+<t t-set="network_name" t-value="mail_ctx.get('network_name') or (mail_ctx.get('subscription_details') or {}).get('network_name') or (mail_ctx.get('subscription_details') or {}).get('networkName') or object.chain_id or object.name or 'N/A'"/>
+<t t-set="subscription_start" t-value="mail_ctx.get('subscription_start') or (mail_ctx.get('subscription_details') or {}).get('start_date') or (mail_ctx.get('subscription_details') or {}).get('startDate') or 'TBA'"/>
+<t t-set="subscription_end" t-value="mail_ctx.get('subscription_end') or (mail_ctx.get('subscription_details') or {}).get('end_date') or (mail_ctx.get('subscription_details') or {}).get('endDate') or 'TBA'"/>
+<t t-set="renewal_date" t-value="mail_ctx.get('next_billing_date') or (mail_ctx.get('subscription_details') or {}).get('next_billing_date') or (mail_ctx.get('subscription_details') or {}).get('renewalDate') or 'TBA'"/>
+<t t-set="eta" t-value="mail_ctx.get('eta') or ((mail_ctx.get('rollup_status') or {}).get('eta')) or 'Soon'"/>
+<t t-set="customer_name" t-value="mail_ctx.get('customer_name') or object.customer_id.display_name or 'Unknown Customer'"/>
+<t t-set="customer_email" t-value="mail_ctx.get('customer_email') or object.customer_id.email or (object.customer_id.user_ids[:1].partner_id.email) or ''"/>
+<t t-set="customer_company" t-value="mail_ctx.get('customer_company') or (object.customer_id.parent_id.name if object.customer_id.parent_id else '')"/>
+<t t-set="stripe_subscription" t-value="mail_ctx.get('stripe_subscription_id') or object.stripe_subscription_id or ''"/>
+<t t-set="static_base" t-value="base_url + '/zeeve_base/static/src/img'"/>
+<t t-set="twitter_icon" t-value="static_base + '/x.png'"/>
+<t t-set="telegram_icon" t-value="static_base + '/telegram.png'"/>
+<t t-set="linkedIn_icon" t-value="static_base + '/linkedIn.png'"/>
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid rgb(233, 233, 233); background: #ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://www.zeeve.io/">
+                    <t t-if="company_logo">
+                      <img t-att-src="company_logo" t-att-alt="company_name" height="100"/>
+                    </t>
+                    <t t-else="">
+                      <img src="https://demo.studiobrahma.in/zeeve/mailer/images/zeeve-logo2.png" alt="Zeeve" height="100"/>
+                    </t>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:16px 0 12px;">
+                  <p style="font-size:20px; line-height:30px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">New rollup subscription confirmed</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <p style="font-size:16px; line-height:24px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">A new rollup subscription has been activated and requires provisioning oversight.</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 0 20px;">
+                  <p style="font-size:16px; color:#FF9653; line-height:26px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Subscription Summary:</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Service: <t t-out="service_name"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Protocol: <t t-out="protocol_name"/> Rollup</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Plan: <t t-out="plan_name"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Network ID: <t t-out="object.service_id or 'N/A'"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Subscription Period: <t t-out="format_date(object.create_date) if object.create_date else 'TBA'"/> to <t t-out="format_date(object.next_billing_date) if object.next_billing_date else 'TBA'"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Next Renewal Date: <t t-out="format_date(object.next_billing_date) if object.next_billing_date else 'TBA'"/></p>
+                      </td>
+                    </tr>
+                    <tr t-if="stripe_subscription">
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Stripe Subscription: <t t-out="stripe_subscription"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 13px 0 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 0 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Provisioning ETA: <t t-out="eta"/></p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 0 20px;">
+                  <p style="font-size:16px; color:#FF9653; line-height:26px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Customer:</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Name: <t t-out="customer_name"/></p>
+                      </td>
+                    </tr>
+                    <tr t-if="customer_company">
+                      <td style="padding:0 13px 18px 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Company: <t t-out="customer_company"/></p>
+                      </td>
+                    </tr>
+                    <tr t-if="customer_email">
+                      <td style="padding:0 13px 0 0; vertical-align:top;" width="27">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 0 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Email: <a t-att-href="'mailto:%s' % customer_email" style="color:#FF9653; text-decoration:none;"><t t-out="customer_email"/></a></p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 24px 0 0; text-align:left;">
+                  <p style="font-size:14px; line-height:24px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Review the service record in Odoo to coordinate provisioning tasks and ensure onboarding communication is aligned.</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:10px 24px 20px 0; text-align:left;">
+                  <p style="font-size:14px; line-height:24px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">— <t t-out="company_name"/> Rollup Operations</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table bgcolor="#ffffff" width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="background-color:#ffffff;">
+              <tr>
+                <td style="padding:40px 24px 15px; text-align:center;">
+                  <p style="font-size:16px; line-height:26px; font-weight:600; color:#FF9653; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Follow us at</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 24px; text-align:center;">
+                  <a href="https://x.com/0xZeeve"><img t-att-src="twitter_icon" alt="twitter" style="width:24px; height:24px;margin-right:20px;"/></a>
+                          <a href="https://www.linkedin.com/company/0xzeeve/"><img t-att-src="linkedIn_icon" alt="linkedIn" style="width:23px; height:23px;margin-right:20px;"/></a>
+                          <a href="https://t.me/ZeeveDeeptech"><img t-att-src="telegram_icon" alt="telegram" style="width:24px; height:24px;"/></a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 24px 48px; text-align:center;">
+                  <p style="font-size:14px; color:#232323; line-height:24px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">@ 2025 Zeeve. All Rights Reserved</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+]]>      </field>
+    </record>
+<!-- Remainder Email before 5 days or 1 day -->
+    <record id="mail_template_rollup_subscription_reminder" model="mail.template">
+      <field name="name">Rollup Subscription - Upcoming Payment Reminder</field>
+      <field name="model_id" ref="rollup_management.model_rollup_service"/>
+      <field name="subject">Reminder: Your Rollup payment is due in {{ ctx.get('days_to_due', 0) }} days</field>
+      <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+      <field name="email_to">{{ (ctx.get('rollup_subscription_ctx') or {}).get('email_to') or object.customer_id.email or (object.customer_id.user_ids[:1].partner_id.email) or '' }}</field>
+      <field name="auto_delete" eval="False"/>
+      <field name="body_html"><![CDATA[
+<t t-set="cfg" t-value="object.env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="company" t-value="object.env.user.company_id or object.env['res.company'].sudo().search([], limit=1)"/>
+<t t-set="base_url" t-value="(object.env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://your-domain.example'"/>
+<t t-set="company_logo" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+<t t-set="customer_name" t-value="(ctx.get('customer_name')) or (object.customer_id.display_name) or (object.customer_id.name) or (object.customer_id.user_ids[:1].partner_id.display_name) or (object.customer_id.user_ids[:1].partner_id.name) or 'there'"/>
+<t t-set="due_date" t-value="ctx.get('next_billing_date') or object.next_billing_date"/>
+<t t-set="days_to_due" t-value="ctx.get('days_to_due', 0)"/>
+<t t-set="amount" t-value="ctx.get('amount')"/>
+<t t-set="current_year" t-value="ctx.get('current_year') or datetime.date.today().year"/>
+<t t-set="invoice_url" t-value="ctx.get('stripe_invoice_url') or (object.metadata_json or {}).get('stripe_invoice_url')"/>
+<t t-set="static_base" t-value="base_url + '/zeeve_base/static/src/img'"/>
+<t t-set="twitter_icon" t-value="static_base + '/x.png'"/>
+<t t-set="telegram_icon" t-value="static_base + '/telegram.png'"/>
+<t t-set="linkedIn_icon" t-value="static_base + '/linkedIn.png'"/>
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border:1px solid #e9e9e9;background:#ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://www.zeeve.io/">
+                    <t t-if="company_logo">
+                      <img t-att-src="company_logo" alt="Zeeve" height="80"/>
+                    </t>
+                    <t t-else="">
+                      <img src="https://demo.studiobrahma.in/zeeve/mailer/images/zeeve-logo2.png" alt="Zeeve" height="80"/>
+                    </t>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:18px 0 12px;">
+                  <p style="font-size:20px;line-height:30px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    <strong>Hi <t t-out="customer_name"/>,</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    This is a friendly reminder that your <strong><t t-out="object.name"/></strong> subscription will be renewed in just <strong><t t-out="days_to_due"/></strong> day(s),on <strong><t t-out="format_date(due_date) if due_date else 'the due date'"/></strong>.
+                    To ensure uninterrupted access to all the benefits and features of your subscription, please make sure your payment is processed before the due date.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 0 16px;">
+                  <p style="font-size:15px;color:#FF9653;line-height:24px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;text-transform:uppercase;letter-spacing:4px;">Key Details</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 10px;">
+                  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Service: <t t-out="object.name"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Due date: <t t-out="format_date(due_date) if due_date else 'TBA'"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Amount: <t t-out="amount if amount else 'TBA'"/></p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <!-- <tr>
+                <td style="padding:12px 0 24px;">
+                  <t t-if="invoice_url">
+                    <a t-att-href="invoice_url" style="display:inline-block;padding:12px 28px;background:#FF9653;color:#ffffff;font-size:15px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;border-radius:6px;text-decoration:none;">Pay Upcoming Invoice</a>
+                  </t>
+                </td>
+              </tr> -->
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:16px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    If you have any questions or need assistance, feel free to reach out to us at <a t-att-href="'mailto:%s' % ((cfg and cfg.support_email) or 'support@zeeve.io')" style="color:#FF9653;text-decoration:none;"><t t-out="(cfg and cfg.support_email) or 'support@zeeve.io'"/></a> .
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:16px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Thank you for being a valued customer!.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 24px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Best Regards,<br/>The Zeeve Team</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table bgcolor="#ffffff" width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="background-color:#ffffff;">
+              <tr>
+                <td style="padding:40px 24px 15px; text-align:center;">
+                  <p style="font-size:16px; line-height:26px; font-weight:600; color:#FF9653; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Follow us at</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 24px; text-align:center;">
+                   <a href="https://x.com/0xZeeve"><img t-att-src="twitter_icon" alt="twitter" style="width:24px; height:24px;margin-right:20px;"/></a>
+                          <a href="https://www.linkedin.com/company/0xzeeve/"><img t-att-src="linkedIn_icon" alt="linkedIn" style="width:23px; height:23px;margin-right:20px;"/></a>
+                          <a href="https://t.me/ZeeveDeeptech"><img t-att-src="telegram_icon" alt="telegram" style="width:24px; height:24px;"/></a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 24px 48px; text-align:center;">
+                  <p style="font-size:14px; color:#232323; line-height:24px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">© <t t-out="current_year"/> <t t-out="company_name"/>. All rights reserved.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+]]>      </field>
+    </record>
+<!-- Remainder Mail on due date -->
+    <record id="mail_template_rollup_subscription_due" model="mail.template">
+      <field name="name">Rollup Subscription - Payment Due</field>
+      <field name="model_id" ref="rollup_management.model_rollup_service"/>
+      <field name="subject">Action required: Your Rollup payment is overdue</field>
+      <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+      <field name="email_to">{{ (ctx.get('rollup_subscription_ctx') or {}).get('email_to') or object.customer_id.email or (object.customer_id.user_ids[:1].partner_id.email) or '' }}</field>
+      <field name="auto_delete" eval="False"/>
+      <field name="body_html"><![CDATA[
+<t t-set="cfg" t-value="object.env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="company" t-value="object.env.user.company_id or object.env['res.company'].sudo().search([], limit=1)"/>
+<t t-set="base_url" t-value="(object.env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://your-domain.example'"/>
+<t t-set="company_logo" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+<t t-set="customer_name" t-value="(ctx.get('customer_name')) or (object.customer_id.display_name) or (object.customer_id.name) or (object.customer_id.user_ids[:1].partner_id.display_name) or (object.customer_id.user_ids[:1].partner_id.name) or 'there'"/>
+<t t-set="due_date" t-value="ctx.get('next_billing_date') or object.next_billing_date"/>
+<t t-set="invoice_url" t-value="ctx.get('stripe_invoice_url') or (object.hosted_invoice_url)"/>
+<t t-set="amount" t-value="ctx.get('amount')"/>
+<t t-set="current_year" t-value="ctx.get('current_year') or datetime.date.today().year"/>
+<t t-set="static_base" t-value="base_url + '/zeeve_base/static/src/img'"/>
+<t t-set="twitter_icon" t-value="static_base + '/x.png'"/>
+<t t-set="telegram_icon" t-value="static_base + '/telegram.png'"/>
+<t t-set="linkedIn_icon" t-value="static_base + '/linkedIn.png'"/>
+
+
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border:1px solid #f2c4a3;background:#ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://www.zeeve.io/">
+                    <t t-if="company_logo">
+                      <img t-att-src="company_logo" alt="Zeeve" height="80"/>
+                    </t>
+                    <t t-else="">
+                      <img src="https://demo.studiobrahma.in/zeeve/mailer/images/zeeve-logo2.png" alt="Zeeve" height="80"/>
+                    </t>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:18px 0 12px;">
+                  <p style="font-size:20px;line-height:30px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;color:#d35400;">
+                    <strong>Immediate action required</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Hi <t t-out="customer_name"/>,
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    This is a friendly reminder that today is the due date for your subscription payment. To continue enjoying <t t-out="object.name"/>, please complete your payment by the end of the day.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 0 16px;">
+                  <p style="font-size:15px;color:#FF9653;line-height:24px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;text-transform:uppercase;letter-spacing:4px;">Account Summary</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 10px;">
+                  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Service: <t t-out="object.name"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Amount: <t t-out="amount if amount else 'TBA'"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Due Date: <strong><t t-out="format_date(due_date) if due_date else 'the due date'"/></strong></p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:12px 0 24px;">
+                  <t t-if="invoice_url">
+                    <a t-att-href="invoice_url" style="display:inline-block;padding:12px 28px;background:#d35400;color:#ffffff;font-size:15px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;border-radius:6px;text-decoration:none;">Pay Outstanding Invoice</a>
+                  </t>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:16px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    If you have any questions or need assistance, feel free to reach out to us at <a t-att-href="'mailto:%s' % ((cfg and cfg.support_email) or 'support@zeeve.io')" style="color:#FF9653;text-decoration:none;"><t t-out="(cfg and cfg.support_email) or 'support@zeeve.io'"/></a> .
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:16px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Thank you for being a valued customer!.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 24px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Best Regards,<br/>The Zeeve Team</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table bgcolor="#ffffff" width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="background-color:#ffffff;">
+              <tr>
+                <td style="padding:40px 24px 15px; text-align:center;">
+                  <p style="font-size:16px; line-height:26px; font-weight:600; color:#FF9653; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Follow us at</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 24px; text-align:center;">
+                   <a href="https://x.com/0xZeeve"><img t-att-src="twitter_icon" alt="twitter" style="width:24px; height:24px;margin-right:20px;"/></a>
+                          <a href="https://www.linkedin.com/company/0xzeeve/"><img t-att-src="linkedIn_icon" alt="linkedIn" style="width:23px; height:23px;margin-right:20px;"/></a>
+                          <a href="https://t.me/ZeeveDeeptech"><img t-att-src="telegram_icon" alt="telegram" style="width:24px; height:24px;"/></a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 24px 48px; text-align:center;">
+                  <p style="font-size:14px; color:#232323; line-height:24px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">© <t t-out="current_year"/> <t t-out="company_name"/>. All rights reserved.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+]]>      </field>
+    </record>
+<!-- When rollup subscription is suspended -->
+    <record id="mail_template_rollup_subscription_suspended" model="mail.template">
+      <field name="name">Rollup Subscription - Suspended</field>
+      <field name="model_id" ref="rollup_management.model_rollup_service"/>
+      <field name="subject">Your Rollup subscription is now suspended</field>
+      <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+      <field name="email_to">{{ (ctx.get('rollup_subscription_ctx') or {}).get('email_to') or object.customer_id.email or (object.customer_id.user_ids[:1].partner_id.email) or '' }}</field>
+      <field name="auto_delete" eval="False"/>
+      <field name="body_html"><![CDATA[
+<t t-set="cfg" t-value="object.env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="company" t-value="object.env.user.company_id or object.env['res.company'].sudo().search([], limit=1)"/>
+<t t-set="base_url" t-value="(object.env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://your-domain.example'"/>
+<t t-set="company_logo" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+<t t-set="customer_name" t-value="(ctx.get('customer_name')) or (object.customer_id.display_name) or (object.customer_id.name) or (object.customer_id.user_ids[:1].partner_id.display_name) or (object.customer_id.user_ids[:1].partner_id.name) or 'there'"/>
+<t t-set="due_date" t-value="ctx.get('next_billing_date') or object.next_billing_date"/>
+<t t-set="invoice_url" t-value="ctx.get('stripe_invoice_url') or (object.hosted_invoice_url)"/>
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border:1px solid #f5b7b1;background:#ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://www.zeeve.io/">
+                    <t t-if="company_logo">
+                      <img t-att-src="company_logo" alt="Zeeve" height="80"/>
+                    </t>
+                    <t t-else="">
+                      <img src="https://demo.studiobrahma.in/zeeve/mailer/images/zeeve-logo2.png" alt="Zeeve" height="80"/>
+                    </t>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:18px 0 12px;">
+                  <p style="font-size:20px;line-height:30px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;color:#c0392b;">
+                    <strong>Access suspended for <t t-out="object.name"/></strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Hi <t t-out="customer_name"/>, your rollup has been temporarily disabled because we have not received payment due on <strong><t t-out="format_date(due_date) if due_date else 'the scheduled date'"/></strong>.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 0 16px;">
+                  <p style="font-size:15px;color:#FF9653;line-height:24px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;text-transform:uppercase;letter-spacing:4px;">How to restore service</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 10px;">
+                  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Pay the outstanding invoice using the button below.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Once Stripe confirms the payment we will automatically reactivate the deployment.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">If you need more time or a custom plan, contact our team and we will work with you.</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:12px 0 24px;">
+                  <t t-if="invoice_url">
+                    <a t-att-href="invoice_url" style="display:inline-block;padding:12px 28px;background:#c0392b;color:#ffffff;font-size:15px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;border-radius:6px;text-decoration:none;">Pay and Reactivate</a>
+                  </t>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:16px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Need urgent assistance? Email <a t-att-href="'mailto:%s' % ((cfg and cfg.support_email) or 'support@zeeve.io')" style="color:#FF9653;text-decoration:none;"><t t-out="(cfg and cfg.support_email) or 'support@zeeve.io'"/></a> and we will respond promptly.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 24px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Regards,<br/>The Zeeve Team</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+]]>      </field>
+    </record>
+<!-- When Stripe payment fails on renewal attempt -->
+    <record id="mail_template_rollup_payment_failed" model="mail.template">
+      <field name="name">Rollup Subscription - Payment Failed</field>
+      <field name="model_id" ref="rollup_management.model_rollup_service"/>
+      <field name="subject">Action needed: Stripe could not renew {{ object.name }}</field>
+      <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+      <field name="email_to">{{ object.customer_name.email or object.customer_name.email_formatted }}</field>
+      <field name="auto_delete" eval="False"/>
+      <field name="body_html"><![CDATA[
+<t t-set="mail_ctx" t-value="ctx.get('rollup_payment_failed_ctx') or ctx.get('rollup_subscription_ctx') or {}"/>
+<t t-set="cfg" t-value="object.env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="company" t-value="object.env.user.company_id or object.env['res.company'].sudo().search([], limit=1)"/>
+<t t-set="base_url" t-value="(object.env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://your-domain.example'"/>
+<t t-set="company_logo" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+<t t-set="customer_name" t-value="mail_ctx.get('customer_name') or (object.customer_id.display_name) or (object.customer_id.name) or (object.customer_id.user_ids[:1].partner_id.display_name) or (object.customer_id.user_ids[:1].partner_id.name) or 'there'"/>
+<t t-set="protocol_name" t-value="mail_ctx.get('protocol_name') or (object.type_id.name) or 'Rollup'"/>
+<t t-set="due_date" t-value="mail_ctx.get('next_billing_date') or ctx.get('next_billing_date') or object.next_billing_date"/>
+<t t-set="due_date_display" t-value="due_date and ((format_date and format_date(due_date)) or (hasattr(due_date, 'strftime') and due_date.strftime('%Y-%m-%d')) or str(due_date)) or 'the scheduled billing date'"/>
+<t t-set="suspension_deadline" t-value="mail_ctx.get('suspension_deadline') or ctx.get('suspension_deadline') or ctx.get('grace_period_end') or object.next_billing_date"/>
+<t t-set="suspension_deadline_display" t-value="suspension_deadline and ((format_date and format_date(suspension_deadline)) or (hasattr(suspension_deadline, 'strftime') and suspension_deadline.strftime('%Y-%m-%d')) or str(suspension_deadline)) or 'your grace period'"/>
+<t t-set="invoice_url" t-value="mail_ctx.get('invoice_url') or ctx.get('stripe_invoice_url') or object.hosted_invoice_url"/>
+<t t-set="error_message" t-value="mail_ctx.get('error_message') or ctx.get('stripe_error_message') or 'Stripe was unable to process the payment method on file.'"/>
+<t t-set="retry_message" t-value="mail_ctx.get('retry_message') or 'Stripe will retry the charge automatically shortly.'"/>
+<t t-set="support_email" t-value="(cfg and cfg.support_email) or 'support@zeeve.io'"/>
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border:1px solid #f9caca;background:#ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://www.zeeve.io/">
+                    <t t-if="company_logo">
+                      <img t-att-src="company_logo" alt="Zeeve" height="80"/>
+                    </t>
+                    <t t-else="">
+                      <img src="https://demo.studiobrahma.in/zeeve/mailer/images/zeeve-logo2.png" alt="Zeeve" height="80"/>
+                    </t>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:18px 0 12px;">
+                  <p style="font-size:20px;line-height:30px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;color:#c0392b;">
+                    <strong>Payment failed for <t t-out="object.name"/></strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Hi <t t-out="customer_name"/>, our attempt to renew your <strong><t t-out="protocol_name"/> Rollup</strong> on <strong><t t-out="due_date_display"/></strong> did not go through. The message from Stripe was: <em><t t-out="error_message"/></em>.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 0 16px;">
+                  <p style="font-size:15px;color:#FF9653;line-height:24px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;text-transform:uppercase;letter-spacing:4px;">What to do next</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 10px;">
+                  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Open the Stripe invoice and retry the payment or update your card details.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Confirm sufficient funds or contact your bank to allow the charge.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">If you need help or more time, reply to this email and our team will assist.</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:12px 0 24px;">
+                  <t t-if="invoice_url">
+                    <a t-att-href="invoice_url" style="display:inline-block;padding:12px 28px;background:#c0392b;color:#ffffff;font-size:15px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;border-radius:6px;text-decoration:none;">Review invoice &amp; pay</a>
+                  </t>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:16px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    <t t-out="retry_message"/> Your rollup remains active, but please resolve the payment before <strong><t t-out="suspension_deadline_display"/></strong> to avoid suspension.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:16px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Questions? Reach us at <a t-att-href="'mailto:%s' % support_email" style="color:#FF9653;text-decoration:none;"><t t-out="support_email"/></a> and we will be happy to help.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 24px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Regards,<br/>The Zeeve Team</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+]]>      </field>
+    </record>
+<!-- Admin alert when Stripe payment fails -->
+    <record id="mail_template_rollup_payment_failed_admin" model="mail.template">
+      <field name="name">Rollup Subscription - Admin Payment Failure</field>
+      <field name="model_id" ref="rollup_management.model_rollup_service"/>
+      <field name="subject">Immediate attention: payment failed for {{ object.name }}</field>
+      <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+      <field name="email_to">{{ object.customer_name.email or object.customer_name.email_formatted }}</field>
+      <field name="auto_delete" eval="False"/>
+      <field name="body_html"><![CDATA[
+<t t-set="mail_ctx" t-value="ctx.get('rollup_payment_failed_ctx') or {}"/>
+<t t-set="cfg" t-value="object.env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="company" t-value="object.env.user.company_id or object.env['res.company'].sudo().search([], limit=1)"/>
+<t t-set="base_url" t-value="(object.env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://your-domain.example'"/>
+<t t-set="company_logo" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+<t t-set="customer_name" t-value="mail_ctx.get('customer_name') or object.customer_id.display_name or object.customer_id.name or 'Customer'"/>
+<t t-set="plan_name" t-value="mail_ctx.get('plan_name') or object.type_id.name or 'Rollup Plan'"/>
+<t t-set="amount_display" t-value="mail_ctx.get('formatted_amount') or mail_ctx.get('amount_value')"/>
+<t t-set="currency_symbol" t-value="mail_ctx.get('currency_symbol') or ''"/>
+<t t-set="due_date_display" t-value="mail_ctx.get('due_date_display') or ''"/>
+<t t-set="error_message" t-value="mail_ctx.get('error_message') or 'No error message provided by Stripe.'"/>
+<t t-set="invoice_url" t-value="mail_ctx.get('invoice_url') or mail_ctx.get('hosted_invoice_url') or object.hosted_invoice_url"/>
+<t t-set="invoice_number" t-value="mail_ctx.get('invoice_number') or mail_ctx.get('stripe_invoice_id') or (object.metadata_json or {}).get('stripe_invoice_id')"/>
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border:1px solid #f9caca;background:#ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://www.zeeve.io/">
+                    <t t-if="company_logo">
+                      <img t-att-src="company_logo" alt="Zeeve" height="80"/>
+                    </t>
+                    <t t-else="">
+                      <img src="https://demo.studiobrahma.in/zeeve/mailer/images/zeeve-logo2.png" alt="Zeeve" height="80"/>
+                    </t>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:18px 0 12px;">
+                  <p style="font-size:20px;line-height:30px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;color:#c0392b;">
+                    <strong>Payment failed for <t t-out="object.name"/></strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Stripe could not capture the scheduled renewal for <strong><t t-out="object.name"/></strong>. Please coordinate with the customer to resolve the billing blocker and avoid service interruption.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 0 16px;">
+                  <p style="font-size:15px;color:#FF9653;line-height:24px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;text-transform:uppercase;letter-spacing:4px;">Failure Snapshot</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 10px;">
+                  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Customer: <t t-out="customer_name"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Plan: <t t-out="plan_name"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Amount due: <t t-if="amount_display"><t t-out="amount_display"/></t><t t-else=""><t t-out="currency_symbol"/> <t t-out="mail_ctx.get('amount_value') or '0.00'"/></t></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Due date: <t t-out="due_date_display or 'TBA'"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Invoice: <t t-out="invoice_number or mail_ctx.get('stripe_invoice_id') or 'N/A'"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Stripe error: <em><t t-out="error_message"/></em></p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:12px 0 24px;">
+                  <t t-if="invoice_url">
+                    <a t-att-href="invoice_url" style="display:inline-block;padding:12px 28px;background:#c0392b;color:#ffffff;font-size:15px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;border-radius:6px;text-decoration:none;">Open hosted invoice</a>
+                  </t>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:16px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Please reach out to the customer or update their billing profile to prevent automatic suspension if the payment remains unpaid.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:16px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Need assistance? Email <a t-att-href="'mailto:%s' % ((cfg and cfg.support_email) or 'support@zeeve.io')" style="color:#FF9653;text-decoration:none;"><t t-out="(cfg and cfg.support_email) or 'support@zeeve.io'"/></a>.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 24px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Regards,<br/>The Zeeve Billing Team</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+]]>      </field>
+    </record>
+<!-- Mail to Admin on every payment -->
+    <record id="mail_template_rollup_payment_success_admin" model="mail.template">
+      <field name="name">Rollup Subscription - Admin Payment Alert</field>
+      <field name="model_id" ref="rollup_management.model_rollup_service"/>
+      <field name="subject"><![CDATA[{{ ctx.get('payment_category_label') or 'Subscription Payment' }} - Rollup payment received for {{ object.name }}]]></field>
+      <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+      <field name="email_to">{{ (object.env['zeeve.config'].sudo().search([], limit=1).admin_emails) or object.env.company.email }}</field>
+      <field name="auto_delete" eval="False"/>
+      <field name="body_html"><![CDATA[
+<t t-set="cfg" t-value="object.env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="company" t-value="object.env.user.company_id or object.env['res.company'].sudo().search([], limit=1)"/>
+<t t-set="base_url" t-value="(object.env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://your-domain.example'"/>
+<t t-set="company_logo" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+<t t-set="invoice" t-value="ctx.get('invoice') or object._get_latest_invoice()"/>
+<t t-set="payment" t-value="ctx.get('payment')"/>
+<t t-set="payment_category" t-value="ctx.get('payment_category') or 'new'"/>
+<t t-set="payment_category_label" t-value="'New Subscription Payment' if payment_category == 'new' else 'Renewal Payment'"/>
+<t t-set="currency" t-value="(payment and payment.currency_id) or (invoice and invoice.currency_id) or company.currency_id"/>
+<t t-set="amount_value" t-value="payment and payment.amount or (invoice and invoice.amount_total) or 0.0"/>
+<t t-set="formatted_amount" t-value="(currency and formatLang and formatLang(amount_value, currency_obj=currency)) or (currency and ('%s %s' % (currency.symbol or '', '%.2f' % amount_value))) or ('%.2f' % amount_value)"/>
+<t t-set="next_billing" t-value="object.next_billing_date"/>
+<t t-set="next_billing_display" t-value="(next_billing and ((format_date and format_date(next_billing)) or (hasattr(next_billing, 'strftime') and next_billing.strftime('%Y-%m-%d')) or str(next_billing))) or 'To be scheduled'"/>
+<t t-set="invoice_action_url" t-value="invoice and ('%s/web#id=%s&model=account.move&view_type=form' % (base_url, invoice.id))"/>
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border:1px solid #e9e9e9;background:#ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://www.zeeve.io/">
+                    <t t-if="company_logo">
+                      <img t-att-src="company_logo" alt="Zeeve" height="80"/>
+                    </t>
+                    <t t-else="">
+                      <img src="https://demo.studiobrahma.in/zeeve/mailer/images/zeeve-logo2.png" alt="Zeeve" height="80"/>
+                    </t>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:18px 0 12px;">
+                  <p style="font-size:20px;line-height:30px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    <strong>Hello Zeeve Team,</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    A payment has been captured for <strong><t t-out="object.name"/></strong>. The subscription is now in good standing and provisioning has been triggered for the customer.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Customer: <strong><t t-out="object.customer_id.display_name"/></strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 0 16px;">
+                  <p style="font-size:15px;color:#FF9653;line-height:24px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;text-transform:uppercase;letter-spacing:4px;">Payment Snapshot</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 10px;">
+                  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Invoice: <t t-out="invoice and invoice.display_name or 'Draft invoice'"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Amount: <t t-out="formatted_amount"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Payment reference: <t t-out="payment and (payment.name or payment.ref) or 'N/A'"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Next billing date: <t t-out="next_billing_display"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Payment type: <t t-out="payment_category_label"/></p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:12px 0 24px;">
+                  <t t-if="invoice_action_url">
+                    <a t-att-href="invoice_action_url" style="display:inline-block;padding:12px 28px;background:#FF9653;color:#ffffff;font-size:15px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;border-radius:6px;text-decoration:none;">Review Invoice in Odoo</a>
+                  </t>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:16px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Please ensure provisioning continues smoothly. Reach out to the customer if additional deployment confirmation is required.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 24px;">
+                  <p style="font-size:16px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Need to escalate? Email <a t-att-href="'mailto:%s' % ((cfg and cfg.support_email) or 'support@zeeve.io')" style="color:#FF9653;text-decoration:none;"><t t-out="(cfg and cfg.support_email) or 'support@zeeve.io'"/></a> for immediate assistance.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 24px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Thanks,<br/>The Zeeve Billing Team</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+]]>      </field>
+    </record>
+  <record id="mail_template_rollup_subscription_cancelled_customer" model="mail.template">
+    <field name="name">Rollup Subscription - Cancellation (Customer)</field>
+    <field name="model_id" ref="rollup_management.model_rollup_service"/>
+    <field name="subject">Cancelled Subscription - {{ ((ctx.get('planDetails') or ctx.get('plan_details') or {}).get('Plan_Name')) or ((ctx.get('planDetails') or ctx.get('plan_details') or {}).get('plan_name')) or (object.type_id.name or 'Rollup Subscription') }}</field>
+    <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+    <field name="email_to">{{ (ctx.get('email_to') or object.customer_id.email or (object.customer_id.user_ids[:1].partner_id.email)) or '' }}</field>
+    <field name="auto_delete" eval="False"/>
+    <field name="body_html"><![CDATA[
+<t t-set="tenant" t-value="ctx.get('tenant') or {}"/>
+<t t-set="tenant_meta" t-value="tenant.get('meta') or {}"/>
+<t t-set="tenant_colors" t-value="tenant_meta.get('colors') or {}"/>
+<t t-set="table_bg_color" t-value="tenant_colors.get('backgroundColor') or '#ffffff'"/>
+<t t-set="content_text_color" t-value="tenant_colors.get('textColorLight') or '#848484'"/>
+<t t-set="support_info" t-value="ctx.get('supportInfo') or ctx.get('support_info') or {}"/>
+<t t-set="plan_details" t-value="ctx.get('planDetails') or ctx.get('plan_details') or {}"/>
+<t t-set="customer_name" t-value="ctx.get('name') or ctx.get('customer_name') or {'firstname': object.customer_id.name or (object.customer_id.display_name or '')}"/>
+<t t-set="base_url" t-value="(ctx.get('baseUrl') or ctx.get('base_url') or (object.env['ir.config_parameter'].sudo().get_param('backend_url') or '')).rstrip('/')"/>
+<t t-set="logo_url" t-value="support_info.get('logoPath') or (base_url and (base_url + '/web/image/res.company/%s/logo' % (object.env.company.id or 1))) or 'https://demo.studiobrahma.in/zeeve/mailer/images/zeeve-logo2.png'"/>
+<t t-set="homepage_url" t-value="support_info.get('homepageURL') or 'https://www.zeeve.io/'"/>
+<t t-set="tick_icon" t-value="(base_url and (base_url + '/zeeve_base/static/src/img/cross_icon.png')) or 'https://demo.studiobrahma.in/zeeve/mailer/images/tick_icon.png'"/>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;box-sizing:border-box;font-size:14px;margin:0;">
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Zeeve Subscription Cancelled Template</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,800" rel="stylesheet" />
+  </head>
+  <body style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;box-sizing:border-box;font-size:14px;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:none;width:100% !important;height:100%;line-height:1.6em;background-color:#f8f8f8;margin:0;">
+    <table t-att-style="'background-color: %s; color: #514d6a; margin-top: 40px; margin-bottom: 40px; line-height: 28px; font-family: arial; width: 100%%;' % table_bg_color">
+      <tbody>
+        <tr>
+          <td t-attf-style="text-align:left;vertical-align:top;background: #{table_bg_color};padding:8px;">
+            <a t-att-href="homepage_url" target="_blank">
+              <img t-att-src="logo_url" alt="Zeeve" style="border:none;display:inline-block;width:100px;text-align:center;height:auto;" height="98"/>
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0px 15px 35px;font-weight:300;font-family:arial;color:#a4a4a4;">
+            <div style="border:1px solid #000;height:auto;width:95%;margin-top:10px;padding-top:10px;padding-bottom:2px;">
+              <img t-att-src="tick_icon" alt="confirmation" style="display:inline-block;width:30px;text-align:center;margin-left:46%;height:auto;"/>
+              <h3 style="text-align:center;color:#3399ff;font-size:20px;margin-top:0px;">Subscription Cancelled</h3>
+            </div>
+            <p t-attf-style="color: #{content_text_color}; line-height: 25px; font-size: 16px;">
+              Dear <strong style="color:#000;">
+                <t t-out="customer_name.get('firstname') or customer_name.get('name') or 'Customer'"/>
+              </strong>,<br/>
+              Your subscription for <strong><t t-out="plan_details.get('Plan_Name') or plan_details.get('plan_name') or (object.type_id.name or 'Rollup Subscription')"/></strong> has now been cancelled.
+              We hope this email finds you well. We are reaching out to confirm that we have received your recent request to cancel your subscription to the
+              <strong><t t-out="plan_details.get('Plan_Name') or plan_details.get('plan_name') or (object.type_id.name or 'Rollup Subscription')"/></strong>.
+              As per your request, your subscription has been successfully cancelled, effective immediately.
+              This means that you will no longer have access to the features and benefits associated with this plan.
+              <hr/>
+              <strong style="color:#000;">As promised, here are the details of your subscription:</strong>
+              <br/>
+              <table style="color:#000;margin-left:15px;margin-right:10px;border:1px solid #000;border-collapse:collapse;width:100%;text-align:center;">
+                <tr style="border:1px solid #000;border-collapse:collapse;">
+                  <th style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><strong>Subscription ID:</strong></th>
+                  <td style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><t t-out="plan_details.get('subscription_id') or object.name or ''"/></td>
+                </tr>
+                <tr style="border:1px solid #000;border-collapse:collapse;">
+                  <th style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><strong>Monthly Subscription Cost:</strong></th>
+                  <td style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;">
+                    <t t-out="plan_details.get('currency_symbol') or (plan_details.get('currency') or '')"/>
+                    <t t-if="plan_details.get('subscription_monthly_cost')">&nbsp;<t t-out="plan_details.get('subscription_monthly_cost')"/></t>
+                  </td>
+                </tr>
+                <tr style="border:1px solid #000;border-collapse:collapse;">
+                  <th style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><strong>Date of Cancellation:</strong></th>
+                  <td style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><t t-out="plan_details.get('cancellation_date') or ''"/></td>
+                </tr>
+                <tr style="border:1px solid #000;border-collapse:collapse;">
+                  <th style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><strong>Status:</strong></th>
+                  <td style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><t t-out="plan_details.get('status') or object.state or ''"/></td>
+                </tr>
+              </table>
+            </p>
+            <hr/>
+            <p t-attf-style="color: #{content_text_color}; line-height: 25px; font-size: 16px;">
+              We value your feedback and would greatly appreciate it if you could spare a few moments to share your reasons for cancelling your subscription.
+              Your insights will aid us in improving our services and meeting the needs of our customers more effectively. You can share your feedback by replying to this email or by visiting our website's feedback page at
+              <a href="https://www.zeeve.io/" target="_blank">Zeeve</a>.
+            </p>
+          </td>
+        </tr>
+        <tr style="background:#1c1c1c;">
+          <td style="padding:3px 15px 4px;vertical-align:top;border-top:solid 1px #eee;" colspan="2">
+            <div style="color:#fff;font-size:10px;margin-left:10%;margin-right:10%;height:auto;text-align:center;">
+              If you have any questions or concerns about your subscription, please don't hesitate to reach out to us.
+              Our customer support team is available 24/7 to assist you.
+            </div>
+            <div style="color:#fff;margin-left:20%;margin-right:20%;height:auto;font-size:10px;text-align:center;">
+              Zeeve Inc, 395 Santa Monica, Pl Unit 308, Santa Monica, CA 90401, United States
+            </div>
+            <div style="color:#fff;margin-left:30%;margin-right:30%;height:auto;font-size:10px;text-align:center;">
+              <t t-out="support_info.get('email') or 'support@zeeve.io'"/> | <t t-out="support_info.get('homepageURL') or homepage_url"/>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
+    ]]></field>
+  </record>
+
+  <record id="mail_template_rollup_subscription_cancelled_admin" model="mail.template">
+    <field name="name">Rollup Subscription - Cancellation (Admin)</field>
+    <field name="model_id" ref="rollup_management.model_rollup_service"/>
+    <field name="subject">Cancelled Subscription By - {{ ((ctx.get('planDetails') or ctx.get('plan_details') or {}).get('buyer_email_id')) or ((ctx.get('planDetails') or ctx.get('plan_details') or {}).get('buyerEmail')) or (object.customer_id.email or 'Customer') }}</field>
+    <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+    <field name="email_to">{{ ctx.get('email_to') or (object.env['zeeve.config'].sudo().search([], limit=1).admin_emails) or object.env.company.email }}</field>
+    <field name="auto_delete" eval="False"/>
+    <field name="body_html"><![CDATA[
+<t t-set="tenant" t-value="ctx.get('tenant') or {}"/>
+<t t-set="tenant_meta" t-value="tenant.get('meta') or {}"/>
+<t t-set="tenant_colors" t-value="tenant_meta.get('colors') or {}"/>
+<t t-set="table_bg_color" t-value="tenant_colors.get('backgroundColor') or '#ffffff'"/>
+<t t-set="content_text_color" t-value="tenant_colors.get('textColorLight') or '#848484'"/>
+<t t-set="support_info" t-value="ctx.get('supportInfo') or ctx.get('support_info') or {}"/>
+<t t-set="plan_details" t-value="ctx.get('planDetails') or ctx.get('plan_details') or {}"/>
+<t t-set="base_url" t-value="(ctx.get('baseUrl') or ctx.get('base_url') or (object.env['ir.config_parameter'].sudo().get_param('backend_url') or '')).rstrip('/')"/>
+<t t-set="logo_url" t-value="support_info.get('logoPath') or (base_url and (base_url + '/web/image/res.company/%s/logo' % (object.env.company.id or 1))) or 'https://demo.studiobrahma.in/zeeve/mailer/images/zeeve-logo2.png'"/>
+<t t-set="homepage_url" t-value="support_info.get('homepageURL') or 'https://www.zeeve.io/'"/>
+<t t-set="cross_icon" t-value="(base_url and (base_url + '/zeeve_base/static/src/img/cross_icon.png')) or 'https://demo.studiobrahma.in/zeeve/mailer/images/cross_icon.png'"/>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;box-sizing:border-box;font-size:14px;margin:0;">
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,800" rel="stylesheet" />
+  </head>
+  <body style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;box-sizing:border-box;font-size:14px;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:none;width:100% !important;height:100%;line-height:1.6em;background-color:#f8f8f8;margin:0;">
+    <table t-att-style="'background-color: %s; color: #514d6a; margin-top: 40px; margin-bottom: 40px; line-height: 28px; font-family: arial; width: 100%%;' % table_bg_color">
+      <tbody>
+        <tr>
+          <td t-attf-style="text-align:left;vertical-align:top;background: #{table_bg_color};padding:8px;">
+            <a t-att-href="homepage_url" target="_blank">
+              <img t-att-src="logo_url" alt="Zeeve" style="border:none;display:inline-block;width:100px;text-align:center;height:auto;" height="98"/>
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0px 15px 35px;font-weight:300;font-family:arial;color:#a4a4a4;">
+            <div style="border:1px solid #000;height:auto;width:95%;margin-top:10px;padding-top:10px;padding-bottom:2px;">
+              <img t-att-src="cross_icon" alt="cancelled" style="display:inline-block;width:30px;text-align:center;margin-left:46%;height:auto;"/>
+              <h3 style="text-align:center;color:#3399ff;font-size:20px;margin-top:0px;">Subscription Cancelled</h3>
+            </div>
+            <p t-attf-style="color: #{content_text_color}; line-height: 25px; font-size: 16px;">
+              Dear <strong style="color:#000;">Admin</strong>,<br/>
+              We hope this email finds you well. We regret to inform you that the subscription for <strong><t t-out="plan_details.get('Plan_Name') or plan_details.get('plan_name') or (object.type_id.name or 'Rollup Subscription')"/></strong> by user <strong><t t-out="plan_details.get('buyer_email_id') or plan_details.get('buyerEmail') or (object.customer_id.email or '')"/></strong> has been cancelled.
+              <hr/>
+              <strong style="color:#000;">Here are the details of the subscription:</strong>
+              <br/>
+              <table style="color:#000;margin-left:15px;margin-right:10px;border:1px solid #000;border-collapse:collapse;width:100%;text-align:center;">
+                <tr style="border:1px solid #000;border-collapse:collapse;">
+                  <th style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><strong>User email:</strong></th>
+                  <td style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><t t-out="plan_details.get('buyer_email_id') or plan_details.get('buyerEmail') or (object.customer_id.email or '')"/></td>
+                </tr>
+                <tr style="border:1px solid #000;border-collapse:collapse;">
+                  <th style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><strong>Subscription ID:</strong></th>
+                  <td style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><t t-out="plan_details.get('subscription_id') or object.name or ''"/></td>
+                </tr>
+                <tr style="border:1px solid #000;border-collapse:collapse;">
+                  <th style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><strong>Monthly Subscription Cost:</strong></th>
+                  <td style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;">
+                    <t t-out="plan_details.get('currency_symbol') or (plan_details.get('currency') or '')"/>
+                    <t t-if="plan_details.get('subscription_monthly_cost')">&nbsp;<t t-out="plan_details.get('subscription_monthly_cost')"/></t>
+                  </td>
+                </tr>
+                <tr style="border:1px solid #000;border-collapse:collapse;">
+                  <th style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><strong>Date of Cancellation:</strong></th>
+                  <td style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><t t-out="plan_details.get('cancellation_date') or ''"/></td>
+                </tr>
+                <tr style="border:1px solid #000;border-collapse:collapse;">
+                  <th style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><strong>Status:</strong></th>
+                  <td style="border:1px solid #000;border-collapse:collapse;min-width:80px;width:auto;"><t t-out="plan_details.get('status') or object.state or ''"/></td>
+                </tr>
+              </table>
+            </p>
+            <hr/>
+            <p t-attf-style="color: #{content_text_color}; line-height: 25px; font-size: 16px;">
+              We understand that this may come as a disappointment, and we would appreciate it if you could update the user's account status accordingly.
+              <br/>
+              Thank you for your understanding and cooperation throughout this process. We greatly appreciate your continued support.
+            </p>
+          </td>
+        </tr>
+        
+        <tr style="background:#1c1c1c;">
+          <td style="padding:3px 15px 4px;vertical-align:top;border-top:solid 1px #eee;" colspan="2">
+            <div style="color:#fff;font-size:10px;margin-left:10%;margin-right:10%;height:auto;text-align:center;">
+              If you have any questions or concerns about your subscription, please don't hesitate to reach out to us.
+              Our customer support team is available 24/7 to assist you.
+            </div>
+            <div style="color:#fff;margin-left:20%;margin-right:20%;height:auto;font-size:10px;text-align:center;">
+              Zeeve Inc, 395 Santa Monica, Pl Unit 308, Santa Monica, CA 90401, United States
+            </div>
+            <div style="color:#fff;margin-left:30%;margin-right:30%;height:auto;font-size:10px;text-align:center;">
+              <t t-out="support_info.get('email') or 'support@zeeve.io'"/> | <t t-out="support_info.get('homepageURL') or homepage_url"/>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
+    ]]></field>
+  </record>
+
+  </data>
+</odoo>

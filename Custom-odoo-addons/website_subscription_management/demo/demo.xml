@@ -1,0 +1,395 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Copyright (c) 2019-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<odoo>
+    <data >
+        <record id='demo_configuration_rec_1' model='subscription.configuration'>
+            <field name='msg_for_draft'>Your Current Subscription is to be under progress.It will active soon.</field>
+            <field name='msg_for_active'>Your plan is active.Enjoy the service.</field>
+            <field name='msg_for_cancel'>Your plan is cancelled.You cannot access it anymore.</field>
+            <field name='msg_for_expired'>This plan is expired.</field>
+            <field name='msg_for_renewed'>This plan is renewed.</field>
+        </record>
+                
+         
+        <record id='demo_subscription_reasons_1' model='subscription.reasons'>
+            <field name='name'>I am no more interested in it.</field>
+            <field name='sequence'>1</field>
+        </record>
+        <record id='demo_subscription_reasons_2' model='subscription.reasons'>
+            <field name='name'>Found Something Other.</field>
+            <field name='sequence'>2</field>
+        </record>
+        <record id='demo_subscription_reasons_3' model='subscription.reasons'>
+            <field name='name'>Not Good ,High price</field>
+            <field name='sequence'>3</field>
+        </record>
+        <record id='demo_subscription_reasons_4' model='subscription.reasons'>
+            <field name='name'>Other</field>
+            <field name='sequence'>4</field>
+        </record>
+
+
+        
+
+        <record id='subscription_plan_demo_1' model='subscription.plan'>
+            <field name='name'>Test Plan 1</field>
+            <field name='duration'>1</field>
+            <field name='unit'>year</field>
+            <field name='plan_amount'>1000</field>
+            <field name='num_billing_cycle'>2</field>
+            <field name='notification_days'>4</field>
+            <field name='override_product_price' eval='False'/>
+            <field name='plan_description'>This plan is for demo purpose.Loaded by default while installation</field>
+        </record>
+
+        <record id='subscription_plan_demo_2' model='subscription.plan'>
+            <field name='name'>Test Plan 2</field>
+            <field name='duration'>1</field>
+            <field name='unit'>month</field>
+            <field name='trial_period'>1</field>
+            <field name='trial_duration'>5</field>
+            <field name='trial_duration_unit'>day</field>
+            <field name='plan_amount'>3000</field>
+            <field name='num_billing_cycle'>4</field>
+            <field name='notification_days'>12</field>
+            <field name='override_product_price' eval='False'/>
+            <field name='plan_description'>This plan is for demo purpose.Loaded by default while installation</field>
+        </record>
+
+        <record id='subscription_plan_demo_3' model='subscription.plan'>
+            <field name='name'>Test Plan 3</field>
+            <field name='duration'>1</field>
+            <field name='unit'>week</field>
+            <field name='trial_period'>1</field>
+            <field name='trial_duration'>5</field>
+            <field name='trial_duration_unit'>day</field>
+            <field name='plan_amount'>3000</field>
+            <field name='num_billing_cycle'>4</field>
+            <field name='notification_days'>12</field>
+            <field name='override_product_price' eval='False'/>
+            <field name='plan_description'>This plan is for demo purpose.Loaded by default while installation</field>
+        </record>
+
+        <record id='subscription_plan_demo_4' model='subscription.plan'>
+            <field name='name'>Test Plan 4</field>
+            <field name='duration'>1</field>
+            <field name='unit'>day</field>
+            <field name='trial_period'>1</field>
+            <field name='trial_duration'>5</field>
+            <field name='trial_duration_unit'>day</field>
+            <field name='plan_amount'>3000</field>
+            <field name='num_billing_cycle'>4</field>
+            <field name='notification_days'>12</field>
+            <field name='override_product_price' eval='False'/>
+            <field name='plan_description'>This plan is for demo purpose.Loaded by default while installation</field>
+        </record>
+
+        <record id='product_attribute_demo_1' model='product.attribute'>
+            <field name='name'>Plan Type</field>
+            <field name='display_type'>radio</field>
+        </record>
+
+        <record id='product_attribute_value_demo_1' model='product.attribute.value'>
+            <field name='attribute_id' ref='product_attribute_demo_1' />
+            <field name='name'>Yearly</field>
+        </record>
+
+         <record id='product_attribute_value_demo_2' model='product.attribute.value'>
+            <field name='attribute_id' ref='product_attribute_demo_1' />
+            <field name='name'>Monthly</field>
+        </record>
+
+         <record id='product_attribute_value_demo_3' model='product.attribute.value'>
+            <field name='attribute_id' ref='product_attribute_demo_1' />
+            <field name='name'>Weekly</field>
+        </record>
+
+         <record id='product_attribute_value_demo_4' model='product.attribute.value'>
+            <field name='attribute_id' ref='product_attribute_demo_1' />
+            <field name='name'>day</field>
+        </record>
+
+         <record id="product_product_4" model="product.template">
+            <field name="name">New yorker magzine</field>
+            <!-- <field name="image_1920" type="base64" file="website_subscription_management/static/src/img/1.png"/> -->
+            <field name="categ_id" ref="product.product_category_5"/>
+            <field name="standard_price">0</field>
+            <field name="list_price">3000</field>
+            <field name="type">service</field>
+            <field name="website_published" eval="True"/>
+            <field name="website_sequence">1</field>
+            <!-- <field name="default_code">plan1-01</field> -->
+            <field name='activate_subscription'>1</field>
+            <field name='subscription_plan_id' ref='subscription_plan_demo_1'/>
+            <!-- <field name='list_price'>3000</field> -->
+            <!-- <field name="attribute_line_ids" eval="[(6,0,[ref('product_attribute_value_demo_1')])]"/> -->
+        </record>
+
+
+         <!-- the product template attribute lines have to be defined before creating the variants -->
+        <record id="wk_product_4_attribute_1_product_template_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_product_4"/>
+            <field name="attribute_id" ref="product_attribute_demo_1"/>
+            <field name="value_ids" eval="[(6, 0, [ref('product_attribute_value_demo_1'), ref('product_attribute_value_demo_2'),ref('product_attribute_value_demo_3'),ref('product_attribute_value_demo_4')])]"/>
+        </record>
+       
+
+       <function model="ir.model.data" name="_update_xmlids">
+            <value model="base" eval="[{
+                'xml_id': 'website_subscription_management.wk_product_4_attribute_1_value_1',
+                'record': obj().env.ref('website_subscription_management.wk_product_4_attribute_1_product_template_attribute_line').product_template_value_ids[0],
+                'noupdate': True,
+            }, {
+                'xml_id': 'website_subscription_management.wk_product_4_attribute_1_value_2',
+                'record': obj().env.ref('website_subscription_management.wk_product_4_attribute_1_product_template_attribute_line').product_template_value_ids[1],
+                'noupdate': True,
+            },{
+                'xml_id': 'website_subscription_management.wk_product_4_attribute_1_value_3',
+                'record': obj().env.ref('website_subscription_management.wk_product_4_attribute_1_product_template_attribute_line').product_template_value_ids[2],
+                'noupdate': True,
+            },{
+                'xml_id': 'website_subscription_management.wk_product_4_attribute_1_value_4',
+                'record': obj().env.ref('website_subscription_management.wk_product_4_attribute_1_product_template_attribute_line').product_template_value_ids[3],
+                'noupdate': True,
+            } ]"/>
+        </function>
+
+
+
+         <function model="ir.model.data" name="_update_xmlids">
+            <value model="base" eval="[{
+                'xml_id': 'website_subscription_management.product_product_4b',
+                'record': obj().env.ref('website_subscription_management.product_product_4')._get_variant_for_combination(obj().env.ref('website_subscription_management.wk_product_4_attribute_1_value_1')),
+                'noupdate': True,
+            }, {
+                'xml_id': 'website_subscription_management.product_product_4c',
+                'record': obj().env.ref('website_subscription_management.product_product_4')._get_variant_for_combination(obj().env.ref('website_subscription_management.wk_product_4_attribute_1_value_2')),
+                'noupdate': True,
+            }, {
+                'xml_id': 'website_subscription_management.product_product_4d',
+                'record': obj().env.ref('website_subscription_management.product_product_4')._get_variant_for_combination(obj().env.ref('website_subscription_management.wk_product_4_attribute_1_value_3')),
+                'noupdate': True,
+            }, {
+                'xml_id': 'website_subscription_management.product_product_4e',
+                'record': obj().env.ref('website_subscription_management.product_product_4')._get_variant_for_combination(obj().env.ref('website_subscription_management.wk_product_4_attribute_1_value_4')),
+                'noupdate': True,
+            }]"/>
+        </function>
+
+
+     <record id="product_product_4b" model="product.product">
+            <field name="image_1920" type="base64" file="website_subscription_management/static/src/img/2.png"/>
+            <field name="default_code">plan1-02</field>
+            <!-- <field name="product_tmpl_id" ref="product_product_4_product_template"/> -->
+            <field name='activate_subscription'>1</field>
+            <field name='subscription_plan_id' ref='subscription_plan_demo_1'/>
+            <!-- <field name='lst_price'>1000</field> -->
+            <field name="standard_price">500.0</field>
+            <!-- <field name="attribute_line_ids" eval="[(6,0,[ref('product_attribute_value_demo_2')])]"/> -->
+        </record>
+
+        <record id="product_product_4c" model="product.product">
+            <field name="image_1920" type="base64" file="website_subscription_management/static/src/img/3.png"/>
+            <field name="default_code">plan1-03</field>
+            <!-- <field name="product_tmpl_id" ref="product_product_4_product_template"/> -->
+            <field name='activate_subscription'>1</field>
+            <field name='subscription_plan_id' ref='subscription_plan_demo_2'/>
+            <!-- <field name='lst_price'>3000</field> -->
+            <field name="standard_price">500.0</field>
+            <!-- <field name="attribute_line_ids" eval="[(6,0,[ref('product_attribute_value_demo_3')])]"/> -->
+        </record>
+
+        <record id="product_product_4d" model="product.product">
+            <field name="image_1920" type="base64" file="website_subscription_management/static/src/img/1.png"/>
+            <field name="default_code">plan1-04</field>
+            <!-- <field name="product_tmpl_id" ref="product_product_4_product_template"/> -->
+            <field name='activate_subscription'>1</field>
+            <field name='subscription_plan_id' ref='subscription_plan_demo_3'/>
+            <!-- <field name='lst_price'>3000</field> -->
+            <field name="standard_price">500.0</field>
+            <!-- <field name="attribute_line_ids" eval="[(6,0,[ref('product_attribute_value_demo_3')])]"/> -->
+        </record>
+
+        <record id="product_product_4e" model="product.product">
+            <field name="image_1920" type="base64" file="website_subscription_management/static/src/img/1.png"/>
+            <field name="default_code">plan1-01</field>
+            <!-- <field name="product_tmpl_id" ref="product_product_4_product_template"/> -->
+            <field name='activate_subscription'>1</field>
+            <field name='subscription_plan_id' ref='subscription_plan_demo_4'/>
+            <!-- <field name='lst_price'>3000</field> -->
+            <field name="standard_price">1500.0</field>
+            <!-- <field name="attribute_line_ids" eval="[(6,0,[ref('product_attribute_value_demo_3')])]"/> -->
+        </record>
+
+       
+
+        <!-- <record id="product_attribute_price_1" model="product.template.attribute.value">
+          <field name="price_extra">800</field>
+            <field name="product_tmpl_id" ref="product_product_4"/>
+            <field name="attribute_line_id" ref="product_attribute_demo_1"/>
+            <field name="product_attribute_value_id" ref="website_subscription_management.product_product_4e"/>
+        </record>
+
+        <record id="product_attribute_price_2" model="product.template.attribute.value">
+          <field name="price_extra">300</field>
+            <field name="product_tmpl_id" ref="product_product_4"/>
+            <field name="attribute_line_id" ref="product_attribute_demo_1"/>
+            <field name="product_attribute_value_id" ref="website_subscription_management.product_product_4c"/>
+        </record>
+
+        <record id="product_attribute_price_3" model="product.template.attribute.value">
+          <field name="price_extra">100</field>
+            <field name="product_tmpl_id" ref="product_product_4"/>
+            <field name="attribute_line_id" ref="product_attribute_demo_1"/>
+            <field name="product_attribute_value_id" ref="website_subscription_management.product_product_4d"/>
+        </record> 
+
+        <record id="product_attribute_price_4" model="product.template.attribute.value">
+            <field name="price_extra">500</field>
+            <field name="product_tmpl_id" ref="product_product_4"/>
+            <field name="attribute_line_id" ref="product_attribute_demo_1"/>
+            <field name="product_attribute_value_id" ref="website_subscription_management.product_product_4e"/>
+        </record>  -->
+
+
+
+
+
+          <!-- Demo data for product -->
+        <!-- <record id="product_product_5" model="product.product">
+            <field name="name">Daily Washington</field>
+            <field name="image_1920" type="base64" file="website_subscription_management/static/src/img/2.png"/>
+            <field name="categ_id" ref="product.product_category_5"/>
+            <field name="standard_price">0</field>
+            <field name="list_price">0</field>
+            <field name="type">service</field>
+            <field name="website_published" eval="True"/>
+            <field name="default_code">plan2-01</field>
+            <field name='activate_subscription'>1</field>
+            <field name='subscription_plan_id' ref='subscription_plan_demo_2'/>
+            <field name='list_price'>3000</field>
+            <field name="attribute_line_ids" eval="[(6,0,[ref('product_attribute_value_demo_1')])]"/>
+        </record>
+
+        <record id="product_product_5b" model="product.product">
+            <field name="default_code">plan2-02</field>
+            <field name="product_tmpl_id" ref="product_product_5_product_template"/>
+            <field name='activate_subscription'>1</field>
+            <field name='subscription_plan_id' ref='subscription_plan_demo_1'/>
+            <field name='list_price'>1000</field>
+            <field name="attribute_line_ids" eval="[(6,0,[ref('product_attribute_value_demo_2')])]"/>
+        </record>
+
+        <record id="product_product_5c" model="product.product">
+            <field name="default_code">plan2-03</field>
+            <field name="product_tmpl_id" ref="product_product_5_product_template"/>
+            <field name='activate_subscription'>1</field>
+            <field name='subscription_plan_id' ref='subscription_plan_demo_3'/>
+            <field name='list_price'>3000</field>
+            <field name="attribute_line_ids" eval="[(6,0,[ref('product_attribute_value_demo_3')])]"/>
+        </record>
+
+        <record id="product_product_5d" model="product.product">
+            <field name="default_code">plan2-04</field>
+            <field name='activate_subscription'>1</field>
+            <field name='subscription_plan_id' ref='subscription_plan_demo_4'/>
+            <field name='list_price'>1000</field>
+            <field name="product_tmpl_id" ref="product_product_5_product_template"/>
+            <field name="attribute_line_ids" eval="[(6,0,[ref('product_attribute_value_demo_4')])]"/>
+        </record>
+
+        <record id="product_attribute_line2_1" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product_product_5_product_template"/>
+            <field name="attribute_id" ref="product_attribute_demo_1"/>
+            <field name="value_ids" eval="[(6,0,[
+             ref('website_subscription_management.product_attribute_value_demo_1'),
+             ref('website_subscription_management.product_attribute_value_demo_2'),
+             ref('website_subscription_management.product_attribute_value_demo_3'),
+             ref('website_subscription_management.product_attribute_value_demo_4')])]"/>
+        </record>
+
+        <record id="product_product_5_product_template" model="product.template">
+                <field name="attribute_line_ids" eval="[(6,0,[ref('product_attribute_line2_1')])]"/>
+        </record>
+
+        <function model="ir.model.data" name="_update_xmlids">
+            <value model="base" eval="[{
+                'xml_id': 'website_subscription_management.product_attribute_price_2_1',
+                'record': obj().env.ref('website_subscription_management.product_attribute_line2_1').product_template_value_ids[0],
+                'noupdate': True,
+            }, {
+                'xml_id': 'website_subscription_management.product_attribute_price_2_2',
+                'record': obj().env.ref('website_subscription_management.product_attribute_line2_1').product_template_value_ids[1],
+                'noupdate': True,
+            },{
+                'xml_id': 'website_subscription_management.product_attribute_price_2_3',
+                'record': obj().env.ref('website_subscription_management.product_attribute_line2_1').product_template_value_ids[2],
+                'noupdate': True,
+            },{
+                'xml_id': 'website_subscription_management.product_attribute_price_2_4',
+                'record': obj().env.ref('website_subscription_management.product_attribute_line2_1').product_template_value_ids[3],
+                'noupdate': True,
+            }]"/>
+        </function>
+
+        <record id="product_attribute_price_2_1" model="product.template.attribute.value">
+          <field name="price_extra">800</field>
+            <field name="product_tmpl_id" ref="product_product_5_product_template"/>
+            <field name="product_attribute_value_id" ref="website_subscription_management.product_attribute_value_demo_1"/>
+        </record>
+
+        <record id="product_attribute_price_2_2" model="product.template.attribute.value">
+          <field name="price_extra">300</field>
+            <field name="product_tmpl_id" ref="product_product_5_product_template"/>
+            <field name="product_attribute_value_id" ref="website_subscription_management.product_attribute_value_demo_2"/>
+        </record>
+
+        <record id="product_attribute_price_2_3" model="product.template.attribute.value">
+          <field name="price_extra">100</field>
+            <field name="product_tmpl_id" ref="product_product_5_product_template"/>
+            <field name="product_attribute_value_id" ref="website_subscription_management.product_attribute_value_demo_3"/>
+        </record>
+
+        <record id="product_attribute_price_2_4" model="product.template.attribute.value">
+          <field name="price_extra">500</field>
+            <field name="product_tmpl_id" ref="product_product_5_product_template"/>
+            <field name="product_attribute_value_id" ref="website_subscription_management.product_attribute_value_demo_4"/>
+        </record> -->
+
+
+        <!-- Demo for the subscription subscription Model -->
+        <!-- <record id="subscription1" model="subscription.subscription">
+          <field name="customer_name" ref="base.partner_admin"/>
+          <field name="customer_billing_address" ref="base.partner_admin"/>
+          <field name="product_id" ref="product_product_5b"/>
+          <field name="sub_plan_id" ref="subscription_plan_demo_1"/>
+          <field name="duration">1</field>
+          <field name="unit">week</field>
+          <field name="price">500.00</field>
+          <field name="num_billing_cycle" >10</field>
+          <field name="never_expires" eval="False"/>
+          <field name="start_date" eval="DateTime.today().strftime('%Y-%m-%d %H:%M')"/>
+      </record>
+
+
+      <record id="subscription3" model="subscription.subscription">
+              <field name="customer_name" ref="base.partner_admin"/>
+              <field name="customer_billing_address" ref="base.partner_admin"/>
+              <field name="product_id" ref="product_product_5c"/>
+              <field name="sub_plan_id" ref="subscription_plan_demo_2"/>
+              <field name="duration">1</field>
+              <field name="unit">year</field>
+              <field name="price">5000.00</field>
+              <field name="num_billing_cycle" >5</field>
+              <field name="never_expires" eval="False"/>
+              <field name="start_date" eval="(DateTime.today() + relativedelta(days=1)).strftime('%Y-%m-%d')"/>
+      </record> -->
+
+
+
+
+
+
+    </data>
+</odoo>

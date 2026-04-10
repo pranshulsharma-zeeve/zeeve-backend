@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Category for Access Rights -->
+        <record id="module_category_access_rights" model="ir.module.category">
+            <field name="name">Access Rights</field>
+            <field name="description">User access rights for custom modules</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <!-- Support Staff - Read Only Access -->
+        <record id="group_support_staff" model="res.groups">
+            <field name="name">Support Staff</field>
+            <field name="category_id" ref="module_category_access_rights"/>
+            <field name="implied_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('base.group_allow_export')),
+            ]"/>
+            <field name="comment">Read-only access to subscription management and invoicing modules</field>
+        </record>
+
+        <!-- Support Staff Manager - Read/Write Access -->
+        <record id="group_support_staff_manager" model="res.groups">
+            <field name="name">Support Staff Manager</field>
+            <field name="category_id" ref="module_category_access_rights"/>
+            <field name="implied_ids" eval="[(4, ref('group_support_staff'))]"/>
+            <field name="comment">Read/Write access to subscription management and invoicing modules</field>
+        </record>
+
+        <!-- Admin - Full Access (except settings) -->
+        <record id="group_admin" model="res.groups">
+            <field name="name">Admin</field>
+            <field name="category_id" ref="module_category_access_rights"/>
+            <field name="implied_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('base.group_partner_manager')),
+                (4, ref('account.group_account_manager')),
+                (4, ref('account.group_account_invoice')),
+            ]"/>
+            <field name="comment">Full access to all features except settings</field>
+        </record>
+
+        <!-- Technical Manager - Full Access (including settings) -->
+        <record id="group_technical_manager" model="res.groups">
+            <field name="name">Technical Manager</field>
+            <field name="category_id" ref="module_category_access_rights"/>
+            <field name="implied_ids" eval="[
+                (4, ref('group_admin')),
+                (4, ref('base.group_system')),
+            ]"/>
+            <field name="comment">Full access including settings and technical features</field>
+        </record>
+
+    </data>
+</odoo>

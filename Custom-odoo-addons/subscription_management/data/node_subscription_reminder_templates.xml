@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="mail_template_node_subscription_reminder" model="mail.template">
+            <field name="name">Node Subscription - Upcoming Payment Reminder</field>
+            <field name="model_id" ref="subscription_management.model_subscription_subscription"/>
+            <field name="subject">Reminder: Your node payment is due in {{ ctx.get('days_to_due', 0) }} days</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+            <field name="email_to">{{ object.customer_name.email or object.customer_name.email_formatted }}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html"><![CDATA[
+<t t-set="company" t-value="object.env.company or object.env['res.company'].sudo().search([], limit=1)"/>
+<t t-set="cfg" t-value="object.env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="base_url" t-value="(object.env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/')"/>
+<t t-set="company_logo" t-value="base_url and company and '%s/web/image/res.company/%s/logo' % (base_url, company.id)"/>
+<t t-set="customer_name" t-value="object.customer_name.display_name or object.customer_name.email or 'there'"/>
+<t t-set="due_date" t-value="ctx.get('next_billing_date') or object.stripe_end_date or object.next_payment_date"/>
+<t t-set="days_to_due" t-value="ctx.get('days_to_due', 0)"/>
+<t t-set="currency_symbol" t-value="(object.currency_id and (object.currency_id.symbol or object.currency_id.name)) or (company.currency_id and (company.currency_id.symbol or company.currency_id.name)) or ''"/>
+<t t-set="amount" t-value="ctx.get('amount') or ('%s %.2f' % (currency_symbol or '', (object.price or 0.0)))"/>
+<t t-set="invoice_url" t-value="ctx.get('stripe_invoice_url')"/>
+<t t-set="current_year" t-value="ctx.get('current_year') or datetime.date.today().year"/>
+<t t-set="static_base" t-value="base_url + '/zeeve_base/static/src/img'"/>
+<t t-set="twitter_icon" t-value="static_base + '/x.png'"/>
+<t t-set="telegram_icon" t-value="static_base + '/telegram.png'"/>
+<t t-set="linkedIn_icon" t-value="static_base + '/linkedIn.png'"/>
+
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border:1px solid #e9e9e9;background:#ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://www.zeeve.io/">
+                    <t t-if="company_logo">
+                      <img t-att-src="company_logo" alt="Zeeve" height="80"/>
+                    </t>
+                    <t t-else="">
+                      <img src="https://demo.studiobrahma.in/zeeve/mailer/images/zeeve-logo2.png" alt="Zeeve" height="80"/>
+                    </t>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:18px 0 12px;">
+                  <p style="font-size:20px;line-height:30px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    <strong>Hi <t t-out="customer_name"/>,</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    This is a friendly reminder that your <strong><t t-out="object.name or 'node subscription'"/></strong> will renew in <strong><t t-out="days_to_due"/></strong> day(s), on <strong><t t-out="format_date(due_date) if due_date else 'the due date'"/></strong>.
+                    Please ensure your payment details are up to date to avoid any disruption.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 0 16px;">
+                  <p style="font-size:15px;color:#FF9653;line-height:24px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;text-transform:uppercase;letter-spacing:4px;">Key Details</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 10px;">
+                  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Plan: <t t-out="object.sub_plan_id.name or 'N/A'"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Due Date: <t t-out="format_date(due_date) if due_date else 'TBA'"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Amount: <t t-out="amount or 'TBA'"/></p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <!-- <tr>
+                <td style="padding:12px 0 24px;">
+                  <t t-if="invoice_url">
+                    <a t-att-href="invoice_url" style="display:inline-block;padding:12px 28px;background:#FF9653;color:#ffffff;font-size:15px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;border-radius:6px;text-decoration:none;">Pay Upcoming Invoice</a>
+                  </t>
+                </td>
+              </tr> -->
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:16px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Need help? Email <a t-att-href="'mailto:%s' % (cfg.support_email if cfg else 'support@zeeve.io')" style="color:#FF9653;text-decoration:none;"><t t-out="(cfg and cfg.support_email) or 'support@zeeve.io'"/></a>.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:16px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Thank you for being a valued customer!
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 24px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Best Regards,<br/>The Zeeve Team</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table bgcolor="#ffffff" width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="background-color:#ffffff;">
+              <tr>
+                <td style="padding:40px 24px 15px; text-align:center;">
+                  <p style="font-size:16px; line-height:26px; font-weight:600; color:#FF9653; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Follow us at</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 24px; text-align:center;">
+                   <a href="https://x.com/0xZeeve"><img t-att-src="twitter_icon" alt="twitter" style="width:24px; height:24px;margin-right:20px;"/></a>
+                          <a href="https://www.linkedin.com/company/0xzeeve/"><img t-att-src="linkedIn_icon" alt="linkedIn" style="width:23px; height:23px;margin-right:20px;"/></a>
+                          <a href="https://t.me/ZeeveDeeptech"><img t-att-src="telegram_icon" alt="telegram" style="width:24px; height:24px;"/></a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 24px 48px; text-align:center;">
+                  <p style="font-size:14px; color:#232323; line-height:24px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">© <t t-out="current_year"/> <t t-out="company.name or 'Zeeve'"/>. All rights reserved.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+]]></field>
+        </record>
+
+        <record id="mail_template_node_subscription_due" model="mail.template">
+            <field name="name">Node Subscription - Payment Due</field>
+            <field name="model_id" ref="subscription_management.model_subscription_subscription"/>
+            <field name="subject">Action required: Your node payment is due today</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+            <field name="email_to">{{ object.customer_name.email or object.customer_name.email_formatted }}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html"><![CDATA[
+<t t-set="company" t-value="object.env.company or object.env['res.company'].sudo().search([], limit=1)"/>
+<t t-set="cfg" t-value="object.env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="base_url" t-value="(object.env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/')"/>
+<t t-set="company_logo" t-value="base_url and company and '%s/web/image/res.company/%s/logo' % (base_url, company.id)"/>
+<t t-set="customer_name" t-value="object.customer_name.display_name or object.customer_name.email or 'there'"/>
+<t t-set="due_date" t-value="ctx.get('next_billing_date') or object.stripe_end_date or object.next_payment_date"/>
+<t t-set="currency_symbol" t-value="(object.currency_id and (object.currency_id.symbol or object.currency_id.name)) or (company.currency_id and (company.currency_id.symbol or company.currency_id.name)) or ''"/>
+<t t-set="amount" t-value="ctx.get('amount') or ('%s %.2f' % (currency_symbol or '', (object.price or 0.0)))"/>
+<t t-set="invoice_url" t-value="ctx.get('stripe_invoice_url') or (object.hosted_invoice_url)"/>
+<t t-set="current_year" t-value="ctx.get('current_year') or datetime.date.today().year"/>
+<t t-set="static_base" t-value="base_url + '/zeeve_base/static/src/img'"/>
+<t t-set="twitter_icon" t-value="static_base + '/x.png'"/>
+<t t-set="telegram_icon" t-value="static_base + '/telegram.png'"/>
+<t t-set="linkedIn_icon" t-value="static_base + '/linkedIn.png'"/>
+
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border:1px solid #f2c4a3;background:#ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://www.zeeve.io/">
+                    <t t-if="company_logo">
+                      <img t-att-src="company_logo" alt="Zeeve" height="80"/>
+                    </t>
+                    <t t-else="">
+                      <img src="https://demo.studiobrahma.in/zeeve/mailer/images/zeeve-logo2.png" alt="Zeeve" height="80"/>
+                    </t>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:18px 0 12px;">
+                  <p style="font-size:20px;line-height:30px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;color:#d35400;">
+                    <strong>Immediate action required</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Hi <t t-out="customer_name"/>,
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    This is a reminder that today is the due date for your node subscription payment. Please settle it to keep your infrastructure online.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 0 16px;">
+                  <p style="font-size:15px;color:#FF9653;line-height:24px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;text-transform:uppercase;letter-spacing:4px;">Account Summary</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 10px;">
+                  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Service: <t t-out="object.name"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Amount: <t t-out="amount or 'TBA'"/></p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 12px 12px 0;vertical-align:top;width:24px;">
+                        <p style="font-size:18px;line-height:28px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;color:#FF9653;margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 12px 0;">
+                        <p style="font-size:17px;line-height:24px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Due Date: <strong><t t-out="format_date(due_date) if due_date else 'the due date'"/></strong></p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:12px 0 24px;">
+                  <t t-if="invoice_url">
+                    <a t-att-href="invoice_url" style="display:inline-block;padding:12px 28px;background:#d35400;color:#ffffff;font-size:15px;font-weight:600;font-family:Poppins,Arial,Helvetica,sans-serif;border-radius:6px;text-decoration:none;">Pay Outstanding Invoice</a>
+                  </t>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 18px;">
+                  <p style="font-size:16px;line-height:26px;font-weight:400;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">
+                    Need help? Email <a t-att-href="'mailto:%s' % (cfg.support_email if cfg else 'support@zeeve.io')" style="color:#FF9653;text-decoration:none;"><t t-out="(cfg and cfg.support_email) or 'support@zeeve.io'"/></a>.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 24px;">
+                  <p style="font-size:17px;line-height:26px;font-weight:500;font-family:Poppins,Arial,Helvetica,sans-serif;margin:0;">Regards,<br/>The Zeeve Team</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table bgcolor="#ffffff" width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="background-color:#ffffff;">
+              <tr>
+                <td style="padding:40px 24px 15px; text-align:center;">
+                  <p style="font-size:16px; line-height:26px; font-weight:600; color:#FF9653; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Follow us at</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 24px; text-align:center;">
+                   <a href="https://x.com/0xZeeve"><img t-att-src="twitter_icon" alt="twitter" style="width:24px; height:24px;margin-right:20px;"/></a>
+                          <a href="https://www.linkedin.com/company/0xzeeve/"><img t-att-src="linkedIn_icon" alt="linkedIn" style="width:23px; height:23px;margin-right:20px;"/></a>
+                          <a href="https://t.me/ZeeveDeeptech"><img t-att-src="telegram_icon" alt="telegram" style="width:24px; height:24px;"/></a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 24px 48px; text-align:center;">
+                  <p style="font-size:14px; color:#232323; line-height:24px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">© <t t-out="current_year"/> <t t-out="company.name or 'Zeeve'"/>. All rights reserved.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+]]></field>
+        </record>
+    </data>
+</odoo>

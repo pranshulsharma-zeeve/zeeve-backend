@@ -1,0 +1,3 @@
+customer_name,sub_plan_id,unit,duration,price,start_date,subscription_type,payment_frequency,network_selection_id,server_location_id
+Azure Corp,Basic RPC Plan,month,12,499.0,2024-01-01,rpc,monthly,mainnet,US East
+Blockchain Labs,Enterprise Validator Plan,year,1,9999.0,2024-02-15,validator,annually,mainnet,Singapore

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="stripe_payment_log_tree_view_rollup_inherit" model="ir.ui.view">
+            <field name="name">stripe.payment.log.tree.rollup.inherit</field>
+            <field name="model">stripe.payment.log</field>
+            <field name="inherit_id" ref="subscription_management.stripe_payment_log_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='event_type']" position="after">
+                    <field name="transaction_hash"/>
+                </xpath>
+                <xpath expr="//field[@name='stripe_subscription_id']" position="after">
+                    <field name="rollup_service_id"/>
+                </xpath>
+                <xpath expr="//field[@name='rollup_service_id']" position="after">
+                    <field name="rollup_type_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="stripe_payment_log_form_view_rollup_inherit" model="ir.ui.view">
+            <field name="name">stripe.payment.log.form.rollup.inherit</field>
+            <field name="model">stripe.payment.log</field>
+            <field name="inherit_id" ref="subscription_management.stripe_payment_log_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/group[2]" position="after">
+                    <group string="Rollup Information">
+                        <group>
+                            <field name="rollup_service_id" options="{'no_create': True}"/>
+                            <field name="rollup_type_id" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="transaction_hash"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="stripe_payment_log_search_view_rollup_inherit" model="ir.ui.view">
+            <field name="name">stripe.payment.log.search.rollup.inherit</field>
+            <field name="model">stripe.payment.log</field>
+            <field name="inherit_id" ref="subscription_management.stripe_payment_log_search_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='subscription_id']" position="after">
+                    <field name="rollup_service_id"/>
+                    <field name="rollup_type_id"/>
+                    <field name="transaction_hash"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

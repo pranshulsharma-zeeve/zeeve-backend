@@ -1,0 +1,502 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- Copyright (c) 2016-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<odoo>
+    <data>
+        <template id="subscription_list" name="Portal My Home : Subscription" inherit_id="portal.portal_my_home" priority="50">
+            <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+        
+                    
+                <t t-set="subscription_count" t-value="website.get_subscription_count()"/>
+                <t t-if="subscription_count" t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/website_subscription_management/static/src/img/subs.svg'"/>
+                          <t t-set="text">See your subscriptions here</t>
+                    <t t-set="title">Subscriptions</t>
+                    <t t-set="url" t-value="'/my/subscriptions'"/>
+                    <t t-set="placeholder_count" t-value="'subscription_count'"/>
+                </t>
+                
+            </xpath>
+        </template>
+
+        <template id="portal_my_subscription" name="My Subscription">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">Subscriptions</t>
+                </t>
+                <h3 class="ml8">Subscriptions</h3>
+                <t t-if='website.get_subscription_count()' t-call="portal.portal_table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr class="active">
+                                <th>Plan Name</th>
+                                <th>Subscription Plan</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>State</th>
+                            </tr>
+                        </thead>
+                        <t t-foreach="subscriptions" t-as="subscription">
+                            <tr>
+                                <td>
+                                    <a t-attf-href='/my/subscriptions/{{ slug(subscription) }}/'>
+                                        <t t-esc='subscription.name'/>
+                                    </a>
+                                </td>
+                                <td>
+                                    <t t-esc='subscription.sub_plan_id.name'/>
+                                </td>
+                                <td>
+                                    <t t-esc='subscription.start_date'/>
+                                </td>
+                                <t t-if='subscription.end_date and subscription.num_billing_cycle &gt; 0'>
+                                    <td>
+                                        <t t-esc='subscription.end_date'/>
+                                    </td>
+                                </t>
+                                <t t-else=''>
+                                    <td>
+                                        <t t-call='website_subscription_management.enddate_modal'/>
+                                    </td>
+                                </t>
+                                <td>
+                                    <t t-set="expiry_date" t-value="subscription.get_expiry_date()"/>
+
+                                    <t t-if='subscription.state in ["close"]'>
+                                        <button type='button' class='btn btn-primary renew_table' data-toggle="tooltip" data-placement="top" title="Your Current Subscription is to be expired">Renew</button>
+                                        <span class='hidden rec_id' t-esc="subscription.id"/>
+                                    </t>
+                                    <t t-elif='subscription.state in ["draft"]'>
+                                        <div class="status status_waiting text-center" title="Your Current Subscription is to be under progress.It will active soon.">Waiting</div>
+                                    </t>
+                                    <t t-elif='subscription.state in ["in_progress"]'>
+                                        <div class="status status_active text-center" title="Your Current Subscription is  active.">
+                            Active</div>
+                                    </t>
+                                    <t t-elif='subscription.state in ["cancel"]'>
+                                        <div class="status status_cancel text-center" title="This subscription is cancelled. You cannot access it any more.">
+                            Cancelled</div>
+                                    </t>
+                                    <t t-elif='subscription.state in ["expired"]'>
+                                        <div class="status status_expired text-center" title="Your subscription is expired.Please Renew it.">
+                            Expired</div>
+                                    </t>
+                                    <t t-elif='subscription.state in ["renewed"]'>
+                                        <div class="status status_renewed text-center" title="This subscription is Renewed.">
+                            Renewed</div>
+                                    </t>
+                                </td>
+                            </tr>
+                        </t>
+                    </table>
+                </t>
+                <t t-else="">
+                    <h3 class='text-secondary'>You haven't any subscription yet. Purchase them.</h3>
+                </t>
+                <!-- </div> -->
+            </t>
+        </template>
+
+        <template id="my_subscription_detail">
+            <t t-call="portal.portal_layout">
+                <!-- <t t-set="breadcrumbs_searchbar" t-value="True"/> -->
+                <!-- <t t-call="portal.portal_searchbar"/> -->
+                <div class="card mt8">
+                    <div class="row">
+                        <div class="col-md-12 col-12 col-sm-12 col-lg-12 wk_sub">
+                            <t t-call='portal.record_pager'/>
+                            <div class='row'>
+                                <div class='col-sm-6 ' >
+                                    <span style='font-size:25px'>Subscription ID: </span>
+                                    <span style='font-size:20px' t-esc="detail.name"/>
+                                </div>
+                                <div class='col-sm-6'>
+                                    <t t-if='detail.state in ["draft","in_progress"]'>
+                                        <button type='button' class='btn btn-danger float-end' data-bs-toggle="modal" data-bs-target="#exampleModal" data-whatever="@mdo" title="Want to cancel your subscription">Cancel</button>
+                                    </t>
+                                    <t t-elif='detail.state in ["expired","close"]'>
+                                        <button type='button' id='renew' class='btn btn-primary renew1 float-end'>Renew</button>
+                                    </t>
+                                </div>
+                            </div>
+                            <t t-call='website_subscription_management.modal_template'></t>
+                            <div class="bd-callout bd-callout-info row" style='padding:1rem;'>
+                                <t t-if='detail.state in ["in_progress"]'>
+                                    <div class='col-sm-9' style='font-size:20px;'>
+                                        <t t-esc='message.msg_for_active'/>
+                                    </div>
+                                    <div class='col-sm-3'>
+                                        <div class="status_edit status_active text-center float-end" title="Your Current Subscription is to be under progress.It will active soon">
+                                        Active</div>
+                                    </div>
+                                </t>
+                                <t t-elif='detail.state in ["draft"]'>
+                                    <div class='col-sm-10'>
+                                        <t t-esc='message.msg_for_draft'/>
+                                    </div>
+                                    <div class='col-sm-2'>
+                                        <div class="status_edit status_waiting text-center float-end" title="Your Current Subscription is to be under progress.It will active soon">Waiting</div>
+                                    </div>
+                                </t>
+                                <t t-elif='detail.state in ["cancel","close"]'>
+                                    <div class='col-sm-9'>
+                                        <t t-esc='message.msg_for_cancel'/>
+                                    </div>
+                                    <div class='col-sm-3'>
+                                        <div class="status_edit status_cancel text-center float-end" title="This subscription is cancelled. You cannot access it any more.">
+                                        Cancelled</div>
+                                    </div>
+                                </t>
+                                <t t-elif='detail.state in ["renewed"]'>
+                                    <div class='col-sm-9'>
+                                        <t t-esc='message.msg_for_renewed'/>
+                                    </div>
+                                    <div class='col-sm-3'>
+                                        <div class="status_edit status_renewed text-center float-end" title="This subscription is Renewed.">
+                                        Renewed</div>
+                                    </div>
+                                </t>
+                                <t t-elif='detail.state in ["expired"]'>
+                                    <div class='col-sm-9'>
+                                        <t t-esc='message.msg_for_expired'/>
+                                    </div>
+                                    <div class='col-sm-3'>
+                                        <div class="status_edit status_expired text-center float-end" title="This subscription is Renewed.">
+                                        expired</div>
+                                    </div>
+                                </t>
+                                <span class='hidden rec_id' t-esc="detail.id"/>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- </div> -->
+                </div>
+                <div class="card wk_susbcription_plan">
+                    <div class='row '>
+                        <div class="col-sm-5" style='margin-right:2%;'>
+                            <h3>Plan Information:</h3>
+                            <div class='row wk_plan' style='border:0.5px solid #d0d6e0;'>
+                                <div class="col-11" style='padding:24px;'>
+                                    <div class='col-xs-12'>
+                                        <b>Subscription Plan :</b>
+                                        <div class='float-end'>
+                                            <t t-esc='detail.sub_plan_id.name'/>
+                                        </div>
+                                    </div>
+                                    <div class='col-xs-12'>
+                                        <b>Recurrency : </b>
+                                        <div class='float-end'>
+                                            <span t-esc="detail.duration"/>
+                                            <span t-esc='detail.unit'/>
+                                        </div>
+                                    </div>
+                                    <div class='col-xs-12'>
+                                        <b>Plan Price : </b>
+                                        <div class='float-end'>
+                                            <t t-esc="detail.price" t-options="{'widget': 'monetary','from_currency': detail.currency_id,'display_currency': website._get_current_pricelist().currency_id}" />
+                                        </div>
+                                    </div>
+                                    <div class='col-xs-12'>
+                                        <b>Start Date : </b>
+                                        <div class='float-end'>
+                                            <t t-esc='detail.start_date'/>
+                                        </div>
+                                    </div>
+
+                                    <t t-if='detail.end_date'>
+                                        <div class='col-xs-12'>
+                                            <b>End Date :</b>
+                                            <div class='float-end'>
+                                                <t t-esc='detail.end_date'/>
+                                            </div>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class='col-xs-12'>
+                                            <b>End Date :</b>
+                                            <div class='float-end'>
+                                                <t t-call='website_subscription_management.enddate_modal'/>
+                                            </div>
+                                        </div>
+
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <h3>Payment Information:</h3>
+                            <div class='row wk_plan' style='border:0.5px solid #d0d6e0;'>
+                                <div class="col-12" style='padding:24px;'>
+                                    <div class='col-xs-12'>
+                                        <b>Trial Period:</b>
+                                        <div class='float-end'>
+                                            <t t-if='detail.trial_period'>
+                                                <t t-esc="detail.trial_duration"/>
+                                                <t t-esc='detail.trial_duration_unit' />
+                                            </t>
+                                            <t t-else=''>
+                                   This plan has no trial period.
+                                            </t>
+                                        </div>
+                                    </div>
+                                    <div class='col-xs-12'>
+                                        <b>No. of Billing cycle : </b>
+                                        <div class='float-end'>
+                                            <span t-esc="detail.num_billing_cycle"/>
+                                        </div>
+                                    </div>
+                                    <div class='col-xs-12'>
+                                        <b>Date of Next Payment: </b>
+                                        <div class='float-end'>
+                                            <t t-if="not (detail.hide_next_payment_date and detail.never_expires is False)">
+                                                <t t-esc="detail.next_payment_date"/>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <template id='enddate_modal'>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
+            Click on it.
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Information</h5>
+                            <span data-bs-dismiss="modal" aria-label="Close">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-octagon" viewBox="0 0 16 16">
+                                    <path d="M4.54.146A.5.5 0 0 1 4.893 0h6.214a.5.5 0 0 1 .353.146l4.394 4.394a.5.5 0 0 1 .146.353v6.214a.5.5 0 0 1-.146.353l-4.394 4.394a.5.5 0 0 1-.353.146H4.893a.5.5 0 0 1-.353-.146L.146 11.46A.5.5 0 0 1 0 11.107V4.893a.5.5 0 0 1 .146-.353L4.54.146zM5.1 1 1 5.1v5.8L5.1 15h5.8l4.1-4.1V5.1L10.9 1H5.1z"/>
+                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="modal-body">
+                    Your Subscription Plan is in Never Expire Mode.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+
+        <template id="product_edit" inherit_id="website_sale.product">
+            <xpath expr="//section[@id='product_detail']" position="after">
+                <t t-if='product.activate_subscription'>
+                    <div class='container' id='subPlan_info'>
+                        <h2 class="text-center">Plans Information</h2>
+                        <div class="row" style='justify-content: center; display: flex;' t-nocache="Need to refresh plan information...">
+
+                            <t t-foreach='product.product_variant_ids' t-as='product_subs'>
+                                <t t-if='product_subs.activate_subscription'>
+                                    <div class="col-md-3 col-xs-12 mb24">
+                                        <div class="panel bg-light" t-att-data-id='product_subs.id' style='border:1px solid #337ab7; font-family: "Times New Roman", Times, serif; height:100%;border-radius:5px;'>
+                                            <div class="panel-heading text-center" style="background-color: #337ab7; color:white; padding:5px;">
+                                                <h3 style="margin: 0">
+                                                    <span t-esc='product_subs.subscription_plan_id.name'/>
+                                                </h3>
+                                            </div>
+                                            <div class="" style='background-color:white; display:flex; justify-content:center;padding:15px;'>
+                                                <span itemprop="image" t-field="product_subs.image_1920" t-options="{'widget': 'image'}" t-att-alt="product_subs.name" />
+                                            </div>
+                                            <div class="panel-body text-center" style='background-color: #337ab7; color:white;'>
+                                                <t t-set="combination_info" t-value="product_subs._get_combination_info_variant(add_qty=add_qty)"/>
+                                                <t t-call='website_sale.product_price'/>
+                                            </div>
+                                            <ul class="list-group" style='color:black;'>
+                                                <li class="list-group-item">
+                                                    <b>Plan Duration</b>:The plan has <span t-esc='product_subs.subscription_plan_id.duration'/>
+&amp;nbsp;<span t-esc='product_subs.subscription_plan_id.unit'/>
+ duration.</li>
+                                            <li class="list-group-item">
+                                                <b>Trial Period</b> : This plan has
+                                                <t t-if='product_subs.subscription_plan_id.trial_duration'>
+                                                    <span t-esc='product_subs.subscription_plan_id.trial_duration'/>
+&amp;nbsp;
+                                                    <span t-esc='product_subs.subscription_plan_id.trial_duration_unit'/>
+ Trial period.
+                                                </t>
+                                                <t t-else=''>
+                                                    <span> No Trial Period.</span>
+                                                </t>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <t t-if='product_subs.subscription_plan_id.plan_description'>
+                                                    <t t-set='length' t-value='len(product_subs.subscription_plan_id.plan_description)'/>
+                                                    <b>Plan Description</b>
+                                                    <t t-if='length > 120'>
+                                                        <a t-if='length > 120' type="button" class="plan_description" data-bs-toggle="modal" t-attf-data-bs-target="#subscription_readMore_#{product_subs.subscription_plan_id.id}" style='display:block;text-align:center;cursor:pointer;'>
+                                                Read more. . .
+                                                        </a>
+                                                        <t t-call='website_subscription_management.subscription_description_read_more_modal'>
+                                                            <t set='subsc_plan' t-value='product_subs.subscription_plan_id'/>
+                                                        </t>
+                                                    </t>
+                                                    <t t-else=''>
+                                                        <p class='plan_info_mem'>
+                                                            <span style='word-break: break-all;' t-field='product_subs.subscription_plan_id.plan_description'/>
+                                                        </p>
+                                                    </t>
+                                                </t>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+        <!-- <xpath expr="//div[contains(@class,'css_quantity')]" position="attributes">
+            <attribute name="t-att-class">'hidden css_quantity input-group oe_website_spinner' if product.activate_subscription else 'css_quantity input-group oe_website_spinner'</attribute>
+        </xpath> -->
+    </template>
+
+    <template id='subscription_description_read_more_modal'>
+        <div class="modal fade" t-attf-id="subscription_readMore_#{product_subs.subscription_plan_id.id}" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">
+                            <b>Subscription Plan Details</b>
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <p class="read_more_body">
+                            <span style='word-break: break-all;' t-field='product_subs.subscription_plan_id.plan_description'/>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+
+    <template id="edit_cart" inherit_id='website_sale.cart_lines'>
+        <xpath expr="//div[contains(@t-attf-class, 'css_quantity')]//t[@t-if='show_qty']" position="replace">
+            <t t-if='not line.product_id.activate_subscription'>
+                <a href="#" class="js_add_cart_json btn btn-link d-inline-block border-end-0" 
+                    aria-label="Remove one" title="Remove one">
+                    <i class="position-relative z-index-1 fa fa-minus"/>
+                </a>
+                <input type="text" class="js_quantity quantity form-control border-start-0 border-end-0"
+                    t-att-data-line-id="line.id" t-att-data-product-id="line.product_id.id"
+                    t-att-value="int(line.product_uom_qty) == line.product_uom_qty and int(line.product_uom_qty) or line.product_uom_qty"/>
+                <t t-if="line._get_shop_warning(clear=False)">
+                    <a href="#" class="btn btn-link">
+                        <i class='fa fa-warning text-warning' t-att-title="line._get_shop_warning()" 
+                            role="img" aria-label="Warning"/>
+                    </a>
+                </t>
+                <a t-else="" href="#" class="js_add_cart_json d-inline-block float_left btn btn-link border-start-0"
+                    aria-label="Add one" title="Add one">
+                    <i class="fa fa-plus position-relative z-index-1"/>
+                </a>
+            </t>
+            <t t-elif='line.product_id.activate_subscription'>
+                <a href="#" class="btn btn-link disabled d-inline-block border-end-0" 
+                    aria-label="Remove one" title="Remove one">
+                    <i class="position-relative z-index-1 fa fa-minus"/>
+                </a>
+                <input type="text" class="js_quantity quantity form-control border-start-0 border-end-0"
+                    t-att-data-line-id="line.id" t-att-data-product-id="line.product_id.id" readonly=''
+                    t-att-value="int(line.product_uom_qty) == line.product_uom_qty and int(line.product_uom_qty) or line.product_uom_qty"/>
+                <t t-if="line._get_shop_warning(clear=False)">
+                    <a href="#" class="btn btn-link">
+                        <i class='fa fa-warning text-warning' t-att-title="line._get_shop_warning()" 
+                            role="img" aria-label="Warning"/>
+                    </a>
+                </t>
+                <a t-else="" href="#" class="d-inline-block disabled float_left btn btn-link border-start-0"
+                    aria-label="Add one" title="Add one">
+                    <i class="fa fa-plus position-relative z-index-1"/>
+                </a>
+            </t>
+        </xpath>
+        <xpath expr='//t[@t-call="website_sale.cart_line_product_link"]' position='after'>
+            <t t-if='line.product_id.activate_subscription'>
+                <p><b>( Subscription Plan )</b></p>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="cart_summary" inherit_id='website_sale.checkout_layout'>
+
+        <xpath expr='//td[contains(@t-attf-class, "td-product_name")]' position='after'>
+            <t t-if='line.product_id.activate_subscription'>
+                <p><b>( Subscription Plan )</b></p>
+            </t>
+        </xpath>
+
+    </template>
+
+    <template id='modal_template'>
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Reason for cancel</h5>
+                        <span data-bs-dismiss="modal" aria-label="Close">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/example/reason" method="post">
+                            <div class="form-group">
+                                <label class="control-label" for="reason_id">Reasons</label>
+                                <select id="reason_id" name="reason_id" class="form-control" required=''>
+                                    <option value=''>Choose...</option>
+                                    <t t-foreach="reasons" t-as="reason">
+                                        <option t-att-value="reason.name" t-attr-name="{{reason.id}}">
+                                            <t t-esc="reason.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name='sub_plan_record_id' t-att-value='detail.id' class='hidden'/>
+                                <label for="message-text" class="col-form-label"> Message:</label>
+                                <textarea class="form-control" id="message-text" name="message" t-att-value="request.params.get('name', '')" placeholder='Please mention your reason why you do this' style='resize: vertical;'></textarea>
+                            </div>
+                            <div class="modal-footer form-group">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" value='submit' class="btn btn-primary cancel_plan">Cancel Now</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id='ribbon_product' inherit_id='website_sale.products_item'>
+        <xpath expr="//form//a[hasclass('oe_product_image_link')]" position="inside">
+            <t t-if="product.activate_subscription">
+                <t t-set="bg_color" t-value="'bg-primary'"/>
+                <t t-set="text_color" t-value="'text-secondary'"/>
+                <span class="o_ribbon bg-success o_ribbon_left" t-attf-style="#{text_color and ('color: %s; ' % text_color)}#{bg_color and 'background-color:' + bg_color}">Subscription</span>
+            </t>
+        </xpath>
+    </template>
+
+</data>
+</odoo>

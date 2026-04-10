@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="form_view_contact_us" model="ir.ui.view">
+        <field name="name">contact.us.form</field>
+        <field name="model">contact.us</field>
+        <field name="arch" type="xml">
+            <form string="Contact Us">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="email" />
+                            <field name="country_id" />
+                        </group>
+                        <group>
+                            <field name="company_name" />
+                            <field name="comment" />
+                            <field name="type"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+
+            </form>
+        </field>
+
+    </record>
+    <record id="tree_view_contact_us" model="ir.ui.view">
+        <field name="name">contact.us.tree</field>
+        <field name="model">contact.us</field>
+        <field name="arch" type="xml">
+            <list string= "Contact Us">
+                <field name="name"/>
+                <field name="email"/>
+                <field name="comment"/>
+                <field name="type"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_contact_us" model="ir.actions.act_window">
+        <field name="name">Contact Us</field>
+        <field name="res_model">contact.us</field>
+        <field name="view_mode">list,kanban,form,search</field>
+    </record>
+
+    <menuitem id="contact_us_sub_menu" name="Contact Us" action="action_contact_us" sequence="100" groups="access_rights.group_admin,access_rights.group_technical_manager,access_rights.group_support_staff,access_rights.group_support_staff_manager"/>
+</odoo>

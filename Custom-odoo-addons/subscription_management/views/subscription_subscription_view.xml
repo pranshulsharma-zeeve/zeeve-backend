@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="search_deafult_subscription" model="ir.ui.view">
+            <field name="name">search.subscription</field>
+            <field name="model">subscription.subscription</field>
+            <field name="arch" type="xml">
+                <search string="Subscriptions">
+                    <field name="name" string="Subscription" filter_domain="[('name','ilike',self)]"/>
+                    <field name="zoho_subscription_id" string="Zoho Subscription ID" filter_domain="[('zoho_subscription_id','ilike',self)]"/>
+                    <field name="customer_email" string="Customer Email" filter_domain="[('customer_name.email','ilike',self)]"/>
+                    <field name="protocol_id"/>
+                    <filter string="Overdue" name="filter_overdue" domain="[('stripe_status', '=', 'past_due')]"/>
+                    <filter string="Due in 2 Days" name="filter_due_in_two_days"
+                            domain="[('stripe_end_date', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('stripe_end_date', '&lt;=', (context_today() + relativedelta(days=2)).strftime('%Y-%m-%d 23:59:59'))]"/>
+                    <filter string="Due in 5 Days" name="filter_due_in_five_days"
+                            domain="[('stripe_end_date', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('stripe_end_date', '&lt;=', (context_today() + relativedelta(days=5)).strftime('%Y-%m-%d 23:59:59'))]"/>
+                    <group string="Group By">
+                        <filter string="State" context="{'group_by':'stripe_status'}" name="group_by_state"/>
+                        <filter string="Subscription Type" context="{'group_by':'subscription_type'}" name="group_by_subscription_type"/>
+                        <filter string="Customer" context="{'group_by':'customer_name'}" name="group_by_customer"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="subscription_subscription_form_view" model="ir.ui.view">
+            <field name="name">subscription.subscription.form</field>
+            <field name="model">subscription.subscription</field>
+            <field name="arch" type="xml">
+                <form string="Subscription">
+                    <header>
+                        <button name="subscription_management.subscription_cancel_reason_wizard_action" string="Cancel" type="action" invisible="state != 'draft'" class="oe_highlight"  context="{'is_cancel':'True'}"/>
+                        <button name="make_payment" type="object" string="Pay invoice" invisible="invoice_count == 0 or state != 'in_progress' or is_paid == False" />
+
+                        <button name="subscription_management.subscription_cancel_reason_wizard_action" string="Close" type="action" invisible="state != 'in_progress'" class="oe_highlight" />
+                        <button name="renew_subscription" string="Renew" type="object" invisible="state not in ['expired','close']" class="oe_highlight" />
+
+                        <button name="create_invoice" string="Create Inv" type="object" class="oe_highlight"/>
+                        <button name="action_check_recurring_payment"
+                                string="Test Recurring Payment (V2)"
+                                type="object"
+                                class="oe_highlight"
+                                invisible="state == 'draft' or not is_odoo_managed"
+                                />
+                        <button name="action_sync_with_stripe" string="Sync From Stripe" type="object"
+                                class="btn-secondary"
+                                />
+                        <button name="action_migrate_to_odoo_managed"
+                                string="Convert to Odoo-Managed"
+                                type="object"
+                                class="oe_highlight"
+                                invisible="is_odoo_managed or not stripe_subscription_id"
+                                confirm="This will cancel the subscription in Stripe at the end of the period and Odoo will take over billing. Are you sure?"/>
+                        <field name="stripe_status" widget="statusbar" statusbar_visible="draft,active,paused,canceled"/>
+
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_payments" type="object" class="oe_stat_button" icon="fa-credit-card" invisible="payment_count == 0" >
+                                <field name="payment_count" widget="statinfo" string="Payments"/>
+                            </button>
+                            <button name="get_wallet_info" type="object" string="Wallet" class="oe_stat_button" icon="fa-wallet" invisible="true" />
+
+
+                            <button name="action_view_payment_logs" type="object" class="oe_stat_button" icon="fa-list-alt" invisible="payment_log_count == 0" >
+                                <field name="payment_log_count" widget="statinfo" string="Payment Logs"/>
+                            </button>
+                            <button name="action_view_validator_transactions" type="object" class="oe_stat_button" icon="fa-exchange" >
+                                <field name="validator_transaction_count" widget="statinfo" string="Validator Txns"/>
+                            </button>
+                            <button name="action_view_nodes" type="object" class="oe_stat_button" icon="fa-server" >
+                                <field name="node_count" widget="statinfo" string="Nodes"/>
+                            </button>
+                            <button name="action_view_etherlink_config_logs" type="object" class="oe_stat_button" icon="fa-file-text-o"  invisible="etherlink_log_count == 0">
+                                <field name="etherlink_log_count" widget="statinfo" string="Config Logs"/>
+                            </button>
+                            <button name="enable_autopay" string="Enable Autopay" type="object" class="oe_link" invisible="autopay_enabled == True or (not is_odoo_managed and not stripe_subscription_id)" />
+                            <button name="disable_autopay" string="Disable Autopay" type="object" class="oe_link" invisible="autopay_enabled == False or (not is_odoo_managed and not stripe_subscription_id)" />
+                            <button name="pause_stripe_subscription" string="Pause Subscription" type="object" class="oe_link" invisible="(stripe_status != 'active' and not is_odoo_managed) or (is_odoo_managed and state != 'in_progress')" />
+                            <button name="resume_stripe_subscription" string="Resume Subscription" type="object" class="oe_link" invisible="(stripe_status != 'paused' and not is_odoo_managed) or (is_odoo_managed and state != 'in_grace')" />
+
+                            <button class="oe_stat_button">
+                                <field name="active" widget="boolean_toggle" class="float-left ml-1" string="Active Record"/>
+                                <b>Active</b>
+                            </button>
+                            <button 
+                                        name="cancel_stripe_subscription" 
+                                        type="object" 
+                                        string="Cancel Subscription" 
+                                        class="btn-danger" 
+                                        invisible="state not in ['in_progress', 'provisioning'] or (not stripe_subscription_id and not is_odoo_managed)" 
+                                        groups="access_rights.group_admin,access_rights.group_technical_manager" 
+                                    />
+                        </div>
+
+                        <h1>
+                            <field name="name" invisible="name == False" />
+                        </h1>
+                        <field name="is_paid" invisible="1"/>
+
+                        <group name="customer" string="Customer Information">
+                            <group name="customer">
+                                <field name="customer_name" readonly="state != 'draft'"></field>
+                            </group>
+                            <group>
+                                <field name="customer_billing_address" readonly="state != 'draft'"></field>
+                                <field name="old_customer_id" invisible="1" />
+                            </group>
+                        </group>
+                        <group name= "subscription_details" string="Subscription Details">
+                            <group>
+                                <!-- <field name="subscription_ref" readonly="1"/> -->
+                                <field name="is_odoo_managed"/>
+                                <field name="subscription_type"/>
+                                <field name="protocol_id"/>
+                                <field name="subscription_uuid" readonly="1"/>
+                                <field name="payment_frequency"/>
+                                <field name="pending_quantity_increase"/>
+                                <field name="pending_quantity_paid"/>
+                            </group>
+                            <group>
+                                <field name="current_term_start" readonly="1"/>
+                                <field name="current_term_end" readonly="1"/>
+                                <field name="last_billing_on" readonly="1"/>
+                                <field name="pending_quantity_prorated_amount"/>
+
+                            </group>
+                        </group>
+                        <group name="plan" string="Plan Information">
+                            <group>
+                                <field name="quantity" readonly="state != 'draft'"></field>
+                                <field name="price" readonly="state != 'draft'" widget='monetary' options="{'currency_field': 'currency_id'}"></field>
+                            </group>
+                            <group>
+                                <field name="sub_plan_id"
+                                       readonly="state != 'draft'"
+                                       options="{'no_create': True}"
+                                       domain="[('protocol_id', '=', protocol_id), ('subscription_type', '=', subscription_type)]"/>
+                                <field name="tax_id" widget="many2many_tags" readonly="state != 'draft'"></field>
+                            </group>
+                        </group>
+
+                        <group name="stripe" string="Stripe Integration" invisible="not stripe_subscription_id">
+                            <group>
+                                <field name="stripe_subscription_id" readonly="1"/>
+                                <field name="stripe_customer_id" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="stripe_payment_method_id" readonly="1"/>
+                                <field name="stripe_price_id"/>
+                                <field name="autopay_enabled" readonly="1" widget="boolean_toggle"/>
+                            </group>
+                        </group>
+                        <group string="Other Information">
+                            <group>
+                                <field name="currency_id" invisible="1"/>
+
+                                <field name="stripe_start_date" readonly="state != 'draft'"></field>
+                                <field name="num_billing_cycle" required="1" readonly="state != 'draft' or never_expires == True"></field>
+                                <field name="start_immediately" readonly="1" invisible="start_immediately == False"></field>
+                                <field name="zoho_subscription_id" readonly="0"/>
+                            </group>
+                            <group>
+                                <field name="stripe_end_date" readonly="state != 'draft' or never_expires == True"></field>
+                                <field name="never_expires" readonly="state != 'draft'"></field>
+                                <label for='duration' string="Recurrency"></label>
+                                <div name='duration'>
+                                    <field name="duration" class="oe_inline" nolabel="1" readonly="state != 'draft'"></field>
+                                    <field name="unit" class="oe_inline" nolabel="1" readonly="state != 'draft'"></field>
+                                </div>
+                                <field name="trial_period" readonly="state != 'draft'" invisible="subscription_uuid != False"></field>
+                                <label for='duration' string="Trial Duration" invisible="trial_period == False or subscription_uuid != False"></label>
+                                <div name='trial_duration' invisible="trial_period == False or subscription_uuid != False">
+                                    <field name="trial_duration" class="oe_inline" nolabel="1" required="trial_period == True" readonly="state != 'draft'"></field>
+                                    <field name="trial_duration_unit" class="oe_inline" nolabel="1" required="trial_period == True" readonly="state != 'draft'"></field>
+                                </div>
+
+                            </group>
+                        </group>
+                        <group name="payment" string="Payment Information"  invisible="True">
+                            <group>
+                                <field name="source" string="Source" required="1" readonly="state != 'draft'"></field>
+                                <!-- <field name="subscription_ref" readonly="state != 'draft'"></field> -->
+                            </group>
+                            <group>
+                                <field name="parent_subscription_id" invisible="parent_subscription_id == False" readonly="True"></field>
+                            </group>
+                        </group>
+                        <group name="validator" string="Validator Information">
+                            <field name="validator_info" invisible="subscription_type != 'validator'" widget="text"></field>
+                            <field name="metaData" widget="json" />
+                        </group>
+                        <notebook>
+                            <page string="Nodes">
+                                <field name="node_ids">
+                                    <list editable="bottom">
+                                        <field name="node_name"/>
+                                        <field name="node_type"/>
+                                        <field name="state"/>
+                                        <field name="network_selection_id"/>
+                                        <field name="server_location_id"/>
+                                        <field name="software_update_rule"/>
+                                        <field name="endpoint_url"/>
+                                        <field name="node_identifier" readonly="1"/>
+                                    </list>
+                                    <form string="Subscription Node">
+                                        <sheet>
+                                            <group>
+                                                <field name="node_identifier" readonly="1"/>
+                                                <field name="node_name"/>
+                                                <field name="node_type"/>
+                                                <field name="state"/>
+                                                <field name="network_selection_id"/>
+                                                <field name="server_location_id"/>
+                                                <field name="software_update_rule"/>
+                                                <field name="endpoint_url"/>
+                                                <field name="metadata_json" widget="json"/>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </page>
+                        </notebook>
+                        <group name="reason">
+                            <field name="reason" invisible="state not in ['close','renewed','cancel']" readonly='1'></field>
+                        </group>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="subscription_validator_transaction_tree_view" model="ir.ui.view">
+            <field name="name">subscription.validator.transaction.tree</field>
+            <field name="model">subscription.validator.transaction</field>
+            <field name="arch" type="xml">
+                <list string="Validator Transactions" create="false" delete="false" edit="false">
+                    <field name="create_date" string="Created On"/>
+                    <field name="transaction_hash"/>
+                    <field name="action"/>
+                    <field name="notes"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="subscription_validator_transaction_form_view" model="ir.ui.view">
+            <field name="name">subscription.validator.transaction.form</field>
+            <field name="model">subscription.validator.transaction</field>
+            <field name="arch" type="xml">
+                <form string="Validator Transaction">
+                    <sheet>
+                        <group>
+                            <field name="subscription_id" readonly="1"/>
+                            <field name="transaction_hash" readonly="1"/>
+                            <field name="action" readonly="1"/>
+                            <field name="notes" readonly="1"/>
+                            <field name="create_date" readonly="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_subscription_validator_transactions" model="ir.actions.act_window">
+            <field name="name">Validator Transactions</field>
+            <field name="res_model">subscription.validator.transaction</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="subscription_validator_transaction_tree_view"/>
+        </record>
+
+        <record id="view_etherlink_node_config_update_tree" model="ir.ui.view">
+            <field name="name">etherlink.node.config.update.tree</field>
+            <field name="model">etherlink.node.config.update</field>
+            <field name="arch" type="xml">
+                <list string="Node Config Logs" create="false" edit="false" delete="false">
+                    <field name="updated_at"/>
+                    <field name="status"/>
+                    <field name="protocol_name"/>
+                    <field name="user_email"/>
+                    <field name="node_id"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_etherlink_node_config_update_form" model="ir.ui.view">
+            <field name="name">etherlink.node.config.update.form</field>
+            <field name="model">etherlink.node.config.update</field>
+            <field name="arch" type="xml">
+                <form string="Node Config Log">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="subscription_id" readonly="1"/>
+                                <field name="protocol_name" readonly="1"/>
+                                <field name="user_email" readonly="1"/>
+                                <field name="node_id" readonly="1"/>
+                                <field name="status" readonly="1"/>
+                                <field name="updated_at" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="updated_config" widget="text" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_etherlink_node_config_updates" model="ir.actions.act_window">
+            <field name="name">Node Config Logs</field>
+            <field name="res_model">etherlink.node.config.update</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="view_etherlink_node_config_update_tree"/>
+        </record>
+        <record id="subscription_list_view" model="ir.ui.view">
+            <field name="name">subscription.subscription.list.view</field>
+            <field name="model">subscription.subscription</field>
+            <field name="arch" type="xml">
+                <list decoration-success="stripe_status == 'active'" decoration-danger="stripe_status == 'canceled'" decoration-bf="stripe_status == 'draft'" decoration-info="stripe_status == 'past_due'" string="Subscriptions">
+                    <field name="subscription_ref"/>
+                    <field name="customer_name"/>
+                    <field name="subscription_type"/>
+                    <field name="sub_plan_id"/>
+                    <field name="protocol_id"/>
+                    <field name="payment_frequency"/>
+                    <field name="node_count" string="Nodes"/>
+                    <field name="create_date" string="Create Date"/>
+                    <field name="last_billing_on" string="Last Billing On"/>
+                    <field name="next_payment_date" column_invisible="True"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Automatic Action Perform -->
+        <record model="ir.cron" id="subscription_management_server_action">
+            <field name='name'>Subscription Management Action</field>
+            <field name="model_id" ref="model_subscription_subscription"/>
+            <field name="state">code</field>
+            <field name="code">action=model.action_alert_mail()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now() +timedelta(days=1)).strftime('%Y-%m-%d 06:30:00')" />
+            <field name="active" eval="True"/>
+        </record>
+
+        <record model="ir.cron" id="cron_subscription_migrate_to_odoo_managed">
+            <field name="name">Subscription: Migrate to Odoo Managed</field>
+            <field name="model_id" ref="model_subscription_subscription"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_migrate_to_odoo_managed()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="action_subscription" model="ir.actions.act_window">
+            <field name="name">Subscriptions</field>
+            <field name="res_model">subscription.subscription</field>
+            <!-- <field name="view_type">form</field> -->
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="subscription_list_view"></field>
+            <field name="search_view_id" ref="search_deafult_subscription"></field>
+            <field name="context">{"search_default_subscription_open_filter":1}</field>
+            <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_admin'), ref('access_rights.group_technical_manager'), ref('access_rights.group_support_staff_manager'), ref('access_rights.group_support_staff')])]"/>
+        </record>
+
+        <record id="product_normal_action_sell_subs" model="ir.actions.act_window">
+            <field name="name">Product Variants</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.product</field>
+            <field name="view_mode">kanban,list,form,activity</field>
+
+            <field name="context">{"search_default_filter_to_sell":1}</field>
+            <field name="domain">[('activate_subscription', '=', True)]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                Create a new product variant
+                </p>
+                <p>
+                You must define a product for everything you sell, whether it's a physical product,
+                a consumable or a service you offer to customers.
+                The product form contains information to simplify the sale process:
+                price, notes in the quotation, accounting data, procurement methods, etc.
+                </p>
+            </field>
+        </record>
+        <record id="action_subscription_products" model="ir.actions.act_window">
+            <field name="name">Subscription Products</field>
+            <field name="res_model">product.template</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('activate_subscription', '=', True)]</field>
+
+        </record>
+
+        <!-- <menuitem id="menu_subscription_products" name="Subscription Products" parent="subscription_management.menu_subscription_management_root" sequence="40" action="action_subscription_products"/> -->
+
+
+        <menuitem name="Subscriptions" id="menu_sale_subscription_submenu2" parent="menu_sale_subscription" action="action_subscription" groups="access_rights.group_admin,access_rights.group_technical_manager,access_rights.group_support_staff,access_rights.group_support_staff_manager"></menuitem>
+        <!-- <menuitem name="Nodes" id="menu_sale_subscription_nodes" parent="menu_sale_subscription_config" action="action_subscription_nodes" groups="access_rights.group_admin,access_rights.group_technical_manager,access_rights.group_support_staff,access_rights.group_support_staff_manager" sequence="20"/> -->
+        <menuitem name="Subscription Products" id="menu_sale_subscription_submenu3" parent="menu_sale_subscription_config" action="product_normal_action_sell_subs" groups="access_rights.group_admin,access_rights.group_technical_manager"></menuitem>
+        <record id="action_server_migrate_to_odoo_managed" model="ir.actions.server">
+            <field name="name">Convert to Odoo-Managed</field>
+            <field name="model_id" ref="subscription_management.model_subscription_subscription"/>
+            <field name="binding_model_id" ref="subscription_management.model_subscription_subscription"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+if records:
+    action = records.action_migrate_to_odoo_managed()
+            </field>
+        </record>
+    </data>
+</odoo>

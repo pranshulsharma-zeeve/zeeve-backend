@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_data_importer_tree" model="ir.ui.view">
+            <field name="name">data.importer.tree</field>
+            <field name="model">data.importer</field>
+            <field name="arch" type="xml">
+                <list string="Data Imports" default_order="create_date desc">
+                    <field name="name"/>
+                    <field name="model_id"/>
+                    <field name="state" widget="badge"/>
+                    <field name="log"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_data_importer_form" model="ir.ui.view">
+            <field name="name">data.importer.form</field>
+            <field name="model">data.importer</field>
+            <field name="arch" type="xml">
+                <form string="Data Importer">
+                    <header>
+                        <button name="action_download_template" type="object" string="Download Template" class="oe_highlight"/>
+                        <button name="action_import_file" type="object" string="Import" class="btn-primary" invisible="state != 'draft'"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="model_id" domain="[('model', '!=', 'ir.module.module')]"/>
+                                <field name="state" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="file" filename="filename" widget="binary" options="{'mimetype': 'text/csv'}"/>
+                                <field name="filename" invisible="1"/>
+                                <field name="chunk_size" />
+                                <field name="chunk_position" />
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Log">
+                                <field name="log" nolabel="1" readonly="1" widget="text" options="{'no_open': True}"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_data_importer" model="ir.actions.act_window">
+            <field name="name">Data Importer</field>
+            <field name="res_model">data.importer</field>
+            <field name="view_mode">list,form</field>
+            <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_technical_manager')])]"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first import
+                </p>
+                <p>
+                    Upload a CSV file, map its columns to model fields and process the import.
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_data_importer_root" name="Data Importer" sequence="20" groups="access_rights.group_technical_manager"/>
+        <menuitem id="menu_data_importer" name="Imports" parent="menu_data_importer_root" action="action_data_importer" sequence="10" groups="access_rights.group_technical_manager"/>
+    </data>
+</odoo>

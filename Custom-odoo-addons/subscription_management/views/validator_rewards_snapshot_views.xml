@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Tree View -->
+        <record id="view_validator_rewards_snapshot_tree" model="ir.ui.view">
+            <field name="name">validator.rewards.snapshot.tree</field>
+            <field name="model">validator.rewards.snapshot</field>
+            <field name="arch" type="xml">
+                <list string="Validator Rewards Snapshots" default_order="snapshot_date desc">
+                    <field name="snapshot_date" decoration-bf="1"/>
+                    <field name="valoper"/>
+                    <field name="outstanding_rewards" decoration-success="outstanding_rewards &gt; 0"/>
+                    <field name="total_rewards"/>
+                    <field name="total_stake" decoration-info="total_stake &gt; 0"/>
+                    <field name="owned_stake"/>
+                    <field name="delegator_count"/>
+                    <field name="commission_pct" string="Commission (%)"/>
+                    <field name="apr_pct" string="APR (%)"/>
+                    <field name="network_apr" string="Network APR (%)"/>
+                    <field name="protocol_id"/>
+                    <field name="node_id"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_validator_rewards_snapshot_form" model="ir.ui.view">
+            <field name="name">validator.rewards.snapshot.form</field>
+            <field name="model">validator.rewards.snapshot</field>
+            <field name="arch" type="xml">
+                <form string="Validator Rewards Snapshot" create="false" edit="false">
+                    <sheet>
+                        <group>
+                            <group string="Validator Information">
+                                <field name="valoper"/>
+                                <field name="protocol_id"/>
+                                <field name="node_id"/>
+                                <field name="epoch"/>
+                            </group>
+                            <group string="Snapshot Details">
+                                <field name="snapshot_date"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Rewards Information">
+                                <field name="outstanding_rewards"/>
+                                <field name="total_rewards"/>
+                            </group>
+                            <group string="Stake Information">
+                                <field name="total_stake"/>
+                                <field name="owned_stake"/>
+                                <field name="delegator_count"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="APR &amp; Commission">
+                                <field name="commission_pct" string="Commission (%)"/>
+                                <field name="apr_pct" string="APR (%)"/>
+                                <field name="network_apr" string="Network APR (%)"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_validator_rewards_snapshots" model="ir.actions.act_window">
+            <field name="name">Validator Rewards Snapshots</field>
+            <field name="res_model">validator.rewards.snapshot</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="view_validator_rewards_snapshot_tree"/>
+        </record>
+
+        <!-- Menu Item under Subscription Configuration -->
+        <menuitem id="menu_validator_rewards_snapshots"
+                  name="Validator Rewards"
+                  parent="menu_sale_subscription_config"
+                  action="action_validator_rewards_snapshots"
+                  sequence="61"
+                  groups="access_rights.group_admin,access_rights.group_technical_manager,access_rights.group_support_staff_manager"/>
+    </data>
+</odoo>

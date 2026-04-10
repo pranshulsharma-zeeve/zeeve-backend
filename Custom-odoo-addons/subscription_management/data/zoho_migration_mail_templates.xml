@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Email Template: Payment Method Setup -->
+        <record id="mail_template_payment_method_setup" model="mail.template">
+            <field name="name">Zoho Migration - Payment Method Setup</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="subject">Action Required: Add Your Payment Method</field>
+            <field name="email_from">${object.company_id.email or 'noreply@zeeve.io'}</field>
+            <field name="email_to">${object.email}</field>
+            <field name="body_html" type="html">
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <div style="background-color: #4F46E5; padding: 20px; text-align: center;">
+                        <h1 style="color: white; margin: 0;">Payment Method Required</h1>
+                    </div>
+                    
+                    <div style="padding: 30px; background-color: #f9fafb;">
+                        <p>Dear ${object.name},</p>
+                        
+                        <p>We've successfully migrated your subscription from Zoho Billing to our new platform.</p>
+                        
+                        <p><strong style="color: #dc2626;">Action Required:</strong> To ensure uninterrupted service and enable automatic billing, please add your payment method.</p>
+                        
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="${ctx.get('setup_url', '#')}" 
+                               style="background-color: #4F46E5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                                🔒 Add Payment Method Securely
+                            </a>
+                        </div>
+                        
+                        <div style="background-color: white; padding: 20px; border-radius: 5px; margin: 20px 0;">
+                            <h3 style="margin-top: 0;">Your Subscription Details:</h3>
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="padding: 5px;"><strong>Customer ID:</strong></td>
+                                    <td style="padding: 5px;">${object.id}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 5px;"><strong>Email:</strong></td>
+                                    <td style="padding: 5px;">${object.email}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 5px;"><strong>Status:</strong></td>
+                                    <td style="padding: 5px;">Active</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0;">
+                            <p style="margin: 0;"><strong>Why is this needed?</strong></p>
+                            <p style="margin: 5px 0 0 0;">For security reasons, we cannot transfer credit card information during migration. This secure link allows you to add your payment method directly with our payment processor, Stripe.</p>
+                        </div>
+                        
+                        <div style="background-color: #e0f2fe; border-left: 4px solid #0284c7; padding: 15px; margin: 20px 0;">
+                            <p style="margin: 0;"><strong>🔒 Security:</strong></p>
+                            <p style="margin: 5px 0 0 0;">This link is encrypted and processed by Stripe, a PCI DSS Level 1 certified payment processor. Your card information is never stored on our servers.</p>
+                        </div>
+                        
+                        <p style="margin-top: 30px;">Once you've added your payment method:</p>
+                        <ul>
+                            <li>✅ Your subscription will remain active</li>
+                            <li>✅ Automatic billing will resume</li>
+                            <li>✅ You'll receive email confirmations for all payments</li>
+                        </ul>
+                        
+                        <p style="margin-top: 30px;">Questions? Contact our support team at <a href="mailto:support@zeeve.io">support@zeeve.io</a></p>
+                        
+                        <p>Thank you for being a valued customer!</p>
+                        
+                        <p style="margin-top: 20px;">
+                            Best regards,<br/>
+                            <strong>The Zeeve Team</strong>
+                        </p>
+                    </div>
+                    
+                    <div style="background-color: #1f2937; color: #9ca3af; padding: 20px; text-align: center; font-size: 12px;">
+                        <p style="margin: 0;">© ${datetime.datetime.now().year} Zeeve. All rights reserved.</p>
+                        <p style="margin: 5px 0 0 0;">Powered by Stripe - PCI DSS Level 1 Certified</p>
+                    </div>
+                </div>
+            </field>
+        </record>
+
+        <!-- Email Template: Migration Welcome -->
+        <record id="mail_template_zoho_migration_welcome" model="mail.template">
+            <field name="name">Zoho Migration - Welcome to New Platform</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="subject">Welcome to Our New Billing Platform!</field>
+            <field name="email_from">${object.company_id.email or 'noreply@zeeve.io'}</field>
+            <field name="email_to">${object.email}</field>
+            <field name="body_html" type="html">
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <div style="background-color: #10b981; padding: 20px; text-align: center;">
+                        <h1 style="color: white; margin: 0;">🎉 Welcome to Our New Platform!</h1>
+                    </div>
+                    
+                    <div style="padding: 30px; background-color: #f9fafb;">
+                        <p>Dear ${object.name},</p>
+                        
+                        <p>We're excited to announce that we've migrated from Zoho Billing to our new, improved platform!</p>
+                        
+                        <h3>What's New?</h3>
+                        <ul>
+                            <li>✨ Improved user interface</li>
+                            <li>🔒 Enhanced security with Stripe</li>
+                            <li>📊 Better subscription management</li>
+                            <li>💳 Secure payment processing</li>
+                            <li>📧 Instant email notifications</li>
+                        </ul>
+                        
+                        <h3>What Stays the Same?</h3>
+                        <ul>
+                            <li>✅ Your subscription plans and pricing</li>
+                            <li>✅ Automatic monthly billing</li>
+                            <li>✅ Service quality and support</li>
+                            <li>✅ Access to your services</li>
+                        </ul>
+                        
+                        <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0;">
+                            <p style="margin: 0;"><strong>📅 Your Data:</strong></p>
+                            <p style="margin: 5px 0 0 0;">All your subscription information has been safely migrated. Your service continues without interruption.</p>
+                        </div>
+                        
+                        <p style="margin-top: 30px;">If you have any questions, our support team is here to help at <a href="mailto:support@zeeve.io">support@zeeve.io</a></p>
+                        
+                        <p>Thank you for your continued trust!</p>
+                        
+                        <p style="margin-top: 20px;">
+                            Best regards,<br/>
+                            <strong>The Zeeve Team</strong>
+                        </p>
+                    </div>
+                    
+                    <div style="background-color: #1f2937; color: #9ca3af; padding: 20px; text-align: center; font-size: 12px;">
+                        <p style="margin: 0;">© ${datetime.datetime.now().year} Zeeve. All rights reserved.</p>
+                    </div>
+                </div>
+            </field>
+        </record>
+
+        <!-- Email Template: Payment Method Reminder -->
+        <record id="mail_template_payment_reminder" model="mail.template">
+            <field name="name">Payment Method Setup - Reminder</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="subject">Reminder: Complete Your Payment Method Setup</field>
+            <field name="email_from">${object.company_id.email or 'noreply@zeeve.io'}</field>
+            <field name="email_to">${object.email}</field>
+            <field name="body_html" type="html">
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <div style="background-color: #f59e0b; padding: 20px; text-align: center;">
+                        <h1 style="color: white; margin: 0;">⏰ Payment Method Required</h1>
+                    </div>
+                    
+                    <div style="padding: 30px; background-color: #f9fafb;">
+                        <p>Dear ${object.name},</p>
+                        
+                        <p>This is a friendly reminder that we still need your payment method to continue your subscription.</p>
+                        
+                        <div style="background-color: #fee2e2; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0;">
+                            <p style="margin: 0;"><strong>⚠️ Important:</strong></p>
+                            <p style="margin: 5px 0 0 0;">Without a payment method on file, we won't be able to process your next billing cycle, which may result in service interruption.</p>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="${ctx.get('setup_url', '#')}" 
+                               style="background-color: #dc2626; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                                Add Payment Method Now
+                            </a>
+                        </div>
+                        
+                        <p>It only takes 2 minutes and ensures uninterrupted service.</p>
+                        
+                        <p style="margin-top: 30px;">Need help? Contact us at <a href="mailto:support@zeeve.io">support@zeeve.io</a></p>
+                        
+                        <p style="margin-top: 20px;">
+                            Best regards,<br/>
+                            <strong>The Zeeve Team</strong>
+                        </p>
+                    </div>
+                    
+                    <div style="background-color: #1f2937; color: #9ca3af; padding: 20px; text-align: center; font-size: 12px;">
+                        <p style="margin: 0;">© ${datetime.datetime.now().year} Zeeve. All rights reserved.</p>
+                    </div>
+                </div>
+            </field>
+        </record>
+    </data>
+</odoo>
+

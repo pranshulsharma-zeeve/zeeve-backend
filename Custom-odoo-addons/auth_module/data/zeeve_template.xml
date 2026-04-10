@@ -1,0 +1,861 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data noupdate="1">
+    <record id="mail_template_welcome_user" model="mail.template">
+      <field name="name">Zeeve Welcome Email</field>
+      <field name="model_id" ref="base.model_res_partner"/>
+      <field name="subject">Welcome to Zeeve</field>
+
+      <!-- Plain email only; no display name, no angle brackets -->
+      <field name="email_from">{{ (object.env['res.company'].sudo().search([], limit=1).email_formatted or object.env['res.company'].sudo().search([], limit=1).email) or 'support@zeeve.io' }}</field>
+
+
+      <field name="body_html"><![CDATA[
+<t t-set="company" t-value="object.company_id or user.company_id"/>
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://your-domain.example'"/>
+<t t-set="logo_url" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+
+<!-- Pull dynamic links from your own config model -->
+<t t-set="cfg" t-value="env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="link_x"         t-value="(cfg and cfg.twitter_url)   or 'https://x.com/0xZeeve'"/>
+<t t-set="link_linkedin"  t-value="(cfg and cfg.linkedin_url)  or 'https://www.linkedin.com/company/0xzeeve/'"/>
+<t t-set="link_telegram"  t-value="(cfg and cfg.telegram_url)  or 'https://t.me/ZeeveDeeptech'"/>
+<t t-set="static_base" t-value="base_url + '/zeeve_base/static/src/img'"/>
+<t t-set="twitter_icon" t-value="static_base + '/x.png'"/>
+<t t-set="telegram_icon" t-value="static_base + '/telegram.png'"/>
+<t t-set="linkedIn_icon" t-value="static_base + '/linkedIn.png'"/>
+
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #e9e9e9; background: #ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <!-- ABSOLUTE URL (base_url + /web/image/...), most mailers block remote images
+                       until the user clicks “Display images”, but at least the URL resolves -->
+                  <img t-att-src="logo_url" alt="Zeeve" height="100"/>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:10px 0 16px;">
+                  <p style="font-size:20px; line-height:30px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                    <strong>
+                      Hi <t t-out="(object.name or object.email or '').split(' ')[0]"/> ,
+                    </strong>
+                  </p>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                    <strong>Thank you for registering with Zeeve.</strong>
+                  </p>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0; color:#FF9653;">
+                    <strong>We're glad to have you as part of our community of blockchain professionals.</strong>
+                  </p>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                    Zeeve offers a range of blockchain infrastructure solutions for both public and private sector enterprises, web3 startups, and developers.
+                  </p>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:30px 0 30px;">
+                  <p style="font-size:16px; color:#FF9653; line-height:26px; font-weight:600; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">
+                    Our services include:
+                  </p>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:0 0 24px;">
+                  <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top">
+                        <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial,Helvetica,sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                          Rollups as a Service for zk Rollups and OP Rollups
+                        </p>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top">
+                        <p style="font-size:18px; color:#FF9653; line-height:28px; font-weight:600; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; color:#383535; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                          AppChain Infrastructure as a Service (Avalanche L1s, Cosmos SDK, Parachains)
+                        </p>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top">
+                        <p style="font-size:18px; color:#FF9653; line-height:28px; font-weight:600; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                          Dedicated Node Infrastructure
+                        </p>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding:0 13px 18px 0; vertical-align:top">
+                        <p style="font-size:18px; color:#FF9653; line-height:28px; font-weight:600; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">&#9679;</p>
+                      </td>
+                      <td style="padding:0 0 18px 0;">
+                        <p style="font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                          Traceye Data Indexing Infrastructure
+                        </p>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding:0 13px 0 0; vertical-align:top">
+                        <p style="font-size:18px; color:#FF9653; line-height:28px; font-weight:600; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">&#9679;</p>
+                      </td>
+                      <td>
+                        <p style="font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                          Monitoring &amp; Analytics
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:20px 24px 20px 0; text-align:left">
+                  <p style="font-size:18px; color:#232323; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                    For support, you can visit our
+                    <a href="https://docs.zeeve.io/" style="color:#FF9653; text-decoration:none; font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                      Developer Documentation
+                    </a>.
+                    If you would like to discuss your specific needs or get further assistance, you can schedule a call with one of our experts using the link below:
+                  </p>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:0 10px 20px 0;">
+                  <table align="left" border="0" cellpadding="0" cellspacing="0" style="max-width:200px; width:200px;" width="200">
+                    <tr>
+                      <td bgcolor="#ffffff" style="padding:15px 10px 15px 0; background:#ffffff; border-radius:0; text-align:center" align="left">
+                        <a href="https://www.zeeve.io/talk-to-an-expert/" style="font-family:Poppins, Arial, Helvetica, sans-serif; text-align:center; text-decoration:none; outline:none; display:block; background-color:#FF9653; font-size:15px; line-height:46px; height:46px; color:#ffffff; font-weight:700; border-radius:0; border:0 solid #FF9653; white-space:nowrap; text-transform:uppercase;">Schedule a Call</a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:0 24px 0 0;">
+                  <p style="font-size:18px; color:#232323; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                    Thank you once again for trusting Zeeve as your infrastructure partner.<br/><br/>
+                    Warm regards,<br/>
+                    <strong>Yuvraj Singh Negi</strong><br/>
+                    Lead, Customer Success
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <table bgcolor="#ffffff" width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="background-color:#ffffff;">
+              <tr>
+                <td style="padding:40px 24px 15px; text-align:center">
+                  <p style="font-size:16px; line-height:26px; font-weight:600; color:#FF9653; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Follow us at</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 24px; text-align:center">
+                  <a t-att-href="link_x"><img t-att-src="twitter_icon" alt="twitter" style="width:24px; height:24px;margin-right:20px;"/></a>
+                  <a t-att-href="link_linkedin"><img t-att-src="linkedIn_icon" alt="linkedIn" style="width:23px; height:23px;margin-right:20px;"/></a>
+                  <a t-att-href="link_telegram"><img t-att-src="telegram_icon" alt="telegram" style="width:24px; height:24px;"/></a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 24px 48px; text-align:center">
+                  <p style="font-size:14px; color:#232323; line-height:24px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">© <t t-out="(company.name or 'Zeeve')"/> <t t-out="datetime.date.today().year"/>. All Rights Reserved</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+      ]]></field>
+
+      <field name="auto_delete" eval="True"/>
+    </record>
+  <!-- Template for forget password -->
+    <record id="mail_template_forget_password_zeeve" model="mail.template">
+      <field name="name">Zeeve | Forget Password</field>
+      <field name="model_id" ref="base.model_res_partner"/>
+      <field name="subject">Reset Your Password – Zeeve</field>
+      <field name="email_from">{{ (object.env['res.company'].sudo().search([], limit=1).email_formatted or object.env['res.company'].sudo().search([], limit=1).email) or 'support@zeeve.io' }}</field>
+      <field name="email_to">{{ object.email or '' }}</field>
+      <field name="body_html"><![CDATA[
+<t t-set="company" t-value="object.company_id or user.company_id"/>
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://auth.zeeve.io'"/>
+<t t-set="logo_url" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+<t t-set="cfg" t-value="env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="link_x"         t-value="(cfg and cfg.twitter_url)   or 'https://x.com/0xZeeve'"/>
+<t t-set="link_linkedin"  t-value="(cfg and cfg.linkedin_url)  or 'https://www.linkedin.com/company/0xzeeve/'"/>
+<t t-set="link_telegram"  t-value="(cfg and cfg.telegram_url)  or 'https://t.me/ZeeveDeeptech'"/>
+<t t-set="support_email"  t-value="(cfg and cfg.support_email)   or 'support@zeeve.io'"/>
+<t t-set="contact_name"   t-value="object.name or object.email or 'there'"/>
+<t t-set="reset_link"     t-value="ctx.get('reset_link') or ctx.get('reset_password_link') or (base_url + '/reset-password')"/>
+<t t-set="current_year"   t-value="ctx.get('current_year') or datetime.date.today().year"/>
+<t t-set="static_base" t-value="base_url + '/zeeve_base/static/src/img'"/>
+<t t-set="twitter_icon" t-value="static_base + '/x.png'"/>
+<t t-set="telegram_icon" t-value="static_base + '/telegram.png'"/>
+<t t-set="linkedIn_icon" t-value="static_base + '/linkedIn.png'"/>
+
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #e9e9e9; background: #ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://www.zeeve.io/" style="display:inline-block">
+                    <img t-att-src="logo_url" alt="Zeeve" height="100"/>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:10px 0 16px;">
+                  <p style="font-size:20px; line-height:30px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0; color:#222;">
+                    <strong>Hi <t t-out="contact_name.split(' ')[0] if isinstance(contact_name, str) else contact_name"/>,</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0; color:#222;">
+                    <strong>We received a request to reset your password for your Zeeve account. Click the button below to set a new password:</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td bgcolor="#ffffff" style="padding:15px 10px 15px 0; background:#ffffff; border-radius:0; text-align:left;" align="left">
+                  <a t-att-href="reset_link" style="font-family:Poppins,Arial,Helvetica,sans-serif; text-align:left; text-decoration:none; outline:none; display:inline-block; background-color:#FF9653; font-size:15px; line-height:46px; height:46px; color:#ffffff; padding:15px 12px; font-weight:700; border-radius:0; border:0 solid #FF9653; white-space:nowrap; text-transform:uppercase;">Reset Password</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 24px 0 0;">
+                  <p style="font-size:18px; color:#232323; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0;">
+                    <br/>If you didn’t request this, you can safely ignore this email—your account is secure.<br/>
+                    <br/>
+                    For any assistance, feel free to contact our support team at
+                    <a t-att-href="'mailto:%s' % support_email" style="color:#FF9653; text-decoration:none;"> <t t-out="support_email"/></a>.<br/>
+                    <br/>
+                    Stay secure,<br/>
+                    <strong>Zeeve Team</strong><br/>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <table bgcolor="#ffffff" width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="background-color:#ffffff;">
+                    <tr>
+                      <td style="padding:40px 24px 15px; margin:0; text-align:center;">
+                        <p style="font-size:16px; line-height:26px; font-weight:600; color:#FF9653; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0; text-transform:uppercase; letter-spacing:5px;">Follow us at</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 24px; margin:0; text-align:center;">
+                        <a t-att-href="link_x"><img t-att-src="twitter_icon" alt="twitter" style="width:24px; height:24px;margin-right:20px;"/></a>
+                        <a t-att-href="link_linkedin"><img t-att-src="linkedIn_icon" alt="linkedIn" style="width:23px; height:23px;margin-right:20px;"/></a>
+                        <a t-att-href="link_telegram"><img t-att-src="telegram_icon" alt="telegram" style="width:24px; height:24px;"/></a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:30px 24px 48px; margin:0; text-align:center;">
+                        <p style="font-size:14px; color:#232323; line-height:24px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0;">© <t t-out="current_year"/> <t t-out="company.name or 'Zeeve'"/>. All Rights Reserved</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+      ]]></field>
+      <field name="auto_delete" eval="True"/>
+    </record>
+<!-- Template for OTP Verification -->
+    <record id="mail_template_otp_verification_zeeve" model="mail.template">
+      <field name="name">Zeeve | OTP Verification</field>
+      <field name="model_id" ref="base.model_res_partner"/>
+      <field name="subject">Your Zeeve OTP Code – Complete Your Registration</field>
+      <field name="email_from">{{ (object.env['res.company'].sudo().search([], limit=1).email_formatted or object.env['res.company'].sudo().search([], limit=1).email) or 'support@zeeve.io' }}</field>
+      <field name="email_to">{{ object.email or '' }}</field>
+      <field name="body_html"><![CDATA[
+<t t-set="company" t-value="object.company_id or user.company_id"/>
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://auth.zeeve.io'"/>
+<t t-set="logo_url" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+<t t-set="cfg" t-value="env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="link_x"         t-value="(cfg and cfg.twitter_url)   or 'https://x.com/0xZeeve'"/>
+<t t-set="link_linkedin"  t-value="(cfg and cfg.linkedin_url)  or 'https://www.linkedin.com/company/0xzeeve/'"/>
+<t t-set="link_telegram"  t-value="(cfg and cfg.telegram_url)  or 'https://t.me/ZeeveDeeptech'"/>
+<t t-set="support_email"  t-value="(cfg and cfg.support_email)   or 'support@zeeve.io'"/>
+<t t-set="contact_name"   t-value="object.name or object.email or 'there'"/>
+<t t-set="otp_code"       t-value="ctx.get('otp_code') or object.verification_token or '000000'"/>
+<t t-set="current_year"   t-value="ctx.get('current_year') or datetime.date.today().year"/>
+<t t-set="static_base" t-value="base_url + '/zeeve_base/static/src/img'"/>
+<t t-set="twitter_icon" t-value="static_base + '/x.png'"/>
+<t t-set="telegram_icon" t-value="static_base + '/telegram.png'"/>
+<t t-set="linkedIn_icon" t-value="static_base + '/linkedIn.png'"/>
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #e9e9e9; background: #ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://www.zeeve.io/" style="display:inline-block">
+                    <img t-att-src="logo_url" alt="Zeeve" height="100"/>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:10px 0 16px;">
+                  <p style="font-size:20px; line-height:30px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0; color:#222;">
+                    <strong>Hi <t t-out="contact_name.split(' ')[0] if isinstance(contact_name, str) else contact_name"/>,</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0; color:#222;">
+                    <strong>Welcome to Zeeve! To complete your registration, please use the OTP below:</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td bgcolor="#ffffff" style="padding:15px 10px 15px 0; background:#ffffff; font-size:21px; font-weight:600; color:#222; text-align:left;" align="left">
+                  [<t t-out="otp_code"/>]
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 24px 0 0;">
+                  <p style="font-size:18px; color:#232323; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0;">
+                    <br/>This code is valid for the next <strong>10 minutes</strong>. Please enter it on the verification page to secure your account.<br/>
+                    <br/>
+                    If you didn’t sign up for Zeeve, please ignore this email.<br/>
+                    <br/>
+                    For any issues, reach out to our support team at
+                    <a t-att-href="'mailto:%s' % support_email" style="color:#FF9653; text-decoration:none;"> <t t-out="support_email"/></a>.<br/>
+                    <br/>
+                    Best regards,<br/>
+                    <strong>Zeeve Team</strong><br/>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <table bgcolor="#ffffff" width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="background-color:#ffffff;">
+                    <tr>
+                      <td style="padding:40px 24px 15px; margin:0; text-align:center;">
+                        <p style="font-size:16px; line-height:26px; font-weight:600; color:#FF9653; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0; text-transform:uppercase; letter-spacing:5px;">Follow us at</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 24px; margin:0; text-align:center;">
+                        <a t-att-href="link_x"><img t-att-src="twitter_icon" alt="twitter" style="width:24px; height:24px;margin-right:20px;"/></a>
+                        <a t-att-href="link_linkedin"><img t-att-src="linkedIn_icon" alt="linkedIn" style="width:23px; height:23px;margin-right:20px;"/></a>
+                        <a t-att-href="link_telegram"><img t-att-src="telegram_icon" alt="telegram" style="width:24px; height:24px;"/></a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:30px 24px 48px; margin:0; text-align:center;">
+                        <p style="font-size:14px; color:#232323; line-height:24px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0;">© <t t-out="current_year"/> <t t-out="company.name or 'Zeeve'"/>. All Rights Reserved</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+      ]]></field>
+      <field name="auto_delete" eval="True"/>
+    </record>
+
+
+     <!-- Internal notification: a user has been onboarded -->
+    <record id="mail_template_user_onboarded" model="mail.template">
+      <field name="name">Zeeve User Onboarded (Internal)</field>
+      <field name="model_id" ref="base.model_res_partner"/>
+      <field name="subject">New user onboarded: {{ object.name or object.email }}</field>
+      <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+
+      <field name="body_html"><![CDATA[
+<t t-set="company" t-value="object.company_id or user.company_id"/>
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://your-domain.example'"/>
+<t t-set="partner_url" t-value="base_url + '/web#id=%s&model=res.partner&view_type=form' % (object.id)"/>
+<t t-set="has_signup_type" t-value="object._fields.get('signup_type')"/>
+<t t-set="has_oauth_provider" t-value="object._fields.get('oauth_provider')"/>
+<t t-set="has_email_verified" t-value="object._fields.get('email_verified')"/>
+
+<table align="center" border="0" cellpadding="0" cellspacing="0" style="max-width:640px; width:100%; border:1px solid #e9e9e9; background:#ffffff;" bgcolor="#ffffff">
+  <tr>
+    <td style="padding:20px 24px; font-family:Poppins,Arial,Helvetica,sans-serif;">
+      <p style="font-size:20px; line-height:28px; font-weight:600; margin:0 0 12px;">New user onboarded 🎉</p>
+      <p style="font-size:16px; line-height:24px; margin:0 0 20px;">
+        A new user has just completed onboarding on <t t-out="(company.name or 'Zeeve')"/>.
+      </p>
+
+      <table width="100%" cellpadding="0" cellspacing="0" style="font-size:15px; line-height:24px;">
+        <tr>
+          <td style="padding:6px 0; width:160px; color:#666;">Name</td>
+          <td style="padding:6px 0;"><t t-out="object.name or '-'"/></td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0; color:#666;">Email</td>
+          <td style="padding:6px 0;"><t t-out="object.email or '-'"/></td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0; color:#666;">Phone</td>
+          <td style="padding:6px 0;"><t t-out="object.mobile or object.phone or '-'"/></td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0; color:#666;">Signup Type</td>
+          <td style="padding:6px 0;"><t t-out="(has_signup_type and object.signup_type) or (has_oauth_provider and object.oauth_provider) or 'password'"/></td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0; color:#666;">Created On</td>
+          <td style="padding:6px 0;">
+            <t t-set="tz" t-value="object.env.context.get('tz') or object.env.user.tz or 'UTC'"/>
+            <t t-set="created_on" t-value="object.create_date"/>
+            <t t-set="created_on_display" t-value="created_on and ((format_datetime and format_datetime(created_on, tz=tz, dt_format='yyyy-MM-dd HH:mm:ss')) or (hasattr(created_on, 'strftime') and created_on.strftime('%Y-%m-%d %H:%M:%S')) or str(created_on)) or '-'"/>
+            <t t-out="created_on_display"/> UTC
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0; color:#666;">Email Verified</td>
+          <td style="padding:6px 0;"><t t-out="(has_email_verified and object.email_verified) and 'Yes' or 'No'"/></td>
+        </tr>
+      </table>
+
+      <p style="margin:24px 0 12px;">
+        <a t-att-href="partner_url"
+           style="display:inline-block; padding:10px 16px; background:#FF9653; color:#fff; text-decoration:none; font-weight:700; text-transform:uppercase;">
+          Open in Backend
+        </a>
+      </p>
+
+      <p style="font-size:13px; color:#888; line-height:20px; margin:18px 0 0;">
+        This is an internal notification from <t t-out="company.name or 'Zeeve'"/>.
+      </p>
+    </td>
+  </tr>
+</table>
+      ]]></field>
+
+      <field name="auto_delete" eval="True"/>
+    </record>
+
+     <!-- Shardeum Welcome Email Template -->
+  <record id="mail_template_welcome_shardeum" model="mail.template">
+    <field name="name">Zeeve Shardeum Welcome Email</field>
+    <field name="model_id" ref="base.model_res_partner"/>
+    <field name="subject">Welcome to Zeeve – Shardeum Validator</field>
+    <field name="email_from">{{ (object.env['res.company'].sudo().search([], limit=1).email_formatted or object.env['res.company'].sudo().search([], limit=1).email) or 'support@zeeve.io' }}</field>
+    <field name="email_to">{{ object.email or '' }}</field>
+    <field name="body_html"><![CDATA[
+<t t-set="name" t-value="object.name or object.email or 'there'"/>
+<t t-set="base_url" t-value="(object.env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/')"/>
+<t t-set="static_base" t-value="base_url + '/zeeve_base/static/src/img'"/>
+<t t-set="twitter_icon" t-value="static_base + '/x.png'"/>
+<t t-set="telegram_icon" t-value="static_base + '/telegram.png'"/>
+<t t-set="linkedIn_icon" t-value="static_base + '/linkedIn.png'"/>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="supported-color-schemes" content="light dark"/>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+  <meta content="width=device-width, user-scalable=no,initial-scale=1.0, shrink-to-fit=no, minimum-scale=1.0, maximum-scale=1.0" name="viewport"/>
+  <meta name="x-apple-disable-message-reformatting"/>
+  <title>Zeeve</title>
+</head>
+<body style="color: black">
+  <table align="center" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+      <td style="padding:5px">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #e9e9e9; background: #ffffff;" bgcolor="#ffffff">
+          <tr>
+            <td style="padding:24px 24px 10px 24px;">
+              <table align="center" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <a href="https://www.zeeve.io/">
+                      <img src="https://demo.studiobrahma.in/zeeve/mailer/images/zeeve-logo2.png" alt="Zeeve" height="100"/>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0 16px;">
+                    <p style="font-size:20px; line-height:30px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                      <strong>Hi <t t-out="name.split(' ')[0] if isinstance(name, str) else name"/>,</strong>
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 0 16px;">
+                    <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                      Thank you for registering with <strong>Zeeve</strong> — we're excited to have you join a growing community of builders and validators shaping the future of blockchain infrastructure.
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 0 16px;">
+                    <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; color:#000000;">
+                      Since you're exploring <strong>Shardeum</strong>, you'll be glad to know that Zeeve offers the easiest and most reliable way to launch your Shardeum Validator Node—no DevOps, no complex setup, just plug-and-play.
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0 30px;">
+                    <p style="font-size:16px; color:#FF9653; line-height:26px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:2px;">
+                      Why choose Zeeve for Shardeum Validators?</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 0 24px;">
+                    <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="padding:0 0 18px 0;">
+                          <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                            ✅ <strong>No-code deployment</strong> — Launch your node in minutes
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:0 0 18px 0;">
+                          <p style="font-size:18px; color:#383535; line-height:28px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                            ✅ <strong>High-availability infrastructure</strong> — 99.99% uptime, active monitoring, and smart alerts
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:0 0 18px 0;">
+                          <p style="font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                            ✅ <strong>Early validator access</strong> — Maximize SHM earnings and get in ahead of the crowd
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:0 0 18px 0;">
+                          <p style="font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                            ✅ <strong>Centralized dashboard</strong> — Manage and monitor everything from one place
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 0 16px;">
+                    <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; color:#000000;">
+                      <strong>But Shardeum is just the beginning.</strong>
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0 30px;">
+                    <p style="font-size:16px; color:#FF9653; line-height:26px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:2px;">
+                      Zeeve also powers:</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 0 24px;">
+                    <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="padding:0 13px 18px 0; vertical-align:top; width:23px;">
+                          <p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+                        </td>
+                        <td style="padding:0 0 18px 0;">
+                          <p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                            <strong>Rollups as a Service</strong> — For zk and OP rollups
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:0 13px 18px 0; vertical-align:top; width:23px;">
+                          <p style="font-size:18px; color:#FF9653; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">&#9679;</p>
+                        </td>
+                        <td style="padding:0 0 18px 0;">
+                          <p style="font-size:18px; color:#383535; line-height:28px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                            <strong>AppChain Infrastructure</strong> — For Avalanche L1s, Cosmos SDK, Parachains
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:0 13px 18px 0; vertical-align:top; width:23px;">
+                          <p style="font-size:18px; color:#FF9653; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">&#9679;</p>
+                        </td>
+                        <td style="padding:0 0 18px 0;">
+                          <p style="font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                            <strong>Enterprise-grade Node</strong> and Consortium Support
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:0 13px 18px 0; vertical-align:top; width:23px;">
+                          <p style="font-size:18px; color:#FF9653; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">&#9679;</p>
+                        </td>
+                        <td style="padding:0 0 18px 0;">
+                          <p style="font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                            <strong>Traceye</strong> — Our powerful Web3 data indexing platform
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:0 13px 18px 0; vertical-align:top; width:23px;">
+                          <p style="font-size:18px; color:#FF9653; line-height:28px; font-weight:600; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">&#9679;</p>
+                        </td>
+                        <td style="padding:0 0 18px 0;">
+                          <p style="font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                            <strong>Advanced Monitoring</strong> &amp; Analytics for any deployment
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:20px 24px 20px 0; text-align:left">
+                    <p style="font-size:18px; color:#232323; line-height:28px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                      For setup help or guidance on choosing the right validator plan, check out our <a href="https://docs.zeeve.io/" style="color:#FF9653; text-decoration: none; font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">Developer Documentation</a> or schedule a call with our team:
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 10px 20px 0;">
+                    <table align="left" border="0" cellpadding="0" cellspacing="0" style="max-width:200px; width:200px;" width="200">
+                      <tr>
+                        <td bgcolor="#ffffff" style="padding:15px 10px 15px 0; background:#ffffff; border-radius:0; text-align:center" align="left">
+                          <a href="https://www.zeeve.io/talk-to-an-expert/" style="font-family:Poppins, Arial, Helvetica, sans-serif; text-align:center; text-decoration:none; outline:none; display:block; background-color:#FF9653; font-size:15px; line-height:46px; height:46px; color:#ffffff; font-weight:700; border-radius:0; border:0 solid #FF9653; white-space:nowrap; text-transform:uppercase;">Talk to an Expert</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 24px 0 0;">
+                    <p style="font-size:18px; color:#232323; line-height:28px; font-weight:500; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">
+                      Welcome to the future of Web3 infrastructure—simplified.<br/><br/>
+                      Warm regards,<br/>
+                      <strong>Yuvraj Singh Negi</strong><br/>
+                      Lead, Customer Success
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <table bgcolor="#ffffff" width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="background-color:#ffffff;">
+                      <tr>
+                        <td style="padding:40px 24px 15px; text-align:center">
+                          <p style="font-size:16px; line-height:26px; font-weight:600; color:#FF9653; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">Follow us at</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:0 24px; text-align:center">
+                          <a href="https://x.com/0xZeeve"><img t-att-src="twitter_icon" alt="twitter" style="width:24px; height:24px;margin-right:20px;"/></a>
+                          <a href="https://www.linkedin.com/company/0xzeeve/"><img t-att-src="linkedIn_icon" alt="linkedIn" style="width:23px; height:23px;margin-right:20px;"/></a>
+                          <a href="https://t.me/ZeeveDeeptech"><img t-att-src="telegram_icon" alt="telegram" style="width:24px; height:24px;"/></a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:30px 24px 48px; text-align:center">
+                          <p style="font-size:14px; color:#232323; line-height:24px; font-weight:400; font-family:Poppins,Arial, Helvetica, sans-serif; margin:0;">© 2025 Zeeve. All Rights Reserved</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+    ]]>    </field>
+    <field name="auto_delete" eval="True"/>
+  </record>
+  </data>
+
+  <!-- Templates that should update on module upgrade -->
+  <data noupdate="0">
+    <record id="mail_template_invitation_send" model="mail.template">
+      <field name="name">User Invitation</field>
+      <field name="model_id" ref="auth_module.model_user_invitation"/>
+      <field name="subject">Invitation to join {{ object.company_id.name }} on Zeeve</field>
+      <field name="email_from">{{ (object.env['res.company'].sudo().search([], limit=1).email_formatted or object.env['res.company'].sudo().search([], limit=1).email) or 'support@zeeve.io' }}</field>
+      <field name="email_to">{{ object.email }}</field>
+      <field name="body_html"><![CDATA[
+<t t-set="company" t-value="object.company_id"/>
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/')"/>
+<t t-set="frontend_url" t-value="(env['ir.config_parameter'].sudo().get_param('frontend_url') or '').rstrip('/')"/>
+<t t-set="logo_url" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+<t t-set="is_existing_user" t-value="env['res.users'].sudo().search([('login', '=', object.email)], limit=1)"/>
+<t t-set="signup_url" t-value="frontend_url + '/settings?tab=invitation'"/>
+<t t-set="invitations_url" t-value="frontend_url + '/account/accept-invitation'"/>
+
+<table align="center" border="0" cellpadding="0" cellspacing="0" style="width:100%; max-width:600px; margin:0 auto; border: 1px solid #e9e9e9; background: #ffffff;">
+  <tr>
+    <td style="padding:24px; text-align:center;">
+      <img t-att-src="logo_url" alt="Zeeve" height="60" style="margin-bottom:20px;"/>
+      <h2 style="font-family:Poppins,Arial,sans-serif; color:#232323;">You've been invited!</h2>
+      <p style="font-family:Poppins,Arial,sans-serif; font-size:16px; line-height:24px; color:#444444; text-align:left;">
+        Hi, <br/><br/>
+        <strong><t t-out="object.invited_by.name"/></strong> has invited you to join <strong><t t-out="object.company_id.name"/></strong> on Zeeve as an <strong><t t-out="object.role.title()"/></strong>.
+      </p>
+
+      <t t-if="not is_existing_user">
+        <p style="font-family:Poppins,Arial,sans-serif; font-size:16px; line-height:24px; color:#444444; text-align:left;">
+          To get started, please set up your account by clicking the button below:
+        </p>
+        <div style="margin:30px 0;">
+          <a t-att-href="signup_url" style="background-color:#FF9653; color:#ffffff; padding:12px 24px; text-decoration:none; border-radius:4px; font-weight:600; font-family:Poppins,Arial,sans-serif;">Setup Account</a>
+        </div>
+      </t>
+      <t t-else="">
+        <p style="font-family:Poppins,Arial,sans-serif; font-size:16px; line-height:24px; color:#444444; text-align:left;">
+          Since you already have an account, you can accept the invitation by clicking the button below:
+        </p>
+        <div style="margin:30px 0;">
+          <a t-att-href="invitations_url" style="background-color:#FF9653; color:#ffffff; padding:12px 24px; text-decoration:none; border-radius:4px; font-weight:600; font-family:Poppins,Arial,sans-serif;">Accept Invitation</a>
+        </div>
+      </t>
+
+      <p style="font-family:Poppins,Arial,sans-serif; font-size:16px; line-height:24px; color:#444444; text-align:left;">
+        Alternatively, you can follow these steps to accept manually: <br/><br/>
+        1. Login to <a t-att-href="frontend_url" style="color:#FF9653; text-decoration:none; font-weight:600;">app.zeeve.io</a><br/>
+        2. Click on your profile icon (top right)<br/>
+        3. Select "Profile" from the dropdown menu.<br/>
+        4. Navigate to the "Invitations" Tab.<br/>
+        5. Click on "Accept Invite".
+      </p>
+
+      <p style="font-family:Poppins,Arial,sans-serif; font-size:14px; color:#888888; margin-top:20px;">
+        This invitation will expire on <t t-out="object.expiry_date.strftime('%Y-%m-%d')"/>.
+      </p>
+      <hr style="border:none; border-top:1px solid #eeeeee; margin:30px 0;"/>
+      <p style="font-family:Poppins,Arial,sans-serif; font-size:12px; color:#aaaaaa; text-align:center;">
+        © 2025 Zeeve. All Rights Reserved.
+      </p>
+    </td>
+  </tr>
+</table>
+      ]]></field>
+    </record>
+
+    <record id="mail_template_invitation_accepted" model="mail.template">
+      <field name="name">Invitation Accepted Notification</field>
+      <field name="model_id" ref="auth_module.model_user_invitation"/>
+      <field name="subject">Invitation Accepted: {{ object.email }}</field>
+      <field name="email_from">{{ (object.env['res.company'].sudo().search([], limit=1).email_formatted or object.env['res.company'].sudo().search([], limit=1).email) or 'support@zeeve.io' }}</field>
+      <field name="email_to">{{ object.invited_by.login }}</field>
+      <field name="body_html"><![CDATA[
+<t t-set="company" t-value="object.company_id"/>
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/')"/>
+<t t-set="logo_url" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+
+<table align="center" border="0" cellpadding="0" cellspacing="0" style="width:100%; max-width:600px; margin:0 auto; border: 1px solid #e9e9e9; background: #ffffff;">
+  <tr>
+    <td style="padding:24px; text-align:center;">
+      <img t-att-src="logo_url" alt="Zeeve" height="60" style="margin-bottom:20px;"/>
+      <h2 style="font-family:Poppins,Arial,sans-serif; color:#232323;">Invitation Accepted</h2>
+      <p style="font-family:Poppins,Arial,sans-serif; font-size:16px; line-height:24px; color:#444444; text-align:left;">
+        Hi <t t-out="object.invited_by.name"/>,<br/><br/>
+        Great news! <strong><t t-out="object.email"/></strong> has accepted your invitation to join <strong><t t-out="object.company_id.name"/></strong> as an <strong><t t-out="object.role.title()"/></strong>.
+      </p>
+      <p style="font-family:Poppins,Arial,sans-serif; font-size:16px; line-height:24px; color:#444444; text-align:left;">
+        The user is now part of your organization and can access the assigned nodes and rollups.
+      </p>
+      <hr style="border:none; border-top:1px solid #eeeeee; margin:30px 0;"/>
+      <p style="font-family:Poppins,Arial,sans-serif; font-size:12px; color:#aaaaaa; text-align:center;">
+        © 2025 Zeeve. All Rights Reserved.
+      </p>
+    </td>
+  </tr>
+</table>
+      ]]></field>
+    </record>
+
+    <record id="mail_template_invitation_rejected" model="mail.template">
+      <field name="name">Invitation Rejected Notification</field>
+      <field name="model_id" ref="auth_module.model_user_invitation"/>
+      <field name="subject">Invitation Declined: {{ object.email }}</field>
+      <field name="email_from">{{ (object.env['res.company'].sudo().search([], limit=1).email_formatted or object.env['res.company'].sudo().search([], limit=1).email) or 'support@zeeve.io' }}</field>
+      <field name="email_to">{{ object.invited_by.login }}</field>
+      <field name="body_html"><![CDATA[
+<t t-set="company" t-value="object.company_id"/>
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/')"/>
+<t t-set="logo_url" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+
+<table align="center" border="0" cellpadding="0" cellspacing="0" style="width:100%; max-width:600px; margin:0 auto; border: 1px solid #e9e9e9; background: #ffffff;">
+  <tr>
+    <td style="padding:24px; text-align:center;">
+      <img t-att-src="logo_url" alt="Zeeve" height="60" style="margin-bottom:20px;"/>
+      <h2 style="font-family:Poppins,Arial,sans-serif; color:#232323;">Invitation Declined</h2>
+      <p style="font-family:Poppins,Arial,sans-serif; font-size:16px; line-height:24px; color:#444444; text-align:left;">
+        Hi <t t-out="object.invited_by.name"/>,<br/><br/>
+        The invitation sent to <strong><t t-out="object.email"/></strong> to join <strong><t t-out="object.company_id.name"/></strong> has been declined.
+      </p>
+      <hr style="border:none; border-top:1px solid #eeeeee; margin:30px 0;"/>
+      <p style="font-family:Poppins,Arial,sans-serif; font-size:12px; color:#aaaaaa; text-align:center;">
+        © 2025 Zeeve. All Rights Reserved.
+      </p>
+    </td>
+  </tr>
+</table>
+      ]]></field>
+    </record>
+  </data>
+</odoo>

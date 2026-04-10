@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Hide default Sales main menu -->
+        <record id="sale.sale_menu_root" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+            <field name="groups_id" eval="[(6, 0, [ref('base.group_no_one')])]"/>
+        </record>
+
+        <!-- Hide default Contacts menu -->
+        <record id="contacts.menu_contacts" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+            <field name="groups_id" eval="[(6, 0, [ref('base.group_no_one')])]"/>
+        </record>
+
+        <!-- Hide main Dashboard menu -->
+        <record id="spreadsheet_dashboard.spreadsheet_dashboard_menu_root" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+            <field name="groups_id" eval="[(6, 0, [ref('base.group_no_one')])]"/>
+        </record>
+
+        <!-- Hide Discuss application entry -->
+        <record id="mail.menu_root_discuss" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+            <field name="groups_id" eval="[(6, 0, [ref('base.group_no_one')])]"/>
+        </record>
+
+        <!-- Hide Link Tracker root menu -->
+        <record id="utm.menu_link_tracker_root" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+            <field name="groups_id" eval="[(6, 0, [ref('base.group_no_one')])]"/>
+        </record>
+        <template id="login_manage_db_restrict" inherit_id="web.login_layout">
+            <xpath expr="//a[@href='/web/database/manager']" position="attributes">
+                <attribute name="t-if">request.env.user and request.env.user.has_group('base.group_system')</attribute>
+            </xpath>
+        </template>
+        <template id="login_hide_superuser_button" inherit_id="web.login">
+            <xpath expr="//button[@name='redirect']" position="attributes">
+                <attribute name="t-if">False</attribute>
+            </xpath>
+        </template>
+
+        <template id="web_favicon_zeeve_base" inherit_id="web.layout">
+            <xpath expr="//link[@rel='shortcut icon']" position="replace">
+                <link type="image/png" rel="shortcut icon" href="/zeeve_base/static/src/img/favicon.png"/>
+            </xpath>
+        </template>
+
+        <template id="login_hide_powered_by" inherit_id="web.login_layout">
+            <xpath expr="//div[contains(@class,'small') and contains(@class,'border-top')]" position="replace">
+                <div class="text-center small mt-4 pt-3 border-top" t-if="not disable_footer">
+                    <t t-if="not disable_database_manager and request.env.user and request.env.user.has_group('base.group_system')">
+                        <a class="border-end pe-2 me-1" href="/web/database/manager">Manage Databases</a>
+                    </t>
+                </div>
+            </xpath>
+        </template>
+
+        <template id="login_hide_signup_link" inherit_id="auth_signup.login">
+            <xpath expr="//a[contains(text(), &quot;Don't have an account?&quot;)]" position="replace"/>
+        </template>
+    </data>
+</odoo>

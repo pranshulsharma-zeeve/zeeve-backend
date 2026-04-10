@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="inherit_res_config_settings_view_form" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.sale</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="sale.res_config_settings_view_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//block[@name='sale_shipping_setting_container']" position="after">
+                    <block title="Subscription">
+                        <setting>
+                            <div class="content-group">
+                                <div class="mt16 row">
+                                    <label for="invoice_generated" class="col-xs-3 col-md-3"/>
+                                    <field name="invoice_generated" required="1"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting>
+                            <div class="content-group">
+                                <div class="mt16 row">
+                                    <label for="renewal_days" class="col-xs-3 col-md-3"/>
+                                    <field name="renewal_days" class="oe_inline" required="1"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting invisible="invoice_generated == 'draft'">
+                            <div class="content-group">
+                                <div class="mt16 row">
+                                    <label for="invoice_email" class="col-xs-3 col-md-3"/>
+                                    <field name="invoice_email" class="oe_inline" required="1"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting>
+                            <div class="content-group">
+                                <div class="mt16 row">
+                                    <label for="journal_id" class="col-xs-3 col-md-3"/>
+                                    <field name="journal_id" class="oe_inline" required="1"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting invisible="invoice_generated != 'paid'">
+                            <div class="content-group">
+                                <div class="mt16 row">
+                                    <label for="paid_subscription_journal" class="col-xs-3 col-md-3">Paid Payment Journal </label>
+                                    <field name="paid_subscription_journal" required="invoice_generated == 'paid'" class="oe_inline"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting>
+                            <div class="content-group">
+                                <div class="mt16 row">
+                                    <label for="trial_period_setting" class="col-xs-3 col-md-3"/>
+                                    <field name="trial_period_setting" widget='radio' class="oe_inline" required="1"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                </xpath>
+                
+                <!-- Stripe Configuration -->
+                <xpath expr="//block[@name='sale_shipping_setting_container']" position="after">
+                    <block title="Stripe Integration">
+                        <setting>
+                            <div class="content-group">
+                                <div class="mt16 row">
+                                    <label for="stripe_secret_key" class="col-xs-3 col-md-3"/>
+                                    <field name="stripe_secret_key" class="oe_inline" password="True"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting>
+                            <div class="content-group">
+                                <div class="mt16 row">
+                                    <label for="stripe_publishable_key" class="col-xs-3 col-md-3"/>
+                                    <field name="stripe_publishable_key" class="oe_inline"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting>
+                            <div class="content-group">
+                                <div class="mt16 row">
+                                    <label for="stripe_webhook_secret" class="col-xs-3 col-md-3"/>
+                                    <field name="stripe_webhook_secret" class="oe_inline" password="True"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting>
+                            <div class="content-group">
+                                <div class="mt16 row">
+                                    <label for="stripe_webhook_url" class="col-xs-3 col-md-3"/>
+                                    <field name="stripe_webhook_url" class="oe_inline" readonly="1"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting>
+                            <div class="content-group">
+                                <div class="mt16 row">
+                                    <label for="stripe_currency" class="col-xs-3 col-md-3"/>
+                                    <field name="stripe_currency" class="oe_inline"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting>
+                            <div class="content-group">
+                                <div class="mt16 row">
+                                    <label for="stripe_autopay_enabled" class="col-xs-3 col-md-3"/>
+                                    <field name="stripe_autopay_enabled" class="oe_inline"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

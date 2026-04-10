@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_custom_invoice_account" model="ir.actions.report">
+        <field name="name">Zeeve Invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">subscription_management.report_custom_invoice</field>
+        <field name="report_file">subscription_management.report_custom_invoice</field>
+        <field name="print_report_name">'Invoice - %s' % (object.name or '')</field>
+        <field name="binding_model_id" ref="model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+<record id="email_template_custom_invoice" model="mail.template">
+    <field name="name">Zeeve Custom Invoice Email</field>
+    <field name="model_id" ref="account.model_account_move"/>
+    <field name="subject">Zeeve Invoice</field>
+    <field name="body_html" type="html">
+        <div>
+            <p>Hello <t t-out="object.partner_id.name"/>,</p>
+            <p>Here is your invoice <strong><t t-out="object.name"/></strong>.</p>
+            <p>Total: <t t-out="object.amount_total"/> <t t-out="object.currency_id.symbol"/></p>
+
+            <t t-if="ctx.get('attachment_url')">
+                <p>
+                    Download your invoice PDF: 
+                    <a t-att-href="ctx['attachment_url']" target="_blank">Click Here</a>
+                </p>
+            </t>
+            <p>Thank you,<br/>Zeeve Team</p>
+        </div>
+    </field>
+</record>
+
+
+</odoo>

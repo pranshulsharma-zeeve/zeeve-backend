@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_move_form_rollup" model="ir.ui.view">
+            <field name="name">account.move.form.rollup</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="action_send_rollup_invoice_email" type="object" string="Send Invoice" class="btn-secondary" invisible="move_type != 'out_invoice' or rollup_service_id" />
+                </xpath>
+                <xpath expr="//sheet/div[@name='button_box']" position="inside">
+                    <button name="action_view_rollup_payments" type="object" class="oe_stat_button" icon="fa-credit-card">
+                        <field name="rollup_payment_count" widget="statinfo" string="Rollup Payments"/>
+                    </button>
+                </xpath>
+                <!-- <xpath expr="//sheet/div[@name='button_box']" position="attributes">
+                    <attribute name="invisible">rollup_service_id</attribute>
+                </xpath> -->
+                <xpath expr="//header/button[@name='%(account.action_view_account_move_reversal)d']" position="attributes">
+                    <attribute name="invisible">(move_type != 'entry' or state != 'posted' or payment_state == 'reversed') or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//header/button[@name='action_reverse']" position="attributes">
+                    <attribute name="invisible">(move_type not in ('out_invoice', 'in_invoice') or state != 'posted') or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//header/button[@name='button_hash']" position="attributes">
+                    <attribute name="invisible">(not restrict_mode_hash_table or inalterable_hash or state != 'posted') or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//header/button[@name='button_set_checked']" position="attributes">
+                    <attribute name="invisible">(checked or state == 'draft') or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//header/button[@name='button_cancel']" position="attributes">
+                    <attribute name="invisible">
+        (rollup_service_id) or (not id or state != 'draft')
+                    </attribute>
+                </xpath>
+                <xpath expr="//header/button[@name='button_request_cancel']" position="attributes">
+                    <attribute name="invisible">(state != 'posted' or show_reset_to_draft_button or not need_cancel_request) or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//header/button[@name='preview_invoice']" position="attributes">
+                    <attribute name="invisible">(move_type not in ('out_invoice', 'out_refund') or state in ('draft', 'cancel')) or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//div[@name='button_box']/button[@name='action_open_business_doc']" position="attributes">
+                    <attribute name="invisible">(move_type != 'entry' or not id or not origin_payment_id) or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//div[@name='button_box']/button[@name='open_reconcile_view']" position="attributes">
+                    <attribute name="invisible">(move_type != 'entry' or not id or not has_reconciled_entries) or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//div[@name='button_box']/button[@name='open_created_caba_entries']" position="attributes">
+                    <attribute name="invisible">(not tax_cash_basis_created_move_ids) or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//page[@id='other_tab']" position="attributes">
+                    <attribute name="invisible">(move_type not in ('out_invoice', 'out_refund', 'in_invoice', 'in_refund')) or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//page[@id='other_tab_entry']" position="attributes">
+                    <attribute name="invisible">(move_type != 'entry') or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//group[@id='header_right_group']" position="inside">
+                    <field name="stripe_payment_intent_id" readonly="1" invisible="stripe_payment_intent_id == False or rollup_service_id == False"/>
+                    <field name="stripe_invoice_id" readonly="1" invisible="stripe_invoice_id == False or rollup_service_id == False"/>
+                </xpath>
+                <xpath expr="//group[@id='header_left_group']" position="inside" invisible="rollup_service_id == False">
+                    <field name="rollup_service_id" options="{'no_create': True}" readonly="1" invisible="rollup_service_id == False"/>
+                    <field name="stripe_transaction_reference" readonly="1" invisible="stripe_transaction_reference == False or rollup_service_id == False"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_invoice_tree_rollup" model="ir.ui.view">
+            <field name="name">account.invoice.list.rollup</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_invoice_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//list[@js_class='account_tree']/field[@name='invoice_origin']" position="after">
+                    <field name="invoice_customer_email" optional="show"/>
+                    <field name="invoice_item_name" optional="show"/>
+                    <field name="invoice_protocol_or_rollup" optional="show"/>
+                    <field name="invoice_quantity" optional="show"/>
+                    <field name="invoice_start_date" optional="show"/>
+                    <field name="invoice_end_date" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_account_payment_form_rollup" model="ir.ui.view">
+            <field name="name">account.payment.form.rollup</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/div[@name='button_box']" position="before">
+                    <div name="rollup_payment_button_box" class="oe_button_box" invisible="rollup_service_id == False">
+                        <button name="action_view_rollup_invoice" type="object" class="oe_stat_button" icon="fa-file-text-o" invisible="rollup_invoice_id == False">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Invoice</span>
+                            </div>
+                        </button>
+                        <button name="action_view_rollup_service" type="object" class="oe_stat_button" icon="fa-server" invisible="rollup_service_id == False">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Service</span>
+                            </div>
+                        </button>
+                    </div>
+                </xpath>
+                <!-- <xpath expr="//sheet/div[@name='button_box']" position="attributes">
+                    <attribute name="invisible">rollup_service_id</attribute>
+                </xpath> -->
+                <xpath expr="//header/button[@name='action_validate']" position="attributes">
+                    <attribute name="invisible">(state != 'in_process' or move_id) or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//header/button[@name='action_reject']" position="attributes">
+                    <attribute name="invisible">(state != 'in_process' or not is_sent) or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//header/button[@name='action_draft']" position="attributes">
+                    <attribute name="invisible">(state in ('draft')) or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//header/button[@name='button_request_cancel']" position="attributes">
+                    <attribute name="invisible">(state != 'in_process' or not move_id or not need_cancel_request) or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//header/button[@name='mark_as_sent']" position="attributes">
+                    <attribute name="invisible">(state != 'in_process' or is_sent or payment_method_code != 'manual') or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//header/button[@name='unmark_as_sent']" position="attributes">
+                    <attribute name="invisible">(state != 'in_process' or not is_sent or payment_method_code != 'manual') or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//div[@name='button_box']/button[@name='button_open_invoices']" position="attributes">
+                    <attribute name="invisible">(reconciled_invoices_count == 0) or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//div[@name='button_box']/button[@name='button_open_bills']" position="attributes">
+                    <attribute name="invisible">(reconciled_bills_count == 0) or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//div[@name='button_box']/button[@name='button_open_statement_lines']" position="attributes">
+                    <attribute name="invisible">(reconciled_statement_lines_count == 0) or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//div[@name='button_box']/button[@name='button_open_journal_entry']" position="attributes">
+                    <attribute name="invisible">(not move_id) or rollup_service_id</attribute>
+                </xpath>
+                <xpath expr="//group[@name='group1']" position="inside">
+                    <field name="rollup_service_id" options="{'no_create': True}" readonly="1" invisible="rollup_service_id == False"/>
+                    <field name="rollup_invoice_id" options="{'no_create': True}" readonly="1" invisible="rollup_service_id == False"/>
+                    <field name="stripe_invoice_id" readonly="1" invisible="rollup_service_id == False"/>
+                </xpath>
+                <xpath expr="//group[@name='group2']" position="inside">
+                    <field name="stripe_payment_intent_id" readonly="1"/>
+                    <field name="transaction_hash" readonly="1" invisible="rollup_service_id == False"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

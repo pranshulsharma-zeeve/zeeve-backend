@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Action and menu items for Protocol Master -->
+    <record id="action_protocol_master" model="ir.actions.act_window">
+        <field name="name">Protocols</field>
+        <field name="res_model">protocol.master</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_admin'), ref('access_rights.group_technical_manager'), ref('access_rights.group_support_staff_manager'), ref('access_rights.group_support_staff')])]"/>
+    </record>
+
+    <menuitem id="menu_zeeve_base_root" name="General Settings" sequence="200"/>
+    <menuitem id="menu_protocol_master" name="Protocols" parent="menu_zeeve_base_root"
+              action="action_protocol_master" sequence="10"
+              groups="access_rights.group_admin,access_rights.group_technical_manager,access_rights.group_support_staff_manager,access_rights.group_support_staff"/>
+
+    <!-- Tree view -->
+    <record id="view_protocol_master_tree" model="ir.ui.view">
+        <field name="name">protocol.master.tree</field>
+        <field name="model">protocol.master</field>
+        <field name="arch" type="xml">
+            <list string="Protocols">
+                <field name="image" widget="image" optional="show"/>
+                <field name="name"/>
+                <field name="protocol_id"/>
+                <field name="short_name"/>
+                <field name="token_symbol" optional="show"/>
+                <field name="price_coingecko_id" optional="show"/>
+                <field name="active"/>
+                <field name="network_apr" optional="show"/>
+                <field name="network_type_ids" widget="many2many_tags" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form view -->
+    <record id="view_protocol_master_form" model="ir.ui.view">
+        <field name="name">protocol.master.form</field>
+        <field name="model">protocol.master</field>
+        <field name="arch" type="xml">
+            <form string="Protocol">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="image" widget="image"/>
+                            <field name="name"/>
+                            <field name="protocol_id" readonly="0"/>
+                        </group>
+                        <group>
+                            <field name="short_name"/>
+                            <field name="web_url"/>
+                            <field name="web_url_testnet"/>
+                            <field name="active"/>
+                            <field name="admin_channel_id" options="{'no_create': False}" domain="[('active','=',True)]"/>
+                        </group>
+                    </group>
+                    <group string="Availability Node Type">
+                        <field name="is_rpc"/>
+                        <field name="is_archive"/>
+                        <field name="is_validator"/>
+                    </group>
+                    <group string="Network Types">
+                        <field name="network_type_ids" widget="many2many_tags" options="{'no_create': False}"/>
+                    </group>
+                    <group>
+                        <field name="notes"/>
+                    </group>
+                    <group string="Pricing">
+                        <field name="token_symbol"/>
+                        <field name="price_coingecko_id"/>
+                        <field name="reward_decimals"/>
+                        <field name="stake_decimals"/>
+                        <field name="network_apr" string="Network APR (%)"/>
+                    </group>
+                    <notebook>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Kanban view -->
+    <record id="view_protocol_master_kanban" model="ir.ui.view">
+        <field name="name">protocol.master.kanban</field>
+        <field name="model">protocol.master</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column">
+                <field name="image"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_image">
+                                <img t-att-src="kanban_image('protocol.master', 'image', record.id.raw_value)" alt="Protocol"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <strong><field name="name"/></strong>
+                                <div><field name="short_name"/></div>
+                                <div><field name="active" widget="boolean_toggle"/></div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Search view -->
+    <record id="view_protocol_master_search" model="ir.ui.view">
+        <field name="name">protocol.master.search</field>
+        <field name="model">protocol.master</field>
+        <field name="arch" type="xml">
+            <search string="Protocols">
+                <field name="name"/>
+                <field name="short_name"/>
+                <filter name="filter_enabled" string="Enabled" domain="[('active', '=', True)]"/>
+                <group expand="1" string="Availability Node Type">
+                    <filter string="RPC" name="group_rpc" context="{'group_by': 'is_rpc'}"/>
+                    <filter string="Archive" name="group_archive" context="{'group_by': 'is_archive'}"/>
+                    <filter string="Validator" name="group_validator" context="{'group_by': 'is_validator'}"/>
+                </group>
+                <field name="network_type_ids"/>
+            </search>
+        </field>
+    </record>
+</odoo>

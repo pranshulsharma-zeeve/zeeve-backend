@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_partner_admin,access.partner.admin,model_res_partner,access_rights.group_admin,1,1,1,0
+access_partner_technical_manager,access.partner.tech,model_res_partner,access_rights.group_technical_manager,1,1,1,0
+access_partner_support_manager,access.partner.support_manager,model_res_partner,access_rights.group_support_staff_manager,1,1,1,0
+access_partner_support,access.partner.support,model_res_partner,access_rights.group_support_staff,1,1,0,0
+access_users_admin,access.users.admin,model_res_users,access_rights.group_admin,1,1,1,0
+access_users_technical_manager,access.users.tech,model_res_users,access_rights.group_technical_manager,1,1,1,0
+access_user_invitation_admin,access.user.invitation.admin,model_user_invitation,access_rights.group_admin,1,1,1,1

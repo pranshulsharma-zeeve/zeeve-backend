@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="action_rollup_settlement_layer" model="ir.actions.act_window">
+            <field name="name">Settlement Layers</field>
+            <field name="res_model">rollup.settlement.layer</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <menuitem id="menu_rollup_settlement_layers"
+                  name="Settlement Layers"
+                  parent="rollup_management.menu_rollup_configuration"
+                  action="action_rollup_settlement_layer"
+                  sequence="30" groups="access_rights.group_admin,access_rights.group_technical_manager,access_rights.group_support_staff,access_rights.group_support_staff_manager"/>
+
+        <record id="view_rollup_settlement_layer_tree" model="ir.ui.view">
+            <field name="name">rollup.settlement.layer.tree</field>
+            <field name="model">rollup.settlement.layer</field>
+            <field name="arch" type="xml">
+                <list string="Settlement Layers">
+                    <field name="name"/>
+                    <field name="active" widget="boolean_button"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_rollup_settlement_layer_form" model="ir.ui.view">
+            <field name="name">rollup.settlement.layer.form</field>
+            <field name="model">rollup.settlement.layer</field>
+            <field name="arch" type="xml">
+                <form string="Settlement Layer">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="description" widget="html"/>
+                        </group>
+                        <notebook>
+                            <page string="Rollup Types">
+                                <label string="Rollup Types" for="type_ids" class="o_form_label"/>
+                                <field name="type_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_rollup_settlement_layer_search" model="ir.ui.view">
+            <field name="name">rollup.settlement.layer.search</field>
+            <field name="model">rollup.settlement.layer</field>
+            <field name="arch" type="xml">
+                <search string="Search Settlement Layers">
+                    <field name="name"/>
+                    <filter name="filter_active" string="Active" domain="[('active', '=', True)]"/>
+                </search>
+            </field>
+        </record>
+    </data>
+</odoo>

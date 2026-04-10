@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="subscription_management.menu_subscription_management_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager'),
+                ref('access_rights.group_support_staff_manager'),
+                ref('access_rights.group_support_staff')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_sale_subscription" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager'),
+                ref('access_rights.group_support_staff_manager'),
+                ref('access_rights.group_support_staff')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_sale_subscription_config" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager'),
+                ref('access_rights.group_support_staff_manager'),
+                ref('access_rights.group_support_staff')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_sale_subscription_submenu1" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_sale_subscription_submenu2" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager'),
+                ref('access_rights.group_support_staff_manager'),
+                ref('access_rights.group_support_staff')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_sale_subscription_submenu3" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_subscription_discount" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+                
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_stripe_payment_log" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_subscription_invoice_queue" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+        <record id="subscription_management.menu_subscription_invoice_queue" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+        <!-- Restrict Settings/Debug entry visibility -->
+        <!-- <record id="base.menu_administration" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_technical_manager')])]"/>
+        </record> -->
+    </data>
+</odoo>

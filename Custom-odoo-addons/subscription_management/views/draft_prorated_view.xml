@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================= -->
+    <!-- Tree View -->
+    <!-- ========================= -->
+    <record id="view_subscription_prorated_charge_tree" model="ir.ui.view">
+        <field name="name">subscription.prorated.charge.tree</field>
+        <field name="model">subscription.prorated.charge</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="subscription_id"/>
+                <field name="session_id"/>
+                <field name="amount"/>
+                <field name="quantity_increase"/>
+                <field name="state"/>
+                <field name="payment_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ========================= -->
+    <!-- Form View -->
+    <!-- ========================= -->
+    <record id="view_subscription_prorated_charge_form" model="ir.ui.view">
+        <field name="name">subscription.prorated.charge.form</field>
+        <field name="model">subscription.prorated.charge</field>
+        <field name="arch" type="xml">
+            <form string="Subscription Prorated Charge">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="subscription_id"/>
+                            <field name="state" readonly="1"/>
+                            <field name="payment_date"/>
+                        </group>
+
+                        <group>
+                            <field name="amount"/>
+                            <field name="quantity_increase"/>
+                        </group>
+                    </group>
+
+                    <group string="Stripe Details" col="2">
+                        <field name="session_id"/>
+                        <field name="stripe_subscription_id"/>
+                        <field name="checkout_url" widget="url"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================= -->
+    <!-- Action -->
+    <!-- ========================= -->
+    <record id="action_subscription_prorated_charge" model="ir.actions.act_window">
+        <field name="name">Subscription Prorated Charges</field>
+        <field name="res_model">subscription.prorated.charge</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ========================= -->
+    <!-- Menu (Optional) -->
+    <!-- ========================= -->
+      <menuitem name="Prorated Subscriptions" id="menu_sale_prorated_subscription" parent="subscription_management.menu_sale_subscription"  action="action_subscription_prorated_charge" sequence="10" groups="access_rights.group_admin,access_rights.group_technical_manager"></menuitem>
+
+</odoo>

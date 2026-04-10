@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Action and menu items for Server Location -->
+    <record id="action_server_location" model="ir.actions.act_window">
+        <field name="name">Server Locations</field>
+        <field name="res_model">server.location</field>
+        <field name="view_mode">list,form</field>
+        <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_admin'), ref('access_rights.group_technical_manager'), ref('access_rights.group_support_staff_manager'), ref('access_rights.group_support_staff')])]"/>
+    </record>
+
+    <menuitem id="menu_server_location" name="Server Locations"
+              parent="menu_zeeve_base_root" action="action_server_location" sequence="20"
+              groups="access_rights.group_admin,access_rights.group_technical_manager,access_rights.group_support_staff_manager,access_rights.group_support_staff"/>
+
+    <!-- Tree view -->
+    <record id="view_server_location_tree" model="ir.ui.view">
+        <field name="name">server.location.tree</field>
+        <field name="model">server.location</field>
+        <field name="arch" type="xml">
+            <list string="Server Locations">
+                <field name="name"/>
+                <field name="country_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form view -->
+    <record id="view_server_location_form" model="ir.ui.view">
+        <field name="name">server.location.form</field>
+        <field name="model">server.location</field>
+        <field name="arch" type="xml">
+            <form string="Server Location">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="country_id" widget="many2one"/>
+                        <field name="continent_id" widget="many2one"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search view -->
+    <record id="view_server_location_search" model="ir.ui.view">
+        <field name="name">server.location.search</field>
+        <field name="model">server.location</field>
+        <field name="arch" type="xml">
+            <search string="Server Locations">
+                <field name="name"/>
+                <field name="country_id"/>
+            </search>
+        </field>
+    </record>
+</odoo>

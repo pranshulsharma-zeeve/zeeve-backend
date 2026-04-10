@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Migration Wizard Form View -->
+        <record id="view_stripe_migration_wizard_form" model="ir.ui.view">
+            <field name="name">stripe.data.migration.form</field>
+            <field name="model">stripe.data.migration</field>
+            <field name="arch" type="xml">
+                <form string="Stripe Data Migration">
+                    <header>
+                        <button name="action_validate_migration" 
+                                string="Validate Prerequisites" 
+                                type="object" 
+                                class="btn-primary"
+                                modifiers="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <button name="action_sync_plans_with_stripe" 
+                                string="Sync Plans to Stripe" 
+                                type="object" 
+                                class="btn-warning"
+                                modifiers="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <button name="action_start_migration" 
+                                string="Start Migration" 
+                                type="object" 
+                                class="btn-success"
+                                modifiers="{'invisible': [('state', '!=', 'draft')]}"
+                                confirm="Are you sure you want to start the migration? This will create resources in Stripe."/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>Zoho to Odoo + Stripe Migration</h1>
+                        </div>
+                        <group>
+                            <group string="Migration Configuration">
+                                <field name="migration_source" widget="radio" modifiers="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="migration_type" widget="radio" modifiers="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="dry_run" modifiers="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                            <group string="Filters">
+                                <field name="customer_filter" modifiers="{'invisible': [('migration_type', '=', 'subscriptions')], 'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="subscription_filter" modifiers="{'invisible': [('migration_type', '=', 'customers')], 'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Zoho CSV Files" modifiers="{'invisible': [('migration_source', '!=', 'zoho')]}">
+                            <group>
+                                <field name="contacts_csv_path" modifiers="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="subscriptions_csv_path" modifiers="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                            <group>
+                                <field name="create_missing_users" modifiers="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="setup_payment_methods" modifiers="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
+                        </group>
+                        
+                        <notebook modifiers="{'invisible': [('state', '=', 'draft')]}">
+                            <page string="Statistics" name="statistics">
+                                <group>
+                                    <group string="Customers" modifiers="{'invisible': [('migration_type', '=', 'subscriptions')]}">
+                                        <field name="customers_processed"/>
+                                        <field name="customers_created"/>
+                                        <field name="users_created_odoo" modifiers="{'invisible': [('migration_source', '!=', 'zoho')]}"/>
+                                        <field name="customers_skipped"/>
+                                        <field name="customers_errors"/>
+                                    </group>
+                                    <group string="Subscriptions" modifiers="{'invisible': [('migration_type', '=', 'customers')]}">
+                                        <field name="subscriptions_processed"/>
+                                        <field name="subscriptions_created"/>
+                                        <field name="subscriptions_skipped"/>
+                                        <field name="subscriptions_errors"/>
+                                    </group>
+                                </group>
+                                <group string="Payment Methods" modifiers="{'invisible': [('migration_source', '!=', 'zoho')]}">
+                                    <field name="payment_setups_created"/>
+                                </group>
+                            </page>
+                            <page string="Migration Log" name="log">
+                                <field name="log_text" widget="text"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Migration Wizard Action -->
+        <record id="action_stripe_migration_wizard" model="ir.actions.act_window">
+            <field name="name">Stripe Data Migration</field>
+            <field name="res_model">stripe.data.migration</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="binding_model_id" ref="subscription_management.model_subscription_plan"/>
+        </record>
+
+        <!-- Menu Item -->
+        <!-- <menuitem id="menu_stripe_migration"
+                  name="Stripe Migration"
+                  parent="subscription_management.menu_subscription_management_root"
+                  action="action_stripe_migration_wizard"
+                  sequence="100"/> -->
+    </data>
+</odoo>
+

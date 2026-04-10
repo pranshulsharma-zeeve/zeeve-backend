@@ -1,0 +1,203 @@
+<odoo>
+    <data>
+        <!-- Inherited Partner Form View -->
+        <record id="view_partner_form_inherit_oauth" model="ir.ui.view">
+            <field name="name">res.partner.oauth.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="function" position="after">
+                    <field name="first_name"/>
+                    <field name="middle_name"/>
+                    <field name="last_name"/>
+                    <field name="oauth_provider"/>
+                    <field name="oauth_uid" invisible="oauth_provider == 'email'"/>
+                    <field name="email_verified"/>
+                    <field name="account_id"/>
+                    <field name="stripe_customer_id"/>
+                    <field name="multi_tenant_host"/>
+                    <field name="max_opn_subscriptions" invisible="multi_tenant_host != 'iopn'"/>
+                </field>
+                <xpath expr="//field[@name='phone']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='website']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='vat']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='function']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='title']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='sales_purchases']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='website']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='category_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//notebook" position="inside">
+                    <page string="Marketing" name="utm_marketing">
+                        <field name="utm_info_pretty" widget="text" readonly="1"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Tree View -->
+        <record id="view_auth_partner_tree" model="ir.ui.view">
+            <field name="name">auth.partner.list</field>
+            <field name="model">res.partner</field>
+            <field name="type">list</field>
+            <field name="arch" type="xml">
+                <list default_order="create_date desc">
+                    <field name="name"/>
+                    <field name="email"/>
+                    <field name="oauth_provider"/>
+                    <field name="utm_info_pretty" widget="text" string="UTM Info"/>
+                    <field name="email_verified"/>
+                    <field name="create_date" string="Signup Date"/>
+                </list>
+            </field>
+        </record>
+        <record id="view_auth_partner_search" model="ir.ui.view">
+            <field name="name">auth.partner.search</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="inside">
+                    <separator/>
+                    <filter name="signup_last_7_days" string="Signup Last 7 Days" help="Users created within the past 7 days" domain="[
+                                ('create_date', '>=', (context_today() + relativedelta(days=-7)).strftime('%Y-%m-%d 00:00:00'))
+                            ]"/>
+                    <filter name="signup_last_2_days" string="Signup Last 2 Days" help="Users created within the past 2 days" domain="[
+                                ('create_date', '>=', (context_today() + relativedelta(days=-2)).strftime('%Y-%m-%d 00:00:00'))
+                            ]"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_auth_partner_search" model="ir.ui.view">
+            <field name="name">auth.partner.search</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="inside">
+                    <separator/>
+                    <filter name="signup_last_7_days" string="Signup Last 7 Days" help="Users created within the past 7 days" domain="[
+                                ('create_date', '>=', (context_today() + relativedelta(days=-7)).strftime('%Y-%m-%d 00:00:00'))
+                            ]"/>
+                    <filter name="signup_last_2_days" string="Signup Last 2 Days" help="Users created within the past 2 days" domain="[
+                                ('create_date', '>=', (context_today() + relativedelta(days=-2)).strftime('%Y-%m-%d 00:00:00'))
+                            ]"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_auth_partner_tree_support" model="ir.ui.view">
+            <field name="name">auth.partner.list.support</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="auth_module.view_auth_partner_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//list" position="attributes">
+                    <attribute name="create">false</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_partner_form_support" model="ir.ui.view">
+            <field name="name">res.partner.oauth.form.support</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="auth_module.view_partner_form_inherit_oauth"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="attributes">
+                    <attribute name="create">false</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Action (force tree + custom form view order) -->
+        <record id="action_auth_users" model="ir.actions.act_window">
+            <field name="name">Users</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_auth_partner_search"/>
+        </record>
+
+        <!-- Define the view sequence explicitly -->
+        <record id="action_auth_users_tree_view" model="ir.actions.act_window.view">
+            <field name="act_window_id" ref="action_auth_users"/>
+            <field name="view_mode">list</field>
+            <field name="view_id" ref="view_auth_partner_tree"/>
+            <field name="sequence">1</field>
+        </record>
+
+        <record id="action_auth_users_form_view" model="ir.actions.act_window.view">
+            <field name="act_window_id" ref="action_auth_users"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_partner_form_inherit_oauth"/>
+            <field name="sequence">2</field>
+        </record>
+
+        <!-- Action: External Users -->
+        <record id="action_auth_external_users" model="ir.actions.act_window">
+            <field name="name">External Users</field>
+            <field name="res_model">res.users</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[("share", "=", True)]</field>
+            <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_admin'), ref('access_rights.group_technical_manager')])]"/>
+        </record>
+
+        <record id="action_auth_external_users_tree_view" model="ir.actions.act_window.view">
+            <field name="act_window_id" ref="action_auth_external_users"/>
+            <field name="view_mode">list</field>
+            <field name="view_id" ref="base.view_users_tree"/>
+            <field name="sequence">1</field>
+        </record>
+
+        <record id="action_auth_external_users_form_view" model="ir.actions.act_window.view">
+            <field name="act_window_id" ref="action_auth_external_users"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="base.view_users_form"/>
+            <field name="sequence">2</field>
+        </record>
+
+
+        <!-- Action: Internal Users -->
+        <record id="action_auth_internal_users" model="ir.actions.act_window">
+            <field name="name">Internal Users</field>
+            <field name="res_model">res.users</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[("share", "=", False)]</field>
+            <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_admin'), ref('access_rights.group_technical_manager')])]"/>
+        </record>
+
+        <record id="action_auth_internal_users_tree_view" model="ir.actions.act_window.view">
+            <field name="act_window_id" ref="action_auth_internal_users"/>
+            <field name="view_mode">list</field>
+            <field name="view_id" ref="base.view_users_tree"/>
+            <field name="sequence">1</field>
+        </record>
+
+        <record id="action_auth_internal_users_form_view" model="ir.actions.act_window.view">
+            <field name="act_window_id" ref="action_auth_internal_users"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="base.view_users_form"/>
+            <field name="sequence">2</field>
+        </record>
+
+
+        <!-- Menu -->
+        <menuitem id="menu_auth_module_root" name="Auth" sequence="0" groups="access_rights.group_admin,access_rights.group_technical_manager,access_rights.group_support_staff,access_rights.group_support_staff_manager"/>
+        <menuitem id="menu_auth_external_users" name="External Users" parent="menu_auth_module_root" sequence="20" action="action_auth_external_users" groups="access_rights.group_admin,access_rights.group_technical_manager"/>
+        <menuitem id="menu_auth_internal_users" name="Internal Users" parent="menu_auth_module_root" sequence="30" action="action_auth_internal_users" groups="access_rights.group_admin,access_rights.group_technical_manager"/>
+        <menuitem id="menu_auth_module_users" name="Partners" parent="menu_auth_module_root" action="action_auth_users" sequence="10" groups="access_rights.group_admin,access_rights.group_technical_manager,access_rights.group_support_staff,access_rights.group_support_staff_manager"/>
+    </data>
+</odoo>

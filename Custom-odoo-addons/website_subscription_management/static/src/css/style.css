@@ -1,0 +1,130 @@
+/* Copyright (c) 2016-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) */
+/* See LICENSE file for full copyright and licensing details. */
+
+.bd-callout-info {
+    border-left-color: #15b9eb;
+}
+.bd-callout {
+    padding: 2.25rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid rgb(250, 231, 231);
+    border-left-width: 5px;
+    border-radius: .25rem;
+}
+
+.table-borderless>tbody>tr>td{
+  border-top: none;
+  }
+.subscription_detail{
+    padding-left:5%;
+    border:1px solid grey;
+    border-radius:5px;
+    margin-top:3%;
+}
+
+.status{
+  padding:3px;
+  font-weight:bold;
+  border-radius:2px;
+}
+.status_edit{
+  padding:3px;
+  width:100px;
+  font-weight:bold;
+  border-radius:2px;
+}
+.status_active{
+  color:rgb(23, 199, 23);
+  background-color:#c0e5d0;
+  border:0.5px solid #24da75;
+}
+.status_cancel{
+  color:rgb(252, 63, 38);
+  background-color:#F0C5C7;
+  border:0.5px solid #fd7474;
+}
+.status_expired{
+  color:rgb(255, 123, 0);
+  background-color:#fadaaa;
+  border:0.5px solid #ffb45e;
+}
+.status_waiting{
+  color:rgb(19, 90, 138);
+  background-color:#82e1fd;
+  border:1px solid #3c92f5;
+
+}
+.status_renewed{
+  color:rgb(2, 77, 238);
+  background-color:#b7cdfc;
+  border:1px solid #7b86ee;
+
+}
+
+.subscription_product{
+  box-sizing: border-box;
+  border: solid 4px transparent;
+  }
+
+.subscription_plan_detail {
+    box-sizing: border-box;
+    position: relative;
+    vertical-align:middle;
+    border: solid 1px lightgray;
+    height: 14rem;
+    overflow: hidden;
+    line-height:14rem;
+    padding:14px;
+    background-color:#337ab7;
+    width:auto;
+    overflow: auto;
+    color:black;
+    }
+  .add_color {
+    background-color:#F44336;
+    color:white;
+    box-shadow:rgb(197, 38, 27) 1px 2px 20px 3px;
+}
+.display_plan{
+    display:block !important;
+}
+.color_ribbon{
+    background-color:#0c0c0c;
+}
+div.ribbon{
+    font-size: 13px !important;
+}
+.hidden {
+    display: none;
+}
+.wk_susbcription_plan {
+    background: white;
+    padding: 20px 40px;
+}
+.wk_sub{
+    padding: 10px 40px;
+}
+.wk_plan {
+    /* height: 200px; */
+    overflow: hidden;
+}
+.wk_plan>div{
+  font-size:1.5vw;
+}
+#subPlan_info .product_price{
+  padding:5px;
+  margin-top:0px !important;
+}
+#subPlan_info div.row img.img-fluid{
+  height: 160px;
+  width: 180px;
+}
+@media only screen and (max-width:415px) {
+  .wk_plan>div{
+    font-size:80%;
+  }
+  .wk_plan{
+    height:auto;
+  }
+}

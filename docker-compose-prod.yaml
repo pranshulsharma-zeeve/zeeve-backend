@@ -1,0 +1,69 @@
+version: "3.9"
+
+services:
+  frontend:
+    image: 379487790755.dkr.ecr.eu-west-2.amazonaws.com/zeeve/zeeve-frontend:0.1.549
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    env_file:
+      - /home/zeever/zeeve-revamp/zeeve-frontend.env
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  backend:
+    image: 379487790755.dkr.ecr.eu-west-2.amazonaws.com/zeeve/zeeve-backend:1.0.3
+    command: >
+      odoo
+      --db_host=db
+      --db_port=5432
+      --db_user=${ODOO_DB_USER:-odoo}
+      --db_password=${ODOO_DB_PASSWORD:-odoo}
+      --database=${ODOO_DB_NAME:-odoo}
+      --addons-path=/usr/lib/python3/dist-packages/odoo/addons,/mnt/custom-addons,/mnt/standard-addons/addons
+      --init=base
+      --without-demo=all
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ODOO_LIMIT_TIME_CPU: ${ODOO_LIMIT_TIME_CPU:-300}
+      ODOO_LIMIT_TIME_REAL: ${ODOO_LIMIT_TIME_REAL:-600}
+      ODOO_LIMIT_MEMORY_SOFT: ${ODOO_LIMIT_MEMORY_SOFT:-2684354560}
+      ODOO_LIMIT_MEMORY_HARD: ${ODOO_LIMIT_MEMORY_HARD:-3221225472}
+      SESSION_COOKIE_SECURE: "True"
+      SESSION_COOKIE_SAMESITE: "Strict"
+    env_file:
+      - /home/zeever/zeeve-revamp/zeeve-backend.env
+    ports:
+      - "${BACKEND_PORT:-8069}:8069"
+    volumes:
+    #   - ./odoo-backend/Custom-odoo-addons:/mnt/custom-addons:ro
+    #   - ./odoo-backend/Standard-odoo-addons:/mnt/standard-addons:ro
+      - odoo_data:/var/lib/odoo
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:8069/web/login >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${ODOO_DB_NAME:-odoo}
+      POSTGRES_USER: ${ODOO_DB_USER:-odoo}
+      POSTGRES_PASSWORD: ${ODOO_DB_PASSWORD:-odoo}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${ODOO_DB_USER:-odoo} -d ${ODOO_DB_NAME:-odoo}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  odoo_data:
+  postgres_data:

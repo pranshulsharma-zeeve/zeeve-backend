@@ -1,0 +1,34 @@
+<odoo>
+    <data noupdate="1">
+        <record id="oauth_provider_google" model="auth.oauth.provider">
+            <field name="name">Google</field>
+            <field name="client_id"/>
+            <field name="auth_endpoint">https://accounts.google.com/o/oauth2/v2/auth</field>
+            <field name="scope">openid email profile</field>
+            <field name="validation_endpoint">https://www.googleapis.com/oauth2/v3/userinfo</field>
+            <field name="data_endpoint">https://oauth2.googleapis.com/token</field>
+            <field name="body">Login with Google</field>
+            <field name="enabled">True</field>
+        </record>
+        <record id="oauth_provider_github" model="auth.oauth.provider">
+            <field name="name">GitHub</field>
+            <field name="client_id"/>
+            <field name="auth_endpoint">https://github.com/login/oauth/authorize</field>
+            <field name="scope">user:email</field>
+            <field name="validation_endpoint">https://api.github.com/user</field>
+            <field name="data_endpoint">https://github.com/login/oauth/access_token</field>
+            <field name="body">Login with GitHub</field>
+            <field name="enabled">True</field>
+        </record>
+        <record id="oauth_provider_apple" model="auth.oauth.provider">
+            <field name="name">Apple</field>
+            <field name="client_id"/>
+            <field name="auth_endpoint">https://appleid.apple.com/auth/authorize</field>
+            <field name="scope">name email</field>
+            <field name="validation_endpoint">https://appleid.apple.com/auth/userinfo</field>
+            <field name="data_endpoint">https://appleid.apple.com/auth/token</field>
+            <field name="body">Login with Apple</field>
+            <field name="enabled">True</field>
+        </record>
+    </data>
+</odoo>

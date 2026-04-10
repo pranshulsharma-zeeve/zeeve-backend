@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <template id="report_rollup_invoice_document">
+            <t t-call="web.html_container">
+                <style type="text/css">
+                    .rollup-page {
+                        font-family:'Lato','Helvetica','Arial',sans-serif;
+                        color:#000000;
+                        font-size:15px;
+                    }
+                    .rollup-wrapper {
+                        padding:4px 52px 40px 52px;
+                        background:#ffffff;
+                    }
+
+                    .rollup-top-row,
+                    .rollup-logo-row,
+                    .rollup-info-row {
+                        width:100%;
+                        border-collapse:collapse;
+                    }
+                    .rollup-logo-row {
+                        margin-top:-10px;
+                        margin-bottom:10px;
+                    }
+                    .rollup-top-row {
+                        margin-bottom:12px;
+                    }
+                    .rollup-info-row {
+                        margin-bottom:18px;
+                    }
+                    .rollup-left-col,
+                    .rollup-right-col {
+                        vertical-align:top;
+                    }
+                    .rollup-left-col {
+                        width:58%;
+                        padding-right:30px;
+                    }
+                    .rollup-right-col {
+                        width:42%;
+                    }
+                    .rollup-brand {
+                        width:100%;
+                    }
+                    .rollup-logo-cell {
+                        vertical-align:top;
+                    }
+                    .rollup-logo-cell .rollup-brand img {
+                        margin-bottom:0;
+                    }
+
+                    .rollup-brand img {
+                        width:270px;
+                        height:auto;
+                        margin-bottom:12px;
+                        display:block;
+                        opacity:1 !important;
+                        -webkit-filter:contrast(1.15) saturate(1.15);
+                        filter:contrast(1.15) saturate(1.15);
+                        image-rendering:-webkit-optimize-contrast;
+                        image-rendering:auto;
+                    }
+                    .rollup-brand h4 {
+                        margin:0 0 4px 0;
+                        font-size:16px;
+                        font-weight:700;
+                        color:#000;
+                    }
+                    .rollup-brand .company-meta {
+                        margin-top:2px;
+                        font-size:14px;
+                        line-height:1.4;
+                        color:#000;
+                    }
+                    .rollup-brand .company-meta p {
+                        margin:2px 0;
+                    }
+
+                    .rollup-fiscal {
+                        text-align:right;
+                        color:#000;
+                    }
+                    .rollup-fiscal h1 {
+                        margin:0 0 4px 0;
+                        font-size:40px;
+                        letter-spacing:1px;
+                        text-transform:uppercase;
+                        font-weight:500;
+                    }
+                    .rollup-fiscal .rollup-inv-number {
+                        margin:0 0 18px 0;
+                        font-size:14px;
+                        color:#000;
+                    }
+                    .rollup-balance {
+                        font-size:14px;
+                        text-align:right;
+                        color:#000;
+                    }
+                    .rollup-balance .label {
+                        display:block;
+                        margin-bottom:2px;
+                    }
+                    .rollup-balance .amount {
+                        display:block;
+                        font-size:16px;
+                        font-weight:700;
+                    }
+
+                    .rollup-info-block {
+                        width:100%;
+                    }
+                    .rollup-info-block h3 {
+                        font-size:14px;
+                        text-transform:uppercase;
+                        color:#000;
+                        margin:0 0 10px 0;
+                    }
+                    .rollup-info-block p {
+                        margin:3px 0;
+                        font-size:15px;
+                        color:#000;
+                    }
+
+                    .rollup-meta {
+                        margin-top:0;
+                        font-size:14px;
+                        color:#000;
+                        line-height:1.7;
+                    }
+                    .rollup-meta-row {
+                        display:flex;
+                        justify-content:flex-end;
+                        gap:12px;
+                    }
+                    .rollup-meta .label {
+                        min-width:110px;
+                        text-align:right;
+                        color:#000;
+                    }
+                    .rollup-meta .value {
+                        min-width:135px;
+                        text-align:right;
+                        font-weight:400;
+                        color:#000;
+                    }
+
+                    .rollup-table {
+                        width:100%;
+                        border-collapse:collapse;
+                        margin-top:4px;
+                    }
+                    .rollup-table thead th {
+                        background:#3b3b3b;
+                        color:#ffffff;
+                        padding:10px 10px;
+                        font-size:14px;
+                        letter-spacing:0.5px;
+                        text-align:left;
+                        border-right:1px solid rgba(255,255,255,0.25);
+                        font-weight:500;
+                    }
+                    .rollup-table thead th:last-child {
+                        border-right:none;
+                    }
+                    .rollup-table th.right,
+                    .rollup-table td.right {
+                        text-align:right;
+                    }
+                    .rollup-table tbody td {
+                        border-bottom:1px solid #e6e6e6;
+                        padding:11px 10px;
+                        font-size:15px;
+                        vertical-align:top;
+                        color:#000;
+                    }
+                    .rollup-table tbody tr:last-child td {
+                        border-bottom:1px solid #dcdcdc;
+                    }
+                    .rollup-line-desc {
+                        font-size:12px;
+                        color:#000;
+                        margin-top:2px;
+                    }
+
+                    .rollup-summary {
+                        width:300px;
+                        margin-left:auto;
+                        margin-top:22px;
+                        font-size:15px;
+                        color:#000;
+                    }
+                    .rollup-summary:before {
+                        content:"";
+                        display:block;
+                        width:100%;
+                        height:1px;
+                        background:#e0e0e0;
+                        margin-bottom:10px;
+                    }
+                    .rollup-summary-row {
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:center;
+                        margin-bottom:4px;
+                    }
+                    .rollup-summary-row span:first-child {
+                        color:#000;
+                    }
+                    .rollup-summary-row span:last-child {
+                        font-weight:400;
+                    }
+                    .rollup-summary-row.total span:first-child {
+                        font-weight:700;
+                    }
+                    .rollup-summary-row.total span:last-child {
+                        font-size:15px;
+                        font-weight:700;
+                    }
+                    .rollup-summary-row.due {
+                        background:#f4f4f4;
+                        padding:12px 12px;
+                        margin-top:10px;
+                        font-weight:700;
+                    }
+
+                    .rollup-notes {
+                        margin-top:34px;
+                        font-size:14px;
+                        color:#000;
+                    }
+                    .rollup-notes h4 {
+                        margin:0 0 6px 0;
+                        font-size:14px;
+                        letter-spacing:1px;
+                        text-transform:uppercase;
+                        color:#000;
+                    }
+                </style>
+
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="company" t-value="o.company_id"/>
+                    <t t-set="currency" t-value="o.currency_id"/>
+                    <t t-set="company_logo" t-value="company.logo and image_data_uri(company.logo)"/>
+                    <t t-set="invoice_date_display" t-value="o.invoice_date or (o.create_date and o.create_date.date())"/>
+                    <t t-set="due_date_display" t-value="o.invoice_date_due or o.invoice_date"/>
+
+                    <div class="page rollup-page">
+                        <div class="rollup-wrapper">
+
+                            <table class="rollup-logo-row">
+                                <tr>
+                                    <td class="rollup-logo-cell">
+                                        <div class="rollup-brand">
+                                            <t t-if="company_logo">
+                                                <img t-att-src="company_logo" t-att-alt="company.name"/>
+                                            </t>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <table class="rollup-top-row">
+                                <tr>
+                                    <td class="rollup-left-col">
+                                        <div class="rollup-brand">
+                                            <h4>
+                                                <t t-esc="company.name"/>
+                                            </h4>
+                                            <div class="company-meta">
+                                                <t t-if="company.partner_id">
+                                                    <div t-field="company.partner_id" t-options="{'widget': 'contact', 'fields': ['address'], 'no_marker': True}"/>
+                                                </t>
+                                                <p t-if="company.phone">
+                                                    <t t-esc="company.phone"/>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="rollup-right-col">
+                                        <div class="rollup-fiscal">
+                                            <h1>INVOICE</h1>
+                                            <p class="rollup-inv-number">
+                                                Invoice# <span>
+                                                <t t-esc="o.name or o.ref"/>
+                                            </span>
+                                        </p>
+                                        <div class="rollup-balance">
+                                            <span class="label">Balance Due</span>
+                                            <span class="amount" t-esc="'%s%.2f' % (currency.symbol or '', o.amount_residual or 0.0)"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table class="rollup-info-row">
+                            <tr>
+                                <td class="rollup-left-col">
+                                    <div class="rollup-info-block">
+                                        <h3>Bill To</h3>
+                                        <p>
+                                            <strong>
+                                                <t t-esc="o.partner_id and o.partner_id.name or ''"/>
+                                            </strong>
+                                        </p>
+                                        <t t-if="o.partner_id">
+                                            <div t-field="o.partner_id" t-options="{'widget': 'contact', 'fields': ['address'], 'no_marker': True}"/>
+                                        </t>
+                                    </div>
+                                </td>
+                                <td class="rollup-right-col">
+                                    <div class="rollup-info-block">
+                                        <div class="rollup-meta">
+                                            <p class="rollup-meta-row">
+                                                <span class="label">Invoice Date :</span>
+                                                <span class="value">
+                                                    <t t-if="o.invoice_date">
+                                                        <t t-esc="o.invoice_date and o.invoice_date.strftime('%d %b %Y') or ''"/>
+                                                    </t>
+                                                    <t t-elif="invoice_date_display">
+                                                        <t t-esc="invoice_date_display and invoice_date_display.strftime('%d %b %Y') or ''"/>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </span>
+                                            </p>
+
+                                            <p class="rollup-meta-row">
+                                                <span class="label">Terms :</span>
+                                                <span class="value">
+                                                    <t t-if="o.invoice_payment_term_id">
+                                                        <t t-esc="o.invoice_payment_term_id.name"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span t-translate="True">Due On Receipt</span>
+                                                    </t>
+                                                </span>
+                                            </p>
+
+                                            <p class="rollup-meta-row">
+                                                <span class="label">Due Date :</span>
+                                                <span class="value">
+                                                    <t t-if="o.invoice_date_due">
+                                                        <t t-esc="o.invoice_date_due and o.invoice_date_due.strftime('%d %b %Y') or ''"/>
+                                                    </t>
+                                                    <t t-elif="due_date_display">
+                                                        <t t-esc="due_date_display and due_date_display.strftime('%d %b %Y') or ''"/>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <t t-set="idx" t-value="0"/>
+                        <table class="rollup-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:6%;">#</th>
+                                    <th style="width:52%;">Item &amp; Description</th>
+                                    <th class="right" style="width:10%;">Qty</th>
+                                    <th class="right" style="width:16%;">Rate</th>
+                                    <th class="right" style="width:16%;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.invoice_line_ids" t-as="line">
+                                    <t t-if="line.display_type not in ('line_section','line_note')">
+                                        <t t-set="idx" t-value="idx + 1"/>
+                                        <tr>
+                                            <td>
+                                                <t t-esc="idx"/>
+                                            </td>
+                                            <td>
+                                                <strong>
+                                                    <t t-esc="line.name"/>
+                                                </strong>
+                                                <t t-if="line.product_id">
+                                                    <div class="rollup-line-desc">
+                                                        <t t-esc="line.product_id.display_name"/>
+                                                    </div>
+                                                </t>
+                                            </td>
+                                            <td class="right">
+                                                <span t-esc="'%.0f' % (line.quantity or 0.0)"/>
+                                                <div class="rollup-line-desc" t-if="line.product_uom_id">
+                                                    <t t-esc="line.product_uom_id.display_name"/>
+                                                </div>
+                                            </td>
+                                            <td class="right">
+                                                <span t-esc="'%.2f' % (line.price_unit or 0.0)"/>
+                                            </td>
+                                            <td class="right">
+                                                <span t-esc="'%.2f' % (line.price_subtotal or 0.0)"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-if="line.display_type in ('line_section','line_note')">
+                                        <tr>
+                                            <td></td>
+                                            <td colspan="4">
+                                                <div class="rollup-line-desc">
+                                                    <t t-esc="line.name"/>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <div class="rollup-summary">
+                            <div class="rollup-summary-row">
+                                <span>Sub Total</span>
+                                <span t-esc="'%.2f' % (o.amount_untaxed or 0.0)"/>
+                            </div>
+                            <div class="rollup-summary-row" t-if="o.amount_tax">
+                                <span>Tax</span>
+                                <span t-esc="'%.2f' % (o.amount_tax or 0.0)"/>
+                            </div>
+                            <div class="rollup-summary-row total">
+                                <span>Total</span>
+                                <span t-esc="'%s%.2f' % (currency.symbol or '', o.amount_total or 0.0)"/>
+                            </div>
+                            <div class="rollup-summary-row due">
+                                <span>Balance Due</span>
+                                <span t-esc="'%s%.2f' % (currency.symbol or '', o.amount_residual or 0.0)"/>
+                            </div>
+                        </div>
+
+                        <div class="rollup-notes">
+                            <h4>Notes</h4>
+                            <p t-if="o.narration" t-field="o.narration" t-options="{'widget': 'text'}"/>
+                            <p t-else="">
+                                <span t-translate="True">Thanks for your business.</span>
+                            </p>
+                        </div>
+
+                        <div class="rollup-notes" t-if="o.invoice_payment_term_id">
+                            <h4>Payment Terms</h4>
+                            <p>
+                                <t t-esc="o.invoice_payment_term_id.name"/>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_rollup_invoice" model="ir.actions.report">
+        <field name="name">Rollup Invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">rollup_management.report_rollup_invoice_document</field>
+        <field name="report_file">rollup_management.report_rollup_invoice_document</field>
+        <field name="print_report_name">(object.name or 'Rollup Invoice').replace('/', '_')</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+</data>
+</odoo>

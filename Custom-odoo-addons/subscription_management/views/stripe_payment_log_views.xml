@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Stripe Payment Log Tree View -->
+    <record id="stripe_payment_log_tree_view" model="ir.ui.view">
+        <field name="name">stripe.payment.log.tree</field>
+        <field name="model">stripe.payment.log</field>
+        <field name="arch" type="xml">
+            <list string="Stripe Payment Logs" decoration-info="processed == False" decoration-success="processed == True">
+                <field name="event_id"/>
+                <field name="event_type"/>
+                <field name="stripe_subscription_id"/>
+                <field name="amount"/>
+                <field name="currency"/>
+                <field name="payment_status"/>
+                <field name="subscription_status"/>
+                <field name="processed"/>
+                <field name="stripe_created"/>
+                <field name="processed_at"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Stripe Payment Log Form View -->
+    <record id="stripe_payment_log_form_view" model="ir.ui.view">
+        <field name="name">stripe.payment.log.form</field>
+        <field name="model">stripe.payment.log</field>
+        <field name="arch" type="xml">
+            <form string="Stripe Payment Log">
+                <header>
+                    <button name="process_event" string="Process Event" type="object"
+                    class="btn-primary"
+                   modifiers='{"invisible": [["processed", "=", true]]}'/>
+
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="event_id" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="event_type"/>
+                            <field name="stripe_subscription_id"/>
+                            <field name="stripe_customer_id"/>
+                            <field name="stripe_payment_intent_id"/>
+                            <field name="stripe_invoice_id"/>
+                        </group>
+                        <group>
+                            <field name="amount"/>
+                            <field name="currency"/>
+                            <field name="payment_status"/>
+                            <field name="subscription_status"/>
+                            <field name="processed"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="subscription_id"/>
+                            <field name="invoice_id"/>
+                            <field name="payment_id"/>
+                        </group>
+                        <group>
+                            <field name="stripe_created"/>
+                            <field name="processed_at"/>
+                            <field name="webhook_attempt"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                        <field name="failure_reason"/>
+                        <field name="processing_error"/>
+                    </group>
+                    <group>
+                        <field name="event_data" widget="text"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Stripe Payment Log Search View -->
+    <record id="stripe_payment_log_search_view" model="ir.ui.view">
+        <field name="name">stripe.payment.log.search</field>
+        <field name="model">stripe.payment.log</field>
+        <field name="arch" type="xml">
+            <search string="Search Payment Logs">
+                <field name="event_id"/>
+                <field name="event_type"/>
+                <field name="stripe_subscription_id"/>
+                <field name="stripe_customer_id"/>
+                <field name="subscription_id"/>
+                <field name="payment_status"/>
+                <field name="subscription_status"/>
+                <field name="processed"/>
+                <separator/>
+                <filter string="Unprocessed" name="unprocessed" domain="[('processed', '=', False)]"/>
+                <filter string="Processed" name="processed" domain="[('processed', '=', True)]"/>
+                <filter string="Failed Payments" name="failed_payments" domain="[('payment_status', '=', 'failed')]"/>
+                <filter string="Successful Payments" name="successful_payments" domain="[('payment_status', '=', 'succeeded')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Event Type" name="group_event_type" context="{'group_by': 'event_type'}"/>
+                    <filter string="Payment Status" name="group_payment_status" context="{'group_by': 'payment_status'}"/>
+                    <filter string="Subscription Status" name="group_subscription_status" context="{'group_by': 'subscription_status'}"/>
+                    <filter string="Processed" name="group_processed" context="{'group_by': 'processed'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Stripe Payment Log Action -->
+    <record id="action_stripe_payment_log" model="ir.actions.act_window">
+        <field name="name">Stripe Payment Logs</field>
+        <field name="res_model">stripe.payment.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="stripe_payment_log_search_view"/>
+        <field name="context">{'search_default_unprocessed': 1}</field>
+        <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_admin'), ref('access_rights.group_technical_manager'), ref('access_rights.group_support_staff_manager'), ref('access_rights.group_support_staff')])]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No payment logs found!
+            </p>
+            <p>
+                Payment logs are automatically created when Stripe webhooks are received.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_stripe_payment_log" 
+              name="Payment Logs" 
+              parent="subscription_management.menu_subscription_management_root" 
+              action="action_stripe_payment_log" 
+              sequence="60" groups="access_rights.group_admin,access_rights.group_technical_manager,access_rights.group_support_staff_manager,access_rights.group_support_staff"/>
+
+</odoo>

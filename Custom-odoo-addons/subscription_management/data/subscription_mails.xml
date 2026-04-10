@@ -1,0 +1,87 @@
+<odoo>
+    <data>
+        <record id="mail_template_user_node_subscription" model="mail.template">
+            <field name="name">User Node Subscription Confirmation</field>
+            <field name="subject">🎉 You’re Live! Node Subscription Confirmed 🚀</field>
+            <field name="email_from">{{ ctx.get('verification_company').email }}</field>
+            <field name="email_to">{{ object.email }}</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f9ff; padding: 30px;">
+                    <div style="max-width: 650px; margin: auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+
+                        <!-- Header -->
+                        <div style="background: linear-gradient(135deg, #1a73e8, #673ab7); color: #ffffff; padding: 30px; text-align: center;">
+                            <h1 style="font-size: 26px; margin: 0;">🚀 Welcome to Blockchain Power!</h1>
+                            <p style="margin-top: 10px; font-size: 16px;">Your Node Subscription is Now Active 🎊</p>
+                        </div>
+
+                        <!-- Body -->
+                        <div style="padding: 30px; color: #333; text-align: center;">
+                            <p style="font-size: 18px; line-height: 1.6;">
+                        Hey <strong>
+                                <t t-out="object.name"/>
+                            </strong>,                            <br/>
+                            <br/>
+                        You’ve just unlocked a blockchain protocol subscription on <strong>
+                            <t t-out="ctx['verification_company'].name"/>
+                        </strong>! 🌐
+                    </p>
+
+                    <div style="margin: 25px 0; padding: 20px; background-color: #f1f5ff; border-left: 5px solid #1a73e8; border-radius: 6px; text-align: left;">
+                        <p>
+                            <strong>🧾 Subscription Details:</strong>
+                        </p>
+                        <p>
+                            <strong>Protocol:</strong>
+                            <t t-out="ctx.get('protocol_name', 'N/A')"/>
+                        </p>
+                        <p>
+                            <strong>Plan:</strong>
+                            <t t-out="ctx.get('plan_name', 'N/A')"/>
+                        </p>
+                        <p>
+                            <strong>Start Date:</strong>
+                            <t t-out="ctx.get('start_date', 'Today')"/>
+                        </p>
+                    </div>
+
+                    <p style="font-size: 16px; margin: 25px 0;">
+                        🔗 Manage your subscription anytime from your dashboard.
+                    </p>
+
+                    <a href="https://odoo-dev.zeeve.net/my/subscriptions" style="display: inline-block; background-color: #1a73e8; color: #ffffff; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px;">
+                        Go to My Dashboard 🚀
+                    </a>
+                </div>
+
+                <!-- Footer -->
+                <div style="background-color: #f1f1f1; text-align: center; padding: 15px; font-size: 12px; color: #555;">
+                    💡 Powered by <strong>
+                    <t t-out="ctx['verification_company'].name"/>
+                </strong> • ©                <t t-out="ctx['current_year']"/>
+            </div>
+        </div>
+    </div>
+</field>
+</record>
+        <record id="mail_template_payment_failed" model="mail.template">
+            <field name="name">Subscription Payment Failed</field>
+            <field name="model_id" ref="subscription_management.model_subscription_subscription"/>
+            <field name="subject">Action Required: Payment Failed for Subscription {{ object.name }}</field>
+            <field name="email_from">{{ object.env.company.email }}</field>
+            <field name="email_to">{{ object.customer_name.email }}</field>
+            <field name="body_html" type="html">
+                <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #333;">
+                    <h2 style="color: #d9534f;">⚠️ Payment Process Failed</h2>
+                    <p>Dear <t t-out="object.customer_name.name"/>,</p>
+                    <p>We were unable to process the recurring payment for your subscription <strong><t t-out="object.name"/></strong>.</p>
+                    <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <strong>Failure Reason:</strong> <t t-out="ctx.get('failure_reason', 'General processing error')"/>
+                    </div>
+                </div>
+            </field>
+        </record>
+</data>
+</odoo>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_protocol_master_form_inherit" model="ir.ui.view">
+            <field name="name">protocol.master.form.inherit</field>
+            <field name="model">protocol.master</field>
+            <field name="inherit_id" ref="zeeve_base.view_protocol_master_form"/>
+            <field name="arch" type="xml">
+
+                <!-- Smart button -->
+                <sheet position="inside">
+                    <button name="action_view_plans"
+                            type="object"
+                            string="Plans"
+                            class="oe_stat_button"
+                            icon="fa-list">
+                        <field name="plan_count" widget="statinfo"/>
+                    </button>
+                </sheet>
+
+                <!-- Subscription plans page -->
+                <notebook position="inside">
+                    <page string="Subscription Plans">
+                        <field name="plan_ids"
+                               context="{'default_protocol_id': protocol_id}"
+                               mode="list,form"
+                               form_view_id="subscription_management.subscription_plan_form_protocol_master">
+                            <list>
+                                <field name="name"/>
+                                <field name="subscription_type"/>
+                                <field name="amount_month"/>
+                                <field name="amount_quarter"/>
+                                <field name="amount_year"/>
+                            </list>
+                        </field>
+                    </page>
+                </notebook>
+
+            </field>
+        </record>
+    </data>
+</odoo>

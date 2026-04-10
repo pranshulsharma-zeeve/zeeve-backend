@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Subscription Discount Tree View -->
+        <record id="subscription_discount_tree_view" model="ir.ui.view">
+            <field name="name">subscription.discount.tree</field>
+            <field name="model">subscription.discount</field>
+            <field name="arch" type="xml">
+                <list string="Subscription Discounts" decoration-success="is_valid == True" decoration-muted="is_valid == False">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="discount_type"/>
+                    <field name="discount_value"/>
+                    <field name="applicability_scope"/>
+                    <field name="duration_in_months"/>
+                    <field name="valid_until"/>
+                    <field name="subscription_plan_ids" widget="many2many_tags"/>
+                    <field name="protocol_ids" widget="many2many_tags"/>
+                    <field name="is_valid" widget="boolean_toggle"/>
+                    <!-- <field name="usage_count"/> -->
+                    <!-- <field name="usage_limit"/> -->
+                    <field name = "stripe_coupon_id"/>
+                    <field name="stripe_synced" widget="boolean_toggle"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Subscription Discount Form View -->
+        <record id="subscription_discount_form_view" model="ir.ui.view">
+            <field name="name">subscription.discount.form</field>
+            <field name="model">subscription.discount</field>
+            <field name="arch" type="xml">
+                <form string="Subscription Discount">
+                    <header>
+                        <button name="action_sync_with_stripe" type="object" string="Sync with Stripe" 
+                                class="btn-primary" modifiers='{"invisible": [["stripe_synced","=",true]]}'/>
+
+                        <button name="action_unsync_from_stripe" type="object" string="Remove from Stripe" 
+                                class="btn-secondary" modifiers='{"invisible": [["stripe_synced","=",false]]}'/>
+
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_sync_with_stripe" type="object" class="oe_stat_button" icon="fa-refresh">
+                                <field name="stripe_synced" widget="statinfo" string="Stripe Sync"/>
+                            </button>
+                        </div>
+                        
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Discount Name"/>
+                            </h1>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="code" placeholder="DISCOUNT_CODE"/>
+                                <field name="description"/>
+                                <field name="active"/>
+                                <field name="applicability_scope"/>
+                            </group>
+                            <group>
+                                <field name="discount_type"/>
+                                <field name="discount_value"/>
+                                <field name="minimum_amount"/>
+                              <field name="maximum_discount_amount"
+       modifiers='{"invisible": [["discount_type", "!=", "percentage"]]}'/>
+                            </group>
+                        </group>
+                        
+                        <group>
+                            <group string="Discount Duration">
+                                <field name="duration_in_months"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Validity" name="validity">
+                                <group>
+                                    <group>
+                                        <field name="valid_from"/>
+                                        <field name="valid_until"/>
+                                    </group>
+                                    <group>
+                                        <field name="usage_limit"/>
+                                        <!-- <field name="usage_count" readonly="1"/> -->
+                                        <!-- <field name="remaining_usage" readonly="1"/> -->
+                                    </group>
+                                </group>
+                            </page>
+                            
+                            <page string="Applicable Plans" name="plans">
+                                <field name="subscription_plan_ids" widget="many2many_tags" 
+                                       options="{'no_create': True}"/>
+                                <p class="text-muted">
+                                    <i class="fa fa-info-circle"/> Leave empty to apply to all subscription plans.
+                                </p>
+                            </page>
+                            
+                            <page string="Applicable Protocols" name="protocols">
+                                <field name="protocol_ids" widget="many2many_tags" 
+                                       options="{'no_create': True}"/>
+                                <p class="text-muted">
+                                    <i class="fa fa-info-circle"/> Leave empty to apply to all protocols.
+                                </p>
+                            </page>
+                            
+                            <page string="Stripe Integration" name="stripe">
+                                <group>
+                                    <group>
+                                        <field name="stripe_coupon_id" readonly="1"/>
+                                        <field name="stripe_synced" readonly="1"/>
+                                        <field name="last_sync_date" readonly="1"/>
+                                        <field name="stripe_promotion_code_id" readonly="1"/>
+                                    </group>
+                                </group>
+                                <div class="alert alert-info" role="alert">
+                                    <p><strong>Coupon Configuration:</strong></p>
+                                    <ul>
+                                        <li><strong>Duration:</strong> Repeating - The discount applies for the number of months specified in "Duration (Months)" field</li>
+                                        <li><strong>Redemption Deadline:</strong> Use "Valid Until" to set when the coupon can no longer be redeemed by new customers</li>
+                                        <li><strong>Important:</strong> Customers who redeem before the deadline will continue receiving the discount for the full duration period</li>
+                                    </ul>
+                                    <p class="mt-2"><strong>Example:</strong> If duration is 3 months and valid until is Dec 31, a customer who redeems on Dec 15 will get the discount for 3 months (Jan, Feb, Mar).</p>
+                                    <p class="mt-2"><strong>Note:</strong> Sync with Stripe to create/update the coupon in your Stripe account.</p>
+                                </div>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Subscription Discount Search View -->
+        <record id="subscription_discount_search_view" model="ir.ui.view">
+            <field name="name">subscription.discount.search</field>
+            <field name="model">subscription.discount</field>
+            <field name="arch" type="xml">
+                <search string="Search Discounts">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="subscription_plan_ids" widget="many2many_tags"/>
+                    <field name="protocol_ids" widget="many2many_tags"/>
+                    <field name="applicability_scope"/>
+                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                    <filter string="Valid" name="valid" domain="[('is_valid', '=', True)]"/>
+                    <filter string="Synced with Stripe" name="stripe_synced" domain="[('stripe_synced', '=', True)]"/>
+                    <filter string="Percentage Discounts" name="percentage" domain="[('discount_type', '=', 'percentage')]"/>
+                    <filter string="Fixed Amount Discounts" name="fixed_amount" domain="[('discount_type', '=', 'fixed_amount')]"/>
+                    <separator/>
+                    <filter string="Expired" name="expired" domain="[('valid_until', '&lt;', context_today())]"/>
+                    <filter string="Not Yet Active" name="not_active" domain="[('valid_from', '&gt;', context_today())]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Discount Type" name="group_type" context="{'group_by': 'discount_type'}"/>
+                        <filter string="Subscription Plan" name="group_plan" context="{'group_by': 'subscription_plan_ids'}"/>
+                        <filter string="Protocol" name="group_protocol" context="{'group_by': 'protocol_ids'}"/>
+                        <filter string="Applies To" name="group_scope" context="{'group_by': 'applicability_scope'}"/>
+                        <filter string="Stripe Sync Status" name="group_stripe" context="{'group_by': 'stripe_synced'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Subscription Discount Action -->
+        <record id="action_subscription_discount" model="ir.actions.act_window">
+            <field name="name">Subscription Discounts</field>
+            <field name="res_model">subscription.discount</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="subscription_discount_search_view"/>
+            <field name="context">{'search_default_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first subscription discount!
+                </p>
+                <p>
+                    Discounts can be applied to subscription plans and protocols.
+                    You can create percentage or fixed amount discounts with usage limits.
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu Items -->
+        <menuitem id="menu_subscription_discount" 
+                  name="Discounts" 
+                  parent="zeeve_base.menu_zeeve_base_root"
+                  action="action_subscription_discount" 
+                  sequence="200" groups="access_rights.group_admin,access_rights.group_technical_manager"/>
+
+        <!-- Add discount field to subscription plan form view -->
+        <record id="subscription_plan_form_view_discount" model="ir.ui.view">
+            <field name="name">subscription.plan.form.discount</field>
+            <field name="model">subscription.plan</field>
+            <field name="inherit_id" ref="subscription_management.subscription_plan_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='region_ids']" position="after">
+                    <field name="discount_ids" widget="many2many_tags" 
+                           options="{'no_create': True}" 
+                           string="Available Discounts"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Add discount field to subscription plan tree view -->
+        <record id="subscription_plan_tree_view_discount" model="ir.ui.view">
+            <field name="name">subscription.plan.tree.discount</field>
+            <field name="model">subscription.plan</field>
+            <field name="inherit_id" ref="subscription_management.subscription_plan_list_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='subscription_type']" position="after">
+                    <field name="discount_ids" widget="many2many_tags" optional="hide"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- Copyright (c) 2016-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<odoo>
+  <data>
+    
+    <record id='email_template_mail' model='mail.template'>
+            <field name='name'>For testing</field>
+            <field name='email_from'>admin@example.com</field>
+            <field name='subject'>Subscription Expiration</field>
+            <field name='model_id' ref='website_subscription_management.model_website'/>
+            <field name='auto_delete' eval="True"/>
+            <field name='body_html'><![CDATA[
+            Please your renew your subscription      
+            ]]>
+            </field>
+        </record>
+
+      <record model="ir.ui.view" id="subscription_management_configurationform">
+          <field name="name">Configuration Tab</field>
+          <field name="model">subscription.plan</field>
+          <field name="inherit_id" ref="subscription_management.subscription_plan_form_view"/>
+          <field name='type'>form</field>
+          <field name="arch" type="xml">
+
+          <xpath expr='//sheet//label[@for="plan_description"]' position='before'>
+              <group>
+                <field name='notification_days'/>
+              </group>
+          </xpath>
+         </field>
+      </record>
+
+        <record id="subscription_configuration" model="ir.ui.view">
+               <field name='name'>subscription configuration form</field>
+               <field name='model'>subscription.configuration</field>
+               <field name='type'>form</field>
+               <field name='arch' type='xml'>
+                    <form string='subscription_configuration form'>
+                         <sheet>
+                          <group>
+                            <field name='msg_for_draft'/>  
+                            <field name='msg_for_active'/>   
+                            <field name='msg_for_cancel'/>                        
+                            <field name='msg_for_expired'/>  
+                            <field name='msg_for_renewed'/>  
+                           </group>
+                         </sheet>
+                    </form>
+               </field>
+          </record>
+          <record id="subscription_configuration_list" model="ir.ui.view">
+               <field name='name'>subscription configuration list</field>
+               <field name='model'>subscription.configuration</field>
+               <field name='arch' type='xml'>
+                    <list string='subscription_configuration list'>
+                         
+                           <field name='msg_for_draft'/>  
+                           <field name='msg_for_active'/>  
+                           <field name='msg_for_cancel'/>                        
+                           <field name='msg_for_expired'/>  
+                           <field name='msg_for_renewed'/>  
+                        
+                    </list>
+               </field>
+          </record>
+
+          <record id="action_subscription_configuration" model="ir.actions.act_window">
+            <field name="name">Subscriptions configuration</field>
+            <field name="res_model">subscription.configuration</field>
+            <!-- <field name="view_type">form</field> -->
+             <field name="limit">1</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="subscription_configuration_list"></field>
+          </record>
+
+        <menuitem name="Subscription configuration" id="menu_sale_subscription_con_submenu2" parent="subscription_management.menu_sale_subscription_config" action="action_subscription_configuration"></menuitem>
+    
+  </data>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_move_form_no_delete" model="ir.ui.view">
+        <field name="name">account.move.form.no.delete</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+
+        <field name="arch" type="xml">
+
+            <xpath expr="//button[@name='action_invoice_sent']" position="after">
+                <button name="unlink"
+                        string="Delete"
+                        type="object"
+                        groups="access_rights.group_admin,access_rights.group_technical_manager"
+                        class="oe_link oe_inline"/>
+            </xpath>
+
+            <xpath expr="//button[@name='unlink']" position="attributes">
+                <attribute name="groups">access_rights.group_admin,access_rights.group_technical_manager</attribute>
+            </xpath>
+            <xpath expr="//group[@id='header_left_group']" position="inside"  invisible="node_id == False">
+                    <field name="node_id" options="{'no_create': True}" readonly="1" invisible="node_id == False" />
+                    <field name="subscription_id" options="{'no_create': True}" readonly="1" invisible="node_id == False" />
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

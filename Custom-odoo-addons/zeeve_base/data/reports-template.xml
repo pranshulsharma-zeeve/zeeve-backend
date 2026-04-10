@@ -1,0 +1,501 @@
+<odoo>
+  <data noupdate="0">
+    <record id="mail_template_zeeve_weekly_report" model="mail.template">
+      <field name="name">Zeeve Weekly Report</field>
+      <field name="model_id" ref="base.model_res_users"/>
+      <field name="subject">Your Weekly Zeeve Platform Report - {{ (ctx.get('report') or {}).get('period_name', 'This Week') }}</field>
+      <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'reports@zeeve.io' }}</field>
+      <field name="body_html"><![CDATA[
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('web.base.url') or '').rstrip('/') or 'https://zeeve.io'"/>
+<t t-set="frontend_url" t-value="(env['ir.config_parameter'].sudo().get_param('frontend_url') or '').rstrip('/') or 'https://zeeve.io'"/>
+<t t-set="report" t-value="ctx.get('report') or {}"/>
+<t t-set="period_name" t-value="report.get('period_name') or 'This Week'"/>
+<t t-set="user_name" t-value="object.name or 'User'"/>
+<t t-set="has_rpc" t-value="report.get('has_rpc') or False"/>
+<t t-set="has_validator" t-value="report.get('has_validator') or False"/>
+<t t-set="rpc_requests" t-value="report.get('rpc_requests') or 0"/>
+<t t-set="uptime" t-value="report.get('uptime') or 0"/>
+<t t-set="validator_rewards" t-value="report.get('validator_rewards') or 0"/>
+<t t-set="overall_growth" t-value="report.get('overall_growth') or 0"/>
+<t t-set="request_growth" t-value="report.get('request_growth') or 0"/>
+<t t-set="rewards_growth" t-value="report.get('rewards_growth') or 0"/>
+<t t-set="incident_change" t-value="report.get('incident_change') if report.get('incident_change') is not None else 0"/>
+<t t-set="improvements" t-value="report.get('improvements') or []"/>
+
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="x-apple-disable-message-reformatting" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="supported-color-schemes" content="light dark" />
+  <title>Zeeve - Weekly Summary</title>
+  <style type="text/css">
+    table { border-collapse: collapse; }
+    img { border: 0; line-height: 100%; outline: none; text-decoration: none; }
+    a { text-decoration: none; }
+
+    @media screen and (max-width: 680px) {
+      .container { width: 100% !important; }
+      .px { padding-left: 16px !important; padding-right: 16px !important; }
+      .h1 { font-size: 22px !important; line-height: 28px !important; }
+      .col { display:block !important; width:100% !important; }
+      .col-r { padding-right:0 !important; padding-bottom:10px !important; }
+      .col-m { padding-left:0 !important; padding-right:0 !important; padding-bottom:10px !important; }
+      .col-l { padding-left:0 !important; }
+      .btn { width:100% !important; }
+      .btn a { display:block !important; }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body, .bg { background:#0b0f1a !important; }
+      .card { background:#111827 !important; border-color:#243244 !important; }
+      .text { color:#e5e7eb !important; }
+      .muted { color:#a1a1aa !important; }
+      .box { background:#0f172a !important; border-color:#243244 !important; }
+      .barbg { background:#1f2937 !important; }
+      .footer { background:#0b0f1a !important; }
+      .btn a { background:#FF9653 !important; color:#111827 !important; }
+      .link { color:#FF9653 !important; }
+    }
+
+    [data-ogsc] body, [data-ogsc] .bg { background:#0b0f1a !important; }
+    [data-ogsc] .card { background:#111827 !important; border-color:#243244 !important; }
+    [data-ogsc] .text { color:#e5e7eb !important; }
+    [data-ogsc] .muted { color:#a1a1aa !important; }
+    [data-ogsc] .box { background:#0f172a !important; border-color:#243244 !important; }
+    [data-ogsc] .barbg { background:#1f2937 !important; }
+    [data-ogsc] .btn a { background:#FF9653 !important; color:#111827 !important; }
+    [data-ogsc] .link { color:#FF9653 !important; }
+    [data-ogsc] .footer { background:#0b0f1a !important; }
+  </style>
+</head>
+
+<body style="margin:0;padding:0;background:#f3f4f6;" class="bg">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;background:#f3f4f6;" class="bg">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" width="680" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;" class="container">
+
+          <tr>
+            <td align="left" style="padding:0 0 12px 0;" class="px">
+              <a href="https://www.zeeve.io/" target="_blank">
+                <img src="https://demo.studiobrahma.in/zeeve/mailer/images/zeevenew.png" alt="Zeeve" height="60" style="display:block;height:60px;width:auto;" />
+              </a>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;" class="card">
+
+                <tr>
+                  <td style="background:#111827;padding:24px 26px;" class="px">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="font-family:Poppins,Arial,Helvetica,sans-serif;color:#ffffff;">
+                          <div style="font-size:14px;line-height:20px;opacity:0.9;">Hi <t t-esc="user_name"/>,</div>
+                          <div style="font-size:28px;line-height:34px;font-weight:700;margin-top:8px;color:#ffffff;" class="h1">
+                            Here's Your Weekly Summary
+                          </div>
+                          <div style="font-size:14px;line-height:20px;opacity:0.9;margin-top:6px;">
+                            <t t-esc="period_name"/>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:22px 26px 18px 26px;" class="px">
+                    <div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:16px;line-height:22px;font-weight:700;color:#111827;" class="text">
+                      Executive Summary
+                    </div>
+
+                    <!-- RPC Only Content -->
+<t t-if="has_rpc and not has_validator">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#374151;margin-top:8px;" class="text">
+                        This week, your RPC nodes handled
+                        <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:,}'.format(int(rpc_requests)) if rpc_requests else '0'"/></span>
+                        requests and achieved
+                        <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:.1f}'.format(float(uptime)) if uptime else '0.0'"/>%</span>
+                        uptime. Overall growth was
+                        <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:.1f}'.format(float(overall_growth)) if overall_growth else '0.0'"/>%</span>.
+                      </div>
+</t>
+
+<!-- Validator Only Content -->
+<t t-if="has_validator and not has_rpc">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#374151;margin-top:8px;" class="text">
+                        This week, your validator nodes delivered
+                        <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:,.0f}'.format(float(validator_rewards)) if validator_rewards else '0'"/></span>
+                        in rewards and achieved
+                        <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:.1f}'.format(float(uptime)) if uptime else '0.0'"/>%</span>
+                        uptime. Overall growth was
+                        <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:.1f}'.format(float(overall_growth)) if overall_growth else '0.0'"/>%</span>.
+                      </div>
+</t>
+
+<!-- Both RPC and Validator Content -->
+<t t-if="has_rpc and has_validator">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#374151;margin-top:8px;" class="text">
+                        This week, your platform handled
+                        <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:,}'.format(int(rpc_requests)) if rpc_requests else '0'"/></span>
+                        RPC requests, achieved
+                        <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:.1f}'.format(float(uptime)) if uptime else '0.0'"/>%</span>
+                        uptime, and delivered
+                        <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:,.0f}'.format(float(validator_rewards)) if validator_rewards else '0'"/></span>
+                        in validator rewards. Overall growth was
+                        <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:.1f}'.format(float(overall_growth)) if overall_growth else '0.0'"/>%</span>.
+                      </div>
+</t>
+
+<!-- KPI cards (same as your existing) -->
+<!-- ... keep your KPI HTML exactly as-is ... -->
+
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:14px;line-height:20px;font-weight:700;color:#111827;margin-top:16px;" class="text">
+                      Top Improvements
+                    </div>
+
+<t t-if="improvements">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:8px;">
+<t t-foreach="improvements" t-as="improvement">
+<tr>
+<td width="16" valign="top" style="font-family:Arial,Helvetica,sans-serif;font-size:18px;line-height:22px;color:#FF9653;">•</td>
+<td valign="top" style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#374151;" class="text">
+<t t-esc="improvement"/>
+</td>
+</tr>
+</t>
+</table>
+</t>
+
+<t t-if="not improvements">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#374151;margin-top:8px;" class="text">
+                        No improvements recorded for this period.
+                      </div>
+</t>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:18px;">
+<tr>
+<td align="center" style="padding:12px 0 0 0;" class="btn">
+<a t-att-href="frontend_url + '/reports/account-weekly'" style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;background:#FF9653;border-radius:10px;padding:12px 20px;display:inline-block;">
+                            View Weekly Dashboard
+                          </a>
+</td>
+</tr>
+</table>
+
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#9ca3af;text-align:center;margin-top:10px;" class="muted">
+                      Explore full trends and export data from your <a t-att-href="frontend_url + '/reports/account-weekly'" style="color:#FF9653;text-decoration:none;" class="link">dashboard</a>.
+                    </div>
+</td>
+</tr>
+
+<tr>
+<td style="padding:16px 24px;background:#333333;" class="footer px">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#ffffff;text-align:center;">
+                      Need help? Visit our
+                      <a href="https://docs.zeeve.io/" target="_blank" style="color:#FF9653;text-decoration:none;" class="link">Developer Documentation</a>
+                      or
+                      <a href="https://www.zeeve.io/talk-to-an-expert/" target="_blank" style="color:#FF9653;text-decoration:none;" class="link">Talk to an expert</a>.
+                    </div>
+</td>
+</tr>
+
+</table>
+</td>
+</tr>
+
+<tr>
+<td align="center" style="padding:14px 0 0 0;">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#9ca3af;text-align:center;" class="muted">
+                © 2026 Zeeve. All Rights Reserved.
+              </div>
+</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>
+      ]]>      </field>
+    </record>
+    <record id="mail_template_zeeve_monthly_report" model="mail.template">
+      <field name="name">Zeeve Monthly Report</field>
+      <field name="model_id" ref="base.model_res_users"/>
+      <field name="subject">Your Monthly Zeeve Platform Report - {{ (ctx.get('report') or {}).get('period_name', 'This Month') }}</field>
+      <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'reports@zeeve.io' }}</field>
+      <field name="body_html"><![CDATA[
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('web.base.url') or '').rstrip('/') or 'https://zeeve.io'"/>
+<t t-set="frontend_url" t-value="(env['ir.config_parameter'].sudo().get_param('frontend_url') or '').rstrip('/') or 'https://zeeve.io'"/>
+<t t-set="report" t-value="ctx.get('report') or {}"/>
+<t t-set="period_name" t-value="report.get('period_name') or 'This Month'"/>
+<t t-set="user_name" t-value="object.name or 'User'"/>
+<t t-set="has_rpc" t-value="report.get('has_rpc') or False"/>
+<t t-set="has_validator" t-value="report.get('has_validator') or False"/>
+<t t-set="rpc_requests" t-value="report.get('rpc_requests') or 0"/>
+<t t-set="uptime" t-value="report.get('uptime') or 0"/>
+<t t-set="validator_rewards" t-value="report.get('validator_rewards') or 0"/>
+<t t-set="overall_growth" t-value="report.get('overall_growth') or 0"/>
+<t t-set="request_growth" t-value="report.get('request_growth') or 0"/>
+<t t-set="rewards_growth" t-value="report.get('rewards_growth') or 0"/>
+<t t-set="incident_change" t-value="report.get('incident_change') or 0"/>
+<t t-set="improvements" t-value="report.get('improvements') or []"/>
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="x-apple-disable-message-reformatting" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="supported-color-schemes" content="light dark" />
+  <title>Zeeve - Monthly Summary</title>
+  <style type="text/css">
+    table { border-collapse: collapse; }
+    img { border: 0; line-height: 100%; outline: none; text-decoration: none; }
+    a { text-decoration: none; }
+    @media screen and (max-width: 680px) {
+      .container { width: 100% !important; }
+      .px { padding-left: 16px !important; padding-right: 16px !important; }
+      .h1 { font-size: 22px !important; line-height: 28px !important; }
+      .col { display:block !important; width:100% !important; }
+      .col-r { padding-right:0 !important; padding-bottom:10px !important; }
+      .col-m { padding-left:0 !important; padding-right:0 !important; padding-bottom:10px !important; }
+      .col-l { padding-left:0 !important; }
+      .btn { width:100% !important; }
+      .btn a { display:block !important; }
+    }
+    @media (prefers-color-scheme: dark) {
+      body, .bg { background:#0b0f1a !important; }
+      .card { background:#111827 !important; border-color:#243244 !important; }
+      .text { color:#e5e7eb !important; }
+      .muted { color:#a1a1aa !important; }
+      .box { background:#0f172a !important; border-color:#243244 !important; }
+      .barbg { background:#1f2937 !important; }
+      .footer { background:#0b0f1a !important; }
+      .btn a { background:#FF9653 !important; color:#111827 !important; }
+      .link { color:#FF9653 !important; }
+    }
+    [data-ogsc] body, [data-ogsc] .bg { background:#0b0f1a !important; }
+    [data-ogsc] .card { background:#111827 !important; border-color:#243244 !important; }
+    [data-ogsc] .text { color:#e5e7eb !important; }
+    [data-ogsc] .muted { color:#a1a1aa !important; }
+    [data-ogsc] .box { background:#0f172a !important; border-color:#243244 !important; }
+    [data-ogsc] .barbg { background:#1f2937 !important; }
+    [data-ogsc] .btn a { background:#FF9653 !important; color:#111827 !important; }
+    [data-ogsc] .link { color:#FF9653 !important; }
+    [data-ogsc] .footer { background:#0b0f1a !important; }
+  </style>
+</head>
+<body style="margin:0;padding:0;background:#f3f4f6;" class="bg">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;background:#f3f4f6;" class="bg">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" width="680" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;" class="container">
+          <tr>
+            <td align="left" style="padding:0 0 12px 0;" class="px">
+              <a href="https://www.zeeve.io/" target="_blank">
+                <img src="https://demo.studiobrahma.in/zeeve/mailer/images/zeevenew.png" alt="Zeeve" height="60" style="display:block;height:60px;width:auto;" />
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;" class="card">
+                <tr>
+                  <td style="background:#111827;padding:24px 26px;" class="px">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+                      <tr>
+                        <td style="font-family:Poppins,Arial,Helvetica,sans-serif;color:#ffffff;">
+                          <div style="font-size:14px;line-height:20px;opacity:0.9;">
+                            Hi <t t-esc="user_name"/>,
+                          </div>
+                          <div style="font-size:28px;line-height:34px;font-weight:700;margin-top:8px; color:#ffffff;" class="h1">
+                            Here's Your Monthly Summary
+                          </div>
+                          <div style="font-size:14px;line-height:20px;opacity:0.9;margin-top:6px;">
+                            <t t-esc="period_name"/>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:22px 26px 18px 26px;" class="px">
+                    <div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:16px;line-height:22px;font-weight:700;color:#111827;" class="text">
+                      Executive Summary
+                    </div>
+
+                    <!-- RPC Only Content -->
+<t t-if="has_rpc and not has_validator">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#374151;margin-top:8px;" class="text">
+                        This month, your RPC nodes handled <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:,}'.format(int(rpc_requests)) if rpc_requests else '0'"/></span> requests and
+                        achieved <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:.1f}'.format(uptime) if uptime else '0.0'"/>%</span> uptime.
+                        Overall growth was <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:.1f}'.format(overall_growth) if overall_growth else '0.0'"/>%</span>.
+                      </div>
+</t>
+
+<!-- Validator Only Content -->
+<t t-if="has_validator and not has_rpc">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#374151;margin-top:8px;" class="text">
+                        This month, your validator nodes delivered
+                        <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:,.0f}'.format(validator_rewards) if validator_rewards else '0'"/></span> in rewards and
+                        achieved <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:.1f}'.format(uptime) if uptime else '0.0'"/>%</span> uptime.
+                        Overall growth was <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:.1f}'.format(overall_growth) if overall_growth else '0.0'"/>%</span>.
+                      </div>
+</t>
+
+<!-- Both RPC and Validator Content -->
+<t t-if="has_rpc and has_validator">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#374151;margin-top:8px;" class="text">
+                        This month, your platform handled <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:,}'.format(int(rpc_requests)) if rpc_requests else '0'"/></span> RPC requests,
+                        achieved <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:.1f}'.format(uptime) if uptime else '0.0'"/>%</span> uptime, and delivered
+                        <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:,.0f}'.format(validator_rewards) if validator_rewards else '0'"/></span> in validator rewards.
+                        Overall growth was <span style="font-weight:700;color:#111827;" class="text"><t t-esc="'{:.1f}'.format(overall_growth) if overall_growth else '0.0'"/>%</span>.
+                      </div>
+</t>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:16px;">
+<tr>
+<!-- Request Growth - Show if has RPC -->
+<t t-if="has_rpc">
+<td width="33.33%" valign="top" style="padding-right:10px;" class="col col-r">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+<tr>
+<td style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:12px;padding:12px 12px;" class="box">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:12px;line-height:16px;color:#4338ca;">
+                                    Request Growth
+                                  </div>
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:20px;line-height:26px;font-weight:700;color:#111827;margin-top:4px;" class="text">
+<t t-esc="'{:.1f}'.format(request_growth) if request_growth else '0.0'"/>%
+                                  </div>
+</td>
+</tr>
+</table>
+</td>
+</t>
+
+<!-- Rewards Growth - Show if has Validator -->
+<t t-if="has_validator">
+<td t-attf-width="{{ '33.33%' if has_rpc else '50%' }}" valign="top" t-attf-style="{{ 'padding-left:5px;padding-right:5px;' if has_rpc else 'padding-right:10px;' }}" class="col col-m">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+<tr>
+<td style="background:#f6fffb;border:1px solid #b7f7df;border-radius:12px;padding:12px 12px;" class="box">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:12px;line-height:16px;color:#0f766e;">
+                                    Rewards Growth
+                                  </div>
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:20px;line-height:26px;font-weight:700;color:#111827;margin-top:4px;" class="text">
+<t t-esc="'{:.1f}'.format(rewards_growth) if rewards_growth else '0.0'"/>%
+                                  </div>
+</td>
+</tr>
+</table>
+</td>
+</t>
+
+<!-- Incident Change - Show only if both RPC and Validator -->
+<t t-if="has_rpc and has_validator">
+<td width="33.33%" valign="top" style="padding-left:10px;" class="col col-l">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+<tr>
+<td style="background:#fff7ed;border:1px solid #fdba74;border-radius:12px;padding:12px 12px;" class="box">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:12px;line-height:16px;color:#c2410c;">
+                                    Incident Change
+                                  </div>
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:20px;line-height:26px;font-weight:700;color:#111827;margin-top:4px;" class="text">
+<t t-esc="'{:+d}'.format(int(incident_change)) if incident_change != 0 else '0'"/>
+</div>
+</td>
+</tr>
+</table>
+</td>
+</t>
+
+<!-- Single metric card if only one node type -->
+<t t-if="not (has_rpc and has_validator)">
+<td width="50%" valign="top" style="padding-left:10px;" class="col col-l">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+<tr>
+<td style="background:#fff7ed;border:1px solid #fdba74;border-radius:12px;padding:12px 12px;" class="box">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:12px;line-height:16px;color:#c2410c;">
+                                    Incident Change
+                                  </div>
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:20px;line-height:26px;font-weight:700;color:#111827;margin-top:4px;" class="text">
+<t t-esc="'{:+d}'.format(int(incident_change)) if incident_change != 0 else '0'"/>
+</div>
+</td>
+</tr>
+</table>
+</td>
+</t>
+</tr>
+</table>
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:14px;line-height:20px;font-weight:700;color:#111827;margin-top:18px;" class="text">
+                      Top Improvements
+                    </div>
+<t t-if="improvements">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:8px;">
+<t t-foreach="improvements" t-as="improvement">
+<tr>
+<td width="16" valign="top" style="font-family:Arial,Helvetica,sans-serif;font-size:18px;line-height:22px;color:#FF9653;">•</td>
+<td valign="top" style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#374151;" class="text">
+<t t-esc="improvement"/>
+</td>
+</tr>
+</t>
+</table>
+</t>
+<t t-if="not improvements">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#374151;margin-top:8px;" class="text">
+                        No improvements recorded for this period.
+                      </div>
+</t>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:18px;">
+<tr>
+<td align="center" style="padding:12px 0 0 0;" class="btn">
+<a t-att-href="frontend_url + '/reports/account-weekly'" style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;background:#FF9653;border-radius:10px;padding:12px 20px;display:inline-block;">
+                            View Monthly Dashboard
+                          </a>
+</td>
+</tr>
+</table>
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#9ca3af;text-align:center;margin-top:10px;" class="muted">
+                      Explore full trends and export data from your <a t-att-href="frontend_url + '/reports/account-weekly'" style="color:#FF9653;text-decoration:none;" class="link">dashboard</a>.
+                    </div>
+</td>
+</tr>
+<tr>
+<td style="padding:16px 24px;background:#333333;" class="footer px">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#ffffff;text-align:center;">
+                      Need help? Visit our
+                      <a href="https://docs.zeeve.io/" target="_blank" style="color:#FF9653;text-decoration:none;" class="link">Developer Documentation</a>
+                      or
+                      <a href="https://www.zeeve.io/talk-to-an-expert/" target="_blank" style="color:#FF9653;text-decoration:none;" class="link">Talk to an expert</a>.
+                    </div>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td align="center" style="padding:14px 0 0 0;">
+<div style="font-family:Poppins,Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#9ca3af;text-align:center;" class="muted">
+                © 2026 Zeeve. All Rights Reserved.
+              </div>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>
+      ]]>      </field>
+    </record>
+  </data>
+</odoo>

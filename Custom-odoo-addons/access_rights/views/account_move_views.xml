@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="view_move_form_no_delete_access" model="ir.ui.view">
+            <field name="name">account.move.form.no.delete.access</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="subscription_management.view_move_form_no_delete"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='unlink']" position="attributes">
+                    <attribute name="groups">access_rights.group_admin,access_rights.group_technical_manager</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

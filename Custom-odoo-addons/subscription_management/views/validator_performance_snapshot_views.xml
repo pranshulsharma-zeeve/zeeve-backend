@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Tree View -->
+        <record id="view_validator_performance_snapshot_tree" model="ir.ui.view">
+            <field name="name">validator.performance.snapshot.tree</field>
+            <field name="model">validator.performance.snapshot</field>
+            <field name="arch" type="xml">
+                <list string="Validator Performance Snapshots" default_order="snapshot_date desc">
+                    <field name="snapshot_date" decoration-bf="1"/>
+                    <field name="valoper"/>
+                    <field name="valcons_addr"/>
+                    <field name="height"/>
+                    <field name="window_size"/>
+                    <field name="missed_counter" decoration-danger="missed_counter &gt; 0"/>
+                    <field name="signed_blocks" decoration-success="1"/>
+                    <field name="protocol_key"/>
+                    <field name="node_id"/>
+                    <field name="expected_blocks"/>
+                    <field name="produced_blocks"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_validator_performance_snapshot_form" model="ir.ui.view">
+            <field name="name">validator.performance.snapshot.form</field>
+            <field name="model">validator.performance.snapshot</field>
+            <field name="arch" type="xml">
+                <form string="Validator Performance Snapshot" create="false" edit="false">
+                    <sheet>
+                        <group>
+                            <group string="Validator Information">
+                                <field name="valoper"/>
+                                <field name="valcons_addr"/>
+                                <field name="protocol_key"/>
+                                <field name="node_id"/>
+                            </group>
+                            <group string="Snapshot Details">
+                                <field name="snapshot_date"/>
+                                <field name="height"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Performance Metrics">
+                                <field name="window_size"/>
+                                <field name="missed_counter"/>
+                                <field name="signed_blocks"/>
+                                <field name="expected_blocks"/>
+                                <field name="produced_blocks"/>
+                            </group>
+                            <group string="Calculated Statistics">
+                                <field name="signed_blocks" string="Uptime %" 
+                                       widget="percentage" 
+                                       invisible="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_validator_performance_snapshots" model="ir.actions.act_window">
+            <field name="name">Validator Performance Snapshots</field>
+            <field name="res_model">validator.performance.snapshot</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="view_validator_performance_snapshot_tree"/>
+            <!-- <field name="search_view_id" ref="view_validator_performance_snapshot_search"/> -->
+            <!-- <field name="context">{'search_default_filter_last_7_days': 1, 'search_default_filter_coreum': 1}</field> -->
+        </record>
+
+        <!-- Menu Item under Subscription Configuration -->
+        <menuitem id="menu_validator_performance_snapshots"
+                  name="Validator Performance"
+                  parent="menu_sale_subscription_config"
+                  action="action_validator_performance_snapshots"
+                  sequence="60"
+                  groups="access_rights.group_admin,access_rights.group_technical_manager,access_rights.group_support_staff_manager"/>
+    </data>
+</odoo>

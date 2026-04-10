@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+
+<record id="mail_template_rollup_invoice_customer" model="mail.template">
+<field name="name">Rollup Invoice - Customer Delivery</field>
+<field name="model_id" ref="rollup_management.model_rollup_service"/>
+<field name="subject">Zeeve | Invoice {{ object.env.context.get('default_invoice_number') or object.invoice_ids[:1].name }}</field>
+<field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+<field name="email_to">{{ object.customer_id.email or object.customer_id.user_ids[:1].partner_id.email }}</field>
+<field name="auto_delete" eval="False"/>
+
+<field name="body_html" type="html">
+    <div style="background-color:#f3f6fb;padding:32px 0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+        <t t-set="company" t-value="object.env.company.sudo() or object.env['res.company'].sudo().search([], limit=1)"/>
+        <t t-set="company_name" t-value="company.name or 'Zeeve'"/>
+        <t t-set="base_url" t-value="(object.env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://your-domain.example'"/>
+        <t t-set="company_logo" t-value="base_url + ('/web/image/res.company/%s/logo' % (company.id or 1))"/>
+        <t t-set="invoice_number" t-value="object.env.context.get('default_invoice_number') or object.invoice_ids[:1].name"/>
+        <t t-set="invoice_amount" t-value="object.env.context.get('default_invoice_amount')"/>
+        <t t-set="invoice_url" t-value="object.env.context.get('default_invoice_url')"/>
+        <t t-set="invoice_due" t-value="object.env.context.get('default_invoice_due_date')"/>
+        <t t-set="payment_reference" t-value="object.env.context.get('default_payment_reference')"/>
+        <t t-set="payment_state" t-value="object.env.context.get('default_payment_state')"/>
+        <t t-set="checkout_url" t-value="object.env.context.get('default_checkout_url')"/>
+        <t t-set="invoice_record" t-value="(object.env.context.get('default_invoice_id') and object.env['account.move'].sudo().browse(object.env.context.get('default_invoice_id'))) or object.invoice_ids[:1]"/>
+        <t t-set="invoice_residual" t-value="object.env.context.get('default_invoice_residual', invoice_record.amount_residual if invoice_record else 0.0)"/>
+        <t t-set="show_pay_button" t-value="checkout_url and invoice_residual and invoice_residual > 0"/>
+        <div style="max-width:720px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 12px 28px rgba(26,55,109,0.12);">
+            <div style="background:#ADD8E6;padding:28px;color:#102542;text-align:center;">
+                <a href="https://www.zeeve.io/">
+                    <t t-if="company_logo">
+                      <img t-att-src="company_logo" alt="Zeeve" height="80"/>
+                    </t>
+                    <t t-else="">
+                      <img src="https://demo.studiobrahma.in/zeeve/mailer/images/zeeve-logo2.png" alt="Zeeve" height="80"/>
+                    </t>
+                  </a>
+                <h1 style="margin:0;font-size:24px;">Your Rollup Invoice</h1>
+                <p style="margin:12px 0 0;font-size:15px;opacity:0.9;">Invoice <strong>
+                    <t t-out="invoice_number or 'Pending'"/>
+                </strong>
+            </p>
+        </div>
+        <div style="padding:32px;color:#1a2a4a;">
+            <p style="font-size:15px;line-height:1.6;margin:0 0 24px 0;">Hello <strong>
+                <t t-out="object.customer_id.name or object.customer_id.email"/>
+            </strong>,
+        </p>
+        <p t-if="payment_state == 'paid'" style="font-size:15px;line-height:1.6;margin:0 0 24px 0;">Thank you for choosing Zeeve. We are sharing the invoice confirmation for your rollup subscription.</p>
+        <p t-else="" style="font-size:15px;line-height:1.6;margin:0 0 24px 0;">Thank you for choosing Zeeve. Your rollup subscription invoice is ready—use the button below to review the invoice and complete payment so we can start deployment.</p>
+        <table style="width:100%;border:1px solid #d5def1;border-radius:12px;overflow:hidden;font-size:14px;">
+            <tbody>
+                <tr style="background:#f8fbff;">
+                    <td style="padding:12px 16px;color:#607298;">Amount Due</td>
+                    <td style="padding:12px 16px;text-align:right;color:#1a2a4a;">
+                        <strong>
+                            <t t-out="invoice_amount or 'TBA'"/>
+                        </strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:12px 16px;color:#607298;">Due Date</td>
+                    <td style="padding:12px 16px;text-align:right;color:#1a2a4a;">
+                        <t t-out="invoice_due or 'Immediate'"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:12px 16px;color:#607298;">Service</td>
+                    <td style="padding:12px 16px;text-align:right;color:#1a2a4a;">
+                        <t t-out="object.name"/>
+                    </td>
+                </tr>
+                <tr t-if="payment_reference">
+                    <td style="padding:12px 16px;color:#607298;">Payment Reference</td>
+                    <td style="padding:12px 16px;text-align:right;color:#1a2a4a;">
+                        <t t-out="payment_reference"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- <t t-if="show_pay_button">
+            <div style="text-align:center;margin:32px 0;">
+                <a t-att-href="checkout_url" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:14px 32px;border-radius:8px;background:linear-gradient(135deg,#1976d2,#42a5f5);color:#ffffff;text-decoration:none;font-weight:600;">Pay Now</a>
+            </div>
+        </t>
+        <t t-elif="invoice_url">
+            <div style="text-align:center;margin:32px 0;">
+                <a t-att-href="invoice_url" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:14px 32px;border-radius:8px;background:#0d47a1;color:#ffffff;text-decoration:none;font-weight:600;">View Invoice</a>
+            </div>
+        </t> -->
+        <p style="font-size:14px;line-height:1.6;margin:0;">A PDF copy of the invoice is attached for your records. If you have already paid, no further action is needed. For assistance contact <strong>
+            <t t-out="company.email or 'support@zeeve.io'"/>
+        </strong>.
+    </p>
+</div>
+<div style="background-color:#ADD8E6;padding:24px;text-align:center;color:#102542;font-size:12px;">
+    <p style="margin:0;">Powered by <t t-out="company_name"/>
+ • Rollup Management Suite</p>
+</div>
+</div>
+</div>
+</field>
+</record>
+</data>
+</odoo>

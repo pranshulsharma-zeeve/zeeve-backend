@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="zeeve_base.menu_zeeve_base_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager'),
+                ref('access_rights.group_support_staff_manager'),
+                ref('access_rights.group_support_staff')
+            ])]"/>
+        </record>
+
+        <record id="zeeve_base.menu_protocol_master" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_admin'), ref('access_rights.group_technical_manager')])]"/>
+        </record>
+
+        <record id="zeeve_base.menu_server_location" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_admin'), ref('access_rights.group_technical_manager')])]"/>
+        </record>
+
+        <record id="zeeve_base.menu_zeeve_config" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_admin'), ref('access_rights.group_technical_manager')])]"/>
+        </record>
+
+        <record id="zeeve_base.menu_zeeve_network_type" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_admin'), ref('access_rights.group_technical_manager')])]"/>
+        </record>
+
+        <record id="zeeve_base.contact_us_sub_menu" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager'),
+                ref('access_rights.group_support_staff_manager'),
+                ref('access_rights.group_support_staff')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_subscription_management_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager'),
+                ref('access_rights.group_support_staff_manager'),
+                ref('access_rights.group_support_staff')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_sale_subscription" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager'),
+                ref('access_rights.group_support_staff_manager'),
+                ref('access_rights.group_support_staff')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_sale_subscription_config" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_sale_subscription_submenu1" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_sale_subscription_submenu2" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager'),
+                ref('access_rights.group_support_staff_manager'),
+                ref('access_rights.group_support_staff')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_sale_subscription_submenu3" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_subscription_discount" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_stripe_payment_log" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+
+        <record id="subscription_management.menu_subscription_invoice_queue" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+<!-- 
+        <record id="subscription_management.menu_stripe_migration" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record> -->
+
+        <record id="rollup_management.menu_rollup_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager'),
+                ref('access_rights.group_support_staff_manager'),
+                ref('access_rights.group_support_staff')
+            ])]"/>
+        </record>
+
+        <record id="rollup_management.menu_rollup_services" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager'),
+                ref('access_rights.group_support_staff_manager'),
+                ref('access_rights.group_support_staff')
+            ])]"/>
+        </record>
+
+        <record id="rollup_management.menu_rollup_configuration" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+
+        <record id="rollup_management.menu_rollup_types" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+
+        <record id="rollup_management.menu_rollup_data_availability" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+
+        <record id="rollup_management.menu_rollup_settlement_layers" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+
+        <record id="rollup_management.menu_rollup_nodes" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+
+        <record id="rollup_management.menu_rollup_sequencer" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager')
+            ])]"/>
+        </record>
+
+        <!-- Restrict Settings/Debug entry visibility -->
+        <!-- <record id="base.menu_administration" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_technical_manager')])]"/>
+        </record> -->
+    </data>
+</odoo>

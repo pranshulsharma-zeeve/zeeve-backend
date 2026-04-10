@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Hide password reset and invitation email buttons from res.users form -->
+        <record id="view_users_form_hide_mail_buttons" model="ir.ui.view">
+            <field name="name">res.users.form.hide.mail.buttons</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <!-- Hide both password reset buttons (from auth_signup module header) -->
+                <xpath expr="//button[@name='action_reset_password' and contains(@invisible, 'active')]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_reset_password' and contains(@invisible, 'new')]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

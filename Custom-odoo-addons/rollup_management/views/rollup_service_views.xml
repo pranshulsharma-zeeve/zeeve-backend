@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="action_rollup_service" model="ir.actions.act_window">
+            <field name="name">Rollup Services</field>
+            <field name="res_model">rollup.service</field>
+            <field name="view_mode">list,kanban,form</field>
+            <field name="context">{'search_default_status_active': 1}</field>
+        </record>
+
+        <record id="action_rollup_service_payment_logs" model="ir.actions.act_window">
+            <field name="name">Payment Logs</field>
+            <field name="res_model">stripe.payment.log</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[("rollup_service_id", "=", active_id)]</field>
+            <field name="context">{'default_rollup_service_id': active_id}</field>
+        </record>
+
+        <record id="action_rollup_service_invoices" model="ir.actions.act_window">
+            <field name="name">Invoices</field>
+            <field name="res_model">account.move</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[("rollup_service_id", "=", active_id)]</field>
+            <field name="context">{'default_rollup_service_id': active_id, 'default_move_type': 'out_invoice'}</field>
+        </record>
+
+        <record id="action_rollup_service_payments" model="ir.actions.act_window">
+            <field name="name">Payments</field>
+            <field name="res_model">account.payment</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('memo', '=', context.get('default_service_id'))]</field>
+            <field name="context">
+        {'default_rollup_service_id': active_id, 'default_payment_type': 'inbound', 'default_partner_type': 'customer'}
+            </field>
+        </record>
+
+        <record id="action_rollup_service_nodes" model="ir.actions.act_window">
+            <field name="name">Service Nodes</field>
+            <field name="res_model">rollup.node</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[("service_id", "=", active_id)]</field>
+            <field name="context">{'default_service_id': active_id}</field>
+        </record>
+
+        <menuitem id="menu_rollup_root" name="Rollup Management" sequence="40" groups="access_rights.group_admin,access_rights.group_technical_manager,access_rights.group_support_staff,access_rights.group_support_staff_manager"/>
+        <menuitem id="menu_rollup_services" name="Rollup Subscriptions" parent="menu_rollup_root" action="action_rollup_service" sequence="10" groups="access_rights.group_admin,access_rights.group_technical_manager,access_rights.group_support_staff,access_rights.group_support_staff_manager"/>
+
+        <record id="view_rollup_service_tree" model="ir.ui.view">
+            <field name="name">rollup.service.tree</field>
+            <field name="model">rollup.service</field>
+            <field name="arch" type="xml">
+                <list string="Rollup Services">
+                    <field name="name"/>
+                    <field name="service_id"/>
+                    <field name="chain_id"/>
+                    <field name="type_id"/>
+                    <field name="region_ids" widget="many2many_tags"/>
+                    <field name="status" widget="badge"/>
+                    <field name="subscription_status" widget="badge"/>
+                    <field name="node_count"/>
+                    <field name="create_date"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- <record id="view_rollup_service_kanban" model="ir.ui.view">
+            <field name="name">rollup.service.kanban</field>
+            <field name="model">rollup.service</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="status" class="o_kanban_small_column">
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_card oe_kanban_global_click o_rollup_status_#{record.status.raw_value or 'unknown'}">
+                                <div class="o_kanban_details">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                        <span class="badge rounded-pill text-bg-secondary">
+                                            <t t-esc="record.status"/>
+                                        </span>
+                                    </div>
+                                    <div class="text-muted mt-1">
+                                        <span t-if="record.service_id">
+                                            <i class="fa fa-id-badge me-1"/><t t-esc="record.service_id"/>
+                                        </span>
+                                        <span t-if="record.type_id">
+                                            <span>&#160;•&#160;</span><i class="fa fa-cubes me-1"/><t t-esc="record.type_id"/>
+                                        </span>
+                                    </div>
+                                    <div class="mt-2">
+                                        <span class="badge text-bg-light" t-if="record.customer_id">
+                                            <i class="fa fa-user me-1"/><t t-esc="record.customer_id"/>
+                                        </span>
+                                        <span class="badge text-bg-info" t-if="record.region_ids">
+                                            <i class="fa fa-globe me-1"/><t t-esc="record.region_ids"/>
+                                        </span>
+                                    </div>
+                                    <div class="row g-2 mt-3">
+                                        <div class="col">
+                                            <small class="text-muted">Invoices</small>
+                                            <div class="fw-semibold"><t t-esc="record.invoice_count"/></div>
+                                        </div>
+                                        <div class="col">
+                                            <small class="text-muted">Payments</small>
+                                            <div class="fw-semibold"><t t-esc="record.payment_count"/></div>
+                                        </div>
+                                        <div class="col">
+                                            <small class="text-muted">Nodes</small>
+                                            <div class="fw-semibold"><t t-esc="record.node_count"/></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_footer d-flex justify-content-between align-items-center mt-2">
+                                    <span class="text-muted" t-if="record.next_billing_date">
+                                        <i class="fa fa-calendar me-1"/><t t-esc="record.next_billing_date"/>
+                                    </span>
+                                    <span class="badge text-bg-success" t-if="record.autopay_enabled and record.autopay_enabled.raw_value">
+                                        <i class="fa fa-refresh me-1"/> Autopay
+                                    </span>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record> -->
+
+        <!-- <record id="action_rollup_service_kanban_view" model="ir.actions.act_window.view">
+                <field name="sequence">2</field>
+                <field name="view_mode">kanban</field>
+                <field name="view_id" ref="view_rollup_service_kanban"/>
+                <field name="act_window_id" ref="action_rollup_service"/>
+            </record> -->
+
+        <record id="view_rollup_service_form" model="ir.ui.view">
+            <field name="name">rollup.service.form</field>
+            <field name="model">rollup.service</field>
+            <field name="arch" type="xml">
+                <form string="Rollup Service">
+                    <header>
+                        <field name="subscription_status" widget="statusbar" statusbar_visible="draft,pending_payment,active"/>
+                        <button name="action_enable_autopay" type="object" string="Enable Autopay" class="oe_highlight" invisible="autopay_enabled or not stripe_subscription_id" />
+                        <button name="action_disable_autopay" type="object" string="Disable Autopay" invisible="not autopay_enabled" />
+                        <!-- <button name="action_pause_subscription" type="object" string="Pause Service" invisible="status == 'paused'" />
+                        <button name="action_resume_subscription" type="object" string="Resume Service" class="oe_highlight" invisible="status != 'paused'" /> -->
+                        <button name="action_activate_service" type="object" string="Activate" class="oe_highlight" invisible="status != 'deploying'" />
+                        <button name="action_send_invoice_email" type="object" string="Send Invoice" class="btn-secondary" invisible="invoice_count == 0"/>
+                        <button name="action_sync_with_stripe" type="object" string="Sync with Stripe" class="btn-secondary" groups="base.group_system" invisible=" not stripe_subscription_id"/>
+                        <button name="action_charge_rollup" type="object" string="Charge Now (Managed)" class="oe_highlight" invisible="not is_odoo_managed or subscription_status not in ['active', 'pending_payment', 'overdue']"/>
+                        <button name="action_migrate_to_odoo_managed" type="object" string="Migrate to Odoo Managed" invisible="is_odoo_managed or not stripe_subscription_id"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_form_label"/>
+                            <h1>
+                                <field name="name" placeholder="Rollup Name"/>
+                            </h1>
+                            <div>
+                                <span class="me-3">
+                                    <strong class="me-1">ID:</strong>
+                                    <field name="service_id" readonly="1" class="oe_inline"/>
+                                </span>
+                                <span>
+                                    <strong class="me-2">Rollup Status:</strong>
+                                    <field name="status" class="oe_inline"/>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="oe_button_box" name="button_box">
+                            <button name="%(rollup_management.action_rollup_service_payment_logs)d" type="action" class="oe_stat_button" icon="fa-credit-card" context="{'default_rollup_service_id': id}">
+                                <field name="payment_log_count" widget="statinfo" string="Payment Logs"/>
+                            </button>
+                            <button name="action_view_invoices" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                                <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                            </button>
+                            <!-- <button name="%(rollup_management.action_rollup_service_payments)d" type="action" class="oe_stat_button" icon="fa-money" context="{'default_service_id': service_id}">
+                                <field name="payment_count" widget="statinfo" string="Payments"/>
+                            </button> -->
+                            <button name="%(rollup_management.action_rollup_service_nodes)d" type="action" class="oe_stat_button" icon="fa-server" context="{'default_service_id': id}">
+                                <field name="node_count" widget="statinfo" string="Nodes"/>
+                            </button>
+                            <button name="action_archive" type="object" string="Archive" class="oe_stat_button" invisible="status == 'archived'" />
+                            <button name="cancel_stripe_rollup_subscription" type="object" string="Cancel Subscription" class="btn-danger" invisible="status == 'canceled'" />
+                        </div>
+                        <group class="o_group o_group_col_2 o_outer_group">
+                            <group string="Service Overview">
+                                <field name="customer_id" options="{'no_create': True}"/>
+                                <field name="type_id" options="{'no_create': True}"/>
+                                <field name="region_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                <field name="chain_id"/>
+                                <field name="service_created_date" readonly="0"/>
+                            </group>
+                            <group string="Subscription &amp; Billing">
+                                <field name="autopay_enabled" widget="boolean_toggle" readonly="1"/>
+                                <field name="next_billing_date" readonly="1"/>
+                                <field name="stripe_customer_id" readonly="1"/>
+                                <field name="stripe_subscription_id" readonly="1"/>
+                                <field name="stripe_invoice_id" readonly="1"/>
+                                <field name="last_stripe_invoice_id" readonly="1"/>
+                                <field name="is_odoo_managed" groups="base.group_no_one"/>
+                                <field name="payment_vault_id" invisible="not is_odoo_managed"/>
+                                <field name="last_charge_date" invisible="not is_odoo_managed"/>
+                                <field name="charge_retry_count" invisible="not is_odoo_managed"/>
+                            </group>
+                        </group>
+                        <group name="discount_group" string="Discounts">
+                            <group>
+                                <field name="original_amount" readonly="1"/>
+                                <field name="discount_amount" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="discount_code" readonly="1"/>
+                                <field name="discount_id" readonly="1" options="{'no_create': True}"/>
+                            </group>
+                        </group>
+
+                        <group class="o_group o_group_col_2 o_outer_group">
+                            <group string="Key Metrics">
+                                <field name="invoice_count" readonly="1" widget="statinfo" string="Invoices"/>
+                                <field name="payment_count" readonly="1" widget="statinfo" string="Payments"/>
+                                <field name="payment_log_count" readonly="1" widget="statinfo" string="Payment Logs"/>
+                                <field name="node_count" readonly="1" widget="statinfo" string="Nodes"/>
+                            </group>
+                            <group string="Technical Identifiers">
+                                <field name="deployment_token" readonly="1"/>
+                                <field name="stripe_payment_intent_id" readonly="1"/>
+                                <field name="stripe_session_id" readonly="1"/>
+                                <field name="zoho_service_id" readonly="0"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Nodes">
+                                <field name="node_ids">
+                                    <list editable="bottom">
+                                        <field name="node_name"/>
+                                        <field name="node_type"/>
+                                        <field name="status"/>
+                                        <field name="endpoint_url"/>
+                                    </list>
+                                    <form string="Rollup Node">
+                                        <group>
+                                            <field name="node_name"/>
+                                            <field name="node_type"/>
+                                            <field name="status"/>
+                                            <field name="endpoint_url"/>
+                                            <field name="metadata_json_text" widget="text" placeholder="{}"/>
+                                        </group>
+                                    </form>
+                                </field>
+                            </page>
+                            <page string="User Inputs">
+                                <field name="inputs_json_pretty" nolabel="1" widget="text"/>
+                            </page>
+                            <page string="Rollup Metadata">
+                                <field name="rollup_metadata" nolabel="1" widget="text"/>
+                            </page>
+                            <page string="Artifacts">
+                                <field name="artifacts" widget="many2many_binary" context="{'default_res_model': 'rollup.service', 'default_res_id': id}" options="{'no_open': False}"/>
+                            </page>
+                            <page string="Billing ">
+                                <group>
+                                    <field name="invoice_ids" readonly="1" context="{'default_rollup_service_id': id}" widget="one2many_list" options="{'no_create': True, 'no_edit': True, 'no_quick_create': True, 'no_create_edit': True}"/>
+                                </group>
+                            </page>
+                            <page string="Payments">
+                                <group>
+                                    <field name="payment_log_ids" readonly="1" widget="one2many_list" options="{'no_create': True, 'no_edit': True, 'no_quick_create': True, 'no_create_edit': True}"/>
+                                </group>
+                            </page>
+                            <page string="Stripe Metadata">
+                                <field name="metadata_json_pretty" readonly="1" nolabel="1" widget="text"/>
+                            </page>
+
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_stripe_payment_log_tree_rollup" model="ir.ui.view">
+            <field name="name">stripe.payment.log.tree.rollup</field>
+            <field name="model">stripe.payment.log</field>
+            <field name="arch" type="xml">
+                <list string="Payment Logs" create="false">
+                    <field name="event_type"/>
+                    <field name="transaction_hash"/>
+                    <field name="event_id"/>
+                    <field name="payment_status"/>
+                    <field name="amount"/>
+                    <field name="stripe_created"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_rollup_service_search" model="ir.ui.view">
+            <field name="name">rollup.service.search</field>
+            <field name="model">rollup.service</field>
+            <field name="arch" type="xml">
+                <search string="Search Rollup Services">
+                    <field name="name"/>
+                    <field name="service_id"/>
+                    <field name="type_id"/>
+                    <field name="chain_id"/>
+                    <filter name="status_active" string="Active" domain="[('status', '=', 'active')]"/>
+                    <filter name="status_deploying" string="Deploying" domain="[('status', '=', 'deploying')]"/>
+                    <filter name="status_failed" string="Failed" domain="[('status', '=', 'failed')]"/>
+                </search>
+            </field>
+        </record>
+    </data>
+</odoo>

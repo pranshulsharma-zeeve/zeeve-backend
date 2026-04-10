@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data noupdate="1">
+    <!-- OPN Welcome Email Template -->
+    <record id="mail_template_welcome_user_opn" model="mail.template">
+      <field name="name">OPN Welcome Email</field>
+      <field name="model_id" ref="base.model_res_partner"/>
+      <field name="subject">Welcome to OPN Validator Console</field>
+      <field name="email_from">{{ (object.env['res.company'].sudo().search([], limit=1).email_formatted or object.env['res.company'].sudo().search([], limit=1).email) or 'support@opnscan.io' }}</field>
+      <field name="body_html"><![CDATA[
+<t t-set="company" t-value="object.company_id or user.company_id"/>
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://your-domain.example'"/>
+<t t-set="logo_url" t-value="base_url + '/zeeve_base/static/src/img/OPN_Black.webp'"/>
+
+<!-- Pull dynamic links from your own config model -->
+<t t-set="cfg" t-value="env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="link_x" t-value="(cfg and cfg.twitter_url)   or 'https://x.com/OPN'"/>
+<t t-set="link_linkedin" t-value="(cfg and cfg.linkedin_url)  or 'https://www.linkedin.com/company/opn/'"/>
+<t t-set="link_telegram" t-value="(cfg and cfg.telegram_url)  or 'https://t.me/OPN'"/>
+<t t-set="static_base" t-value="base_url + '/zeeve_base/static/src/img'"/>
+<t t-set="twitter_icon" t-value="static_base + '/x.png'"/>
+<t t-set="telegram_icon" t-value="static_base + '/telegram.png'"/>
+<t t-set="linkedIn_icon" t-value="static_base + '/linkedIn.png'"/>
+
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td style="padding:5px">
+<table align="center" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #e9e9e9; background: #ffffff;" bgcolor="#ffffff">
+<tr>
+<td style="padding:24px 24px 10px 24px;">
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td>
+<!-- ABSOLUTE URL (base_url + /web/image/...), most mailers block remote images
+                       until the user clicks "Display images", but at least the URL resolves -->
+<img t-att-src="logo_url" alt="OPN" height="100"/>
+</td>
+</tr>
+
+<tr>
+<td style="padding:10px 0 16px;">
+<p style="font-size:20px; line-height:30px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+<strong>
+                      Hi <t t-out="(object.name or object.email or '').split(' ')[0]"/> ,
+                    </strong>
+</p>
+</td>
+</tr>
+
+<tr>
+<td style="padding:0 0 16px;">
+<p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+<strong>Thank you for registering with OPN.</strong>
+</p>
+</td>
+</tr>
+
+<tr>
+<td style="padding:0 0 16px;">
+<p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0; color:#FF9653;">
+<strong>We're glad to have you as part of our validator community.</strong>
+</p>
+</td>
+</tr>
+
+<tr>
+<td style="padding:0 0 16px;">
+<p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                    OPN Validator Console is your gateway to participating in the network as a validator. Through our intuitive interface, you can explore, monitor, and manage your validator nodes with ease.
+                  </p>
+</td>
+</tr>
+
+<tr>
+<td style="padding:0 0 16px;">
+<p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                    Explore the OPN Validator Console and discover the full potential of network participation at
+                    <a href="https://opnscan.io/" style="color:#FF9653; text-decoration:none; font-weight:600;">opnscan.io</a>.
+                  </p>
+</td>
+</tr>
+
+<tr>
+<td style="padding:30px 0 30px;">
+<p style="font-size:16px; color:#FF9653; line-height:26px; font-weight:600; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0; text-transform:uppercase; letter-spacing:5px;">
+                    Key Features:
+                  </p>
+</td>
+</tr>
+
+<tr>
+<td style="padding:0 0 24px;">
+<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td style="padding:0 13px 18px 0; vertical-align:top">
+<p style="font-size:18px; line-height:28px; font-weight:600; font-family:Poppins,Arial,Helvetica,sans-serif; color:#FF9653; margin:0;">&#9679;</p>
+</td>
+<td style="padding:0 0 18px 0;">
+<p style="font-size:18px; line-height:20px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                          Real-time Validator Monitoring
+                        </p>
+</td>
+</tr>
+
+<tr>
+<td style="padding:0 13px 18px 0; vertical-align:top">
+<p style="font-size:18px; color:#FF9653; line-height:28px; font-weight:600; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">&#9679;</p>
+</td>
+<td style="padding:0 0 18px 0;">
+<p style="font-size:18px; color:#383535; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                          Network Statistics and Analytics
+                        </p>
+</td>
+</tr>
+
+<tr>
+<td style="padding:0 13px 18px 0; vertical-align:top">
+<p style="font-size:18px; color:#FF9653; line-height:28px; font-weight:600; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">&#9679;</p>
+</td>
+<td style="padding:0 0 18px 0;">
+<p style="font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                          Validator Performance Insights
+                        </p>
+</td>
+</tr>
+
+<tr>
+<td style="padding:0 13px 18px 0; vertical-align:top">
+<p style="font-size:18px; color:#FF9653; line-height:28px; font-weight:600; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">&#9679;</p>
+</td>
+<td style="padding:0 0 18px 0;">
+<p style="font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                          Secure Validator Management
+                        </p>
+</td>
+</tr>
+
+<tr>
+<td style="padding:0 13px 0 0; vertical-align:top">
+<p style="font-size:18px; color:#FF9653; line-height:28px; font-weight:600; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">&#9679;</p>
+</td>
+<td>
+<p style="font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                          Community Support &amp; Resources
+                        </p>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td style="padding:20px 24px 20px 0; text-align:left">
+<p style="font-size:18px; color:#232323; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                    Get started with validator setup and management in our
+                    <a href="https://opnscan.io/" style="color:#FF9653; text-decoration:none; font-size:18px; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif;">
+                      OPN Validator Console
+                    </a>.
+                    If you have any questions or need assistance, our community is here to help you succeed.
+                  </p>
+</td>
+</tr>
+
+<tr>
+<td style="padding:30px 0 30px;">
+<table align="left" border="0" cellpadding="0" cellspacing="0" style="max-width:200px; width:200px;" width="200">
+<tr>
+<td bgcolor="#ffffff" style="padding:15px 10px 15px 0; background:#ffffff; border-radius:0; text-align:center" align="left">
+<a href="https://opnscan.io/" style="font-family:Poppins, Arial, Helvetica, sans-serif; text-align:center; text-decoration:none; outline:none; display:block; background-color:#FF9653; font-size:15px; line-height:46px; height:46px; color:#ffffff; font-weight:700; border-radius:0; border:0 solid #FF9653; white-space:nowrap; text-transform:uppercase;">View Console</a>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td style="padding:0 24px 0 0;">
+<p style="font-size:18px; color:#232323; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; margin:0;">
+                    Thank you once again for joining the OPN Validator Network.<br/><br/>
+                    Warm regards,<br/>
+<strong>OPN Team</strong>
+</p>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table>
+      ]]>      </field>
+
+      <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- OPN OTP Verification Email Template -->
+    <record id="mail_template_otp_verification_opn" model="mail.template">
+      <field name="name">OPN | OTP Verification</field>
+      <field name="model_id" ref="base.model_res_partner"/>
+      <field name="subject">Your OPN OTP Code – Complete Your Registration</field>
+      <field name="email_from">{{ (object.env['res.company'].sudo().search([], limit=1).email_formatted or object.env['res.company'].sudo().search([], limit=1).email) or 'support@opnscan.io' }}</field>
+      <field name="email_to">{{ object.email or '' }}</field>
+      <field name="body_html"><![CDATA[
+<t t-set="company" t-value="object.company_id or user.company_id"/>
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://auth.opnscan.io'"/>
+<t t-set="logo_url" t-value="base_url + '/zeeve_base/static/src/img/OPN_Black.webp'"/>
+<t t-set="cfg" t-value="env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="link_x" t-value="(cfg and cfg.twitter_url)   or 'https://x.com/OPN'"/>
+<t t-set="link_linkedin" t-value="(cfg and cfg.linkedin_url)  or 'https://www.linkedin.com/company/opn/'"/>
+<t t-set="link_telegram" t-value="(cfg and cfg.telegram_url)  or 'https://t.me/OPN'"/>
+<t t-set="support_email" t-value="(cfg and cfg.support_email)   or 'support@opnscan.io'"/>
+<t t-set="contact_name" t-value="object.name or object.email or 'there'"/>
+<t t-set="otp_code" t-value="ctx.get('otp_code') or object.verification_token or '000000'"/>
+<t t-set="current_year" t-value="ctx.get('current_year') or datetime.date.today().year"/>
+<t t-set="static_base" t-value="base_url + '/zeeve_base/static/src/img'"/>
+<t t-set="twitter_icon" t-value="static_base + '/x.png'"/>
+<t t-set="telegram_icon" t-value="static_base + '/telegram.png'"/>
+<t t-set="linkedIn_icon" t-value="static_base + '/linkedIn.png'"/>
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #e9e9e9; background: #ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://opnscan.io/" style="display:inline-block">
+                    <img t-att-src="logo_url" alt="OPN" height="100"/>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:10px 0 16px;">
+                  <p style="font-size:20px; line-height:30px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0; color:#222;">
+                    <strong>Hi <t t-out="contact_name.split(' ')[0] if isinstance(contact_name, str) else contact_name"/>,</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0; color:#222;">
+                    <strong>Welcome to OPN! To complete your registration, please use the OTP below:</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td bgcolor="#ffffff" style="padding:15px 10px 15px 0; background:#ffffff; font-size:21px; font-weight:600; color:#222; text-align:left;" align="left">
+                  [<t t-out="otp_code"/>]
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 24px 0 0;">
+                  <p style="font-size:18px; color:#232323; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0;">
+                    <br/>This code is valid for the next <strong>10 minutes</strong>. Please enter it on the verification page to secure your account.<br/>
+                    <br/>
+                    If you didn't sign up for OPN, please ignore this email.<br/>
+                    <br/>
+                    For any issues, reach out to our support team at
+                    <a t-att-href="'mailto:%s' % support_email" style="color:#FF9653; text-decoration:none;"> <t t-out="support_email"/></a>.<br/>
+                    <br/>
+                    Best regards,<br/>
+                    <strong>OPN Team</strong><br/>
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+      ]]>      </field>
+      <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- OPN Forgot Password Email Template -->
+    <record id="mail_template_forget_password_opn" model="mail.template">
+      <field name="name">OPN | Forgot Password</field>
+      <field name="model_id" ref="base.model_res_partner"/>
+      <field name="subject">Reset Your Password – OPN</field>
+      <field name="email_from">{{ (object.env['res.company'].sudo().search([], limit=1).email_formatted or object.env['res.company'].sudo().search([], limit=1).email) or 'support@opnscan.io' }}</field>
+      <field name="email_to">{{ object.email or '' }}</field>
+      <field name="body_html"><![CDATA[
+<t t-set="company" t-value="object.company_id or user.company_id"/>
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://auth.opnscan.io'"/>
+<t t-set="logo_url" t-value="base_url + '/zeeve_base/static/src/img/OPN_Black.webp'"/>
+<t t-set="cfg" t-value="env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="link_x" t-value="(cfg and cfg.twitter_url)   or 'https://x.com/OPN'"/>
+<t t-set="link_linkedin" t-value="(cfg and cfg.linkedin_url)  or 'https://www.linkedin.com/company/opn/'"/>
+<t t-set="link_telegram" t-value="(cfg and cfg.telegram_url)  or 'https://t.me/OPN'"/>
+<t t-set="support_email" t-value="(cfg and cfg.support_email)   or 'support@opnscan.io'"/>
+<t t-set="contact_name" t-value="object.name or object.email or 'there'"/>
+<t t-set="reset_link" t-value="ctx.get('reset_link') or ctx.get('reset_password_link') or (base_url + '/reset-password')"/>
+<t t-set="current_year" t-value="ctx.get('current_year') or datetime.date.today().year"/>
+<t t-set="static_base" t-value="base_url + '/zeeve_base/static/src/img'"/>
+<t t-set="twitter_icon" t-value="static_base + '/x.png'"/>
+<t t-set="telegram_icon" t-value="static_base + '/telegram.png'"/>
+<t t-set="linkedIn_icon" t-value="static_base + '/linkedIn.png'"/>
+
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #e9e9e9; background: #ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://opnscan.io/" style="display:inline-block">
+                    <img t-att-src="logo_url" alt="OPN" height="100"/>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:10px 0 16px;">
+                  <p style="font-size:20px; line-height:30px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0; color:#222;">
+                    <strong>Hi <t t-out="contact_name.split(' ')[0] if isinstance(contact_name, str) else contact_name"/>,</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0; color:#222;">
+                    <strong>We received a request to reset your password for your OPN account. Click the button below to set a new password:</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td bgcolor="#ffffff" style="padding:15px 10px 15px 0; background:#ffffff; border-radius:0; text-align:left;" align="left">
+                  <a t-att-href="reset_link" style="font-family:Poppins,Arial,Helvetica,sans-serif; text-align:left; text-decoration:none; outline:none; display:inline-block; background-color:#FF9653; font-size:15px; line-height:46px; height:46px; color:#ffffff; padding:15px 12px; font-weight:700; border-radius:0; border:0 solid #FF9653; white-space:nowrap; text-transform:uppercase;">Reset Password</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 24px 0 0;">
+                  <p style="font-size:18px; color:#232323; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0;">
+                    <br/>If you didn't request this, you can safely ignore this email—your account is secure.<br/>
+                    <br/>
+                    For any assistance, feel free to contact our support team at
+                    <a t-att-href="'mailto:%s' % support_email" style="color:#FF9653; text-decoration:none;"> <t t-out="support_email"/></a>.<br/>
+                    <br/>
+                    Stay secure,<br/>
+                    <strong>OPN Team</strong><br/>
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+      ]]>      </field>
+      <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- OPN Reset Password Email Template -->
+    <record id="mail_template_reset_password_opn" model="mail.template">
+      <field name="name">OPN | Password Reset Confirmation</field>
+      <field name="model_id" ref="base.model_res_partner"/>
+      <field name="subject">Your Password Has Been Reset – OPN</field>
+      <field name="email_from">{{ (object.env['res.company'].sudo().search([], limit=1).email_formatted or object.env['res.company'].sudo().search([], limit=1).email) or 'support@opnscan.io' }}</field>
+      <field name="email_to">{{ object.email or '' }}</field>
+      <field name="body_html"><![CDATA[
+<t t-set="company" t-value="object.company_id or user.company_id"/>
+<t t-set="base_url" t-value="(env['ir.config_parameter'].sudo().get_param('backend_url') or '').rstrip('/') or 'https://auth.opnscan.io'"/>
+<t t-set="logo_url" t-value="base_url + '/zeeve_base/static/src/img/OPN_Black.webp'"/>
+<t t-set="cfg" t-value="env['zeeve.config'].sudo().search([], limit=1)"/>
+<t t-set="link_x" t-value="(cfg and cfg.twitter_url)   or 'https://x.com/OPN'"/>
+<t t-set="link_linkedin" t-value="(cfg and cfg.linkedin_url)  or 'https://www.linkedin.com/company/opn/'"/>
+<t t-set="link_telegram" t-value="(cfg and cfg.telegram_url)  or 'https://t.me/OPN'"/>
+<t t-set="support_email" t-value="(cfg and cfg.support_email)   or 'support@opnscan.io'"/>
+<t t-set="contact_name" t-value="object.name or object.email or 'there'"/>
+<t t-set="login_link" t-value="base_url + '/login'"/>
+<t t-set="current_year" t-value="ctx.get('current_year') or datetime.date.today().year"/>
+<t t-set="static_base" t-value="base_url + '/zeeve_base/static/src/img'"/>
+<t t-set="twitter_icon" t-value="static_base + '/x.png'"/>
+<t t-set="telegram_icon" t-value="static_base + '/telegram.png'"/>
+<t t-set="linkedIn_icon" t-value="static_base + '/linkedIn.png'"/>
+
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:5px">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #e9e9e9; background: #ffffff;" bgcolor="#ffffff">
+        <tr>
+          <td style="padding:24px 24px 10px 24px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <a href="https://opnscan.io/" style="display:inline-block">
+                    <img t-att-src="logo_url" alt="OPN" height="100"/>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:10px 0 16px;">
+                  <p style="font-size:20px; line-height:30px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0; color:#222;">
+                    <strong>Hi <t t-out="contact_name.split(' ')[0] if isinstance(contact_name, str) else contact_name"/>,</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0; color:#222;">
+                    <strong>Your password has been successfully reset.</strong>
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 16px;">
+                  <p style="font-size:18px; line-height:28px; font-weight:400; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0; color:#222;">
+                    You can now log in to your OPN account using your new password.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td bgcolor="#ffffff" style="padding:15px 10px 15px 0; background:#ffffff; border-radius:0; text-align:left;" align="left">
+                  <a t-att-href="login_link" style="font-family:Poppins,Arial,Helvetica,sans-serif; text-align:left; text-decoration:none; outline:none; display:inline-block; background-color:#FF9653; font-size:15px; line-height:46px; height:46px; color:#ffffff; padding:15px 12px; font-weight:700; border-radius:0; border:0 solid #FF9653; white-space:nowrap; text-transform:uppercase;">Log In</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 24px 0 0;">
+                  <p style="font-size:18px; color:#232323; line-height:28px; font-weight:500; font-family:Poppins,Arial,Helvetica,sans-serif; padding:0; margin:0;">
+                    <br/>If you didn't reset your password or have any concerns about your account security, please contact our support team immediately at
+                    <a t-att-href="'mailto:%s' % support_email" style="color:#FF9653; text-decoration:none;"> <t t-out="support_email"/></a>.<br/>
+                    <br/>
+                    Thank you for using OPN,<br/>
+                    <strong>OPN Team</strong><br/>
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+      ]]>      </field>
+      <field name="auto_delete" eval="True"/>
+    </record>
+
+  </data>
+</odoo>

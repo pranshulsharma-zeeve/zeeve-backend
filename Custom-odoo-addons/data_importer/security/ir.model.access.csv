@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_data_importer_technical_manager,data.importer.tech,model_data_importer,access_rights.group_technical_manager,1,1,1,1

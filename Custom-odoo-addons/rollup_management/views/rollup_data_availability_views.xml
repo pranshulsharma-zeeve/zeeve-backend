@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="action_rollup_data_availability" model="ir.actions.act_window">
+            <field name="name">Data Availability</field>
+            <field name="res_model">rollup.data.availability</field>
+            <field name="view_mode">list,form</field>
+
+        </record>
+
+        <menuitem id="menu_rollup_data_availability" name="Data Availability" parent="rollup_management.menu_rollup_configuration" action="action_rollup_data_availability" sequence="20" groups="access_rights.group_admin,access_rights.group_technical_manager,access_rights.group_support_staff,access_rights.group_support_staff_manager"/>
+
+        <record id="view_rollup_data_availability_tree" model="ir.ui.view">
+            <field name="name">rollup.data.availability.tree</field>
+            <field name="model">rollup.data.availability</field>
+            <field name="arch" type="xml">
+                <list string="Data Availability Providers">
+                    <field name="name"/>
+                    <field name="coming_soon" widget="boolean_button"/>
+                    <field name="da_active" widget="boolean_button"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_rollup_data_availability_form" model="ir.ui.view">
+            <field name="name">rollup.data.availability.form</field>
+            <field name="model">rollup.data.availability</field>
+            <field name="arch" type="xml">
+                <form string="Data Availability Provider">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="logo" widget="image" />
+                                <field name="name"/>
+                            </group>
+                            <group>
+                                <field name="coming_soon"/>
+                                <field name="da_active"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Rollup Types">
+                                <label string="Rollup Types" for="type_ids" class="o_form_label"/>
+                                <field name="type_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_rollup_data_availability_search" model="ir.ui.view">
+            <field name="name">rollup.data.availability.search</field>
+            <field name="model">rollup.data.availability</field>
+            <field name="arch" type="xml">
+                <search string="Search Data Availability Providers">
+                    <field name="name"/>
+                    <filter name="filter_active" string="Active" domain="[('da_active', '=', True)]"/>
+                    <filter name="filter_coming_soon" string="Coming Soon" domain="[('coming_soon', '=', True)]"/>
+                </search>
+            </field>
+        </record>
+    </data>
+</odoo>

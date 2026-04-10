@@ -1,0 +1,165 @@
+<odoo>
+    <data>
+        <record id="subscription_management_mail_template" model="mail.template">
+            <field name="name">Subscription Detail</field>
+            <field name="subject">🚀 ${object.name or 'Subscription'} Activated</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+            <field name="email_to">{{ object.customer_name.email or object.customer_name.email_formatted }}</field>
+            <field name="model_id" ref="subscription_management.model_subscription_subscription"/>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0;padding:32px 0;background-color:#f3f6fb;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+                    <t t-set="company" t-value="object.env.company"/>
+                    <t t-if="not company">
+                        <t t-set="company" t-value="object.env['res.company'].sudo().search([], limit=1)"/>
+                    </t>
+                    <t t-set="company_name" t-value="(company and company.name) or 'Zeeve'"/>
+                    <t t-set="company_logo_raw" t-value="company and company.logo"/>
+                    <t t-set="company_logo_data" t-value="company_logo_raw and (company_logo_raw.decode() if hasattr(company_logo_raw, 'decode') else company_logo_raw)"/>
+                    <t t-set="company_website" t-value="(company and company.website) or 'https://www.zeeve.io'"/>
+                    <t t-set="support_email" t-value="(company and company.email) or 'support@zeeve.io'"/>
+                    <t t-set="support_phone" t-value="company and company.phone"/>
+                    <t t-set="current_year" t-value="ctx.get('current_year') or datetime.date.today().year"/>
+                    <t t-set="cta_url" t-value="(company_website and '%s/dashboard' % company_website.rstrip('/')) or 'https://app.zeeve.io/dashboard'"/>
+                    <t t-set="formatted_price" t-value="object.price and formatLang(object.price, currency_obj=object.currency_id or company.currency_id)"/>
+                    <t t-set="renewal_date" t-value="object.end_date and format_date(object.env, object.end_date)"/>
+                    <div style="max-width:640px;margin:0 auto;background-color:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 18px 45px rgba(13,71,161,0.18);">
+                        <div style="background:linear-gradient(120deg,#0d47a1,#1e63c6);padding:28px;text-align:center;color:#ffffff;">
+                            <t t-if="company_logo_data">
+                                <img t-att-src="'data:image/png;base64,%s' % company_logo_data" t-att-alt="company_name + ' logo'" t-att-title="company_name" style="max-height:52px;margin:0 auto 12px auto;display:block;"/>
+                            </t>
+                            <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:0.9;font-weight:600;">
+                                <t t-out="company_name"/>
+                            </div>
+                            <h1 style="margin:12px 0 0;font-size:24px;font-weight:700;letter-spacing:0.4px;">Subscription Activated</h1>
+                            <p style="margin:12px 0 0;font-size:13px;letter-spacing:1.6px;text-transform:uppercase;opacity:0.85;">Access details in your Zeeve dashboard</p>
+                        </div>
+                        <div style="padding:32px;color:#1a2a4a;">
+                            <p style="font-size:16px;line-height:1.6;margin:0 0 24px 0;">Hello <strong><t t-out="object.customer_name.name or object.customer_name.email"/></strong>,</p>
+                            <p style="font-size:15px;line-height:1.6;margin:0 0 24px 0;">Your subscription is now live. We’ve summarised the key billing and infrastructure details below.</p>
+                            <div style="border:1px solid #d5def1;border-radius:12px;padding:24px;background:#f8fbff;margin-bottom:24px;">
+                                <table style="width:100%;border-collapse:collapse;font-size:14px;">
+                                    <tbody>
+                                        <tr>
+                                            <td style="padding:6px 0;color:#607298;">Subscription</td>
+                                            <td style="padding:6px 0;text-align:right;color:#1a2a4a;"><t t-out="object.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:6px 0;color:#607298;">Protocol</td>
+                                            <td style="padding:6px 0;text-align:right;color:#1a2a4a;"><t t-out="object.protocol_id.name or 'N/A'"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:6px 0;color:#607298;">Plan</td>
+                                            <td style="padding:6px 0;text-align:right;color:#1a2a4a;"><t t-out="object.sub_plan_id.name or 'Custom Plan'"/></td>
+                                        </tr>
+                                        <tr t-if="formatted_price">
+                                            <td style="padding:6px 0;color:#607298;">Billing</td>
+                                            <td style="padding:6px 0;text-align:right;color:#1a2a4a;"><t t-out="formatted_price"/> <t t-if="object.payment_frequency">/<t t-out="object.payment_frequency"/></t></td>
+                                        </tr>
+                                        <tr t-if="renewal_date">
+                                            <td style="padding:6px 0;color:#607298;">Renewal Date</td>
+                                            <td style="padding:6px 0;text-align:right;color:#1a2a4a;"><t t-out="renewal_date"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div style="text-align:center;margin:32px 0;">
+                                <a t-att-href="cta_url" target="_blank" style="display:inline-block;padding:14px 32px;border-radius:12px;background:linear-gradient(120deg,#1e63c6,#42a5f5);color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">Manage Subscription</a>
+                            </div>
+                            <p style="margin:0;font-size:14px;line-height:1.6;color:#42526e;">Need configuration support or a bespoke plan? Reply to this email and our success team will assist you.</p>
+                        </div>
+                        <div style="background-color:#0d1b2a;padding:24px;text-align:center;color:#9fb4d3;font-size:12px;">
+                            <p style="margin:0;font-size:12px;color:#e8f0ff;">
+                                Need help?
+                                <a t-att-href="'mailto:%s' % support_email" style="color:#e8f0ff;text-decoration:none;"><t t-out="support_email"/></a>
+                                <t t-if="support_phone">
+                                    <span> · </span>Call <t t-out="support_phone"/>
+                                </t>
+                                <span> · </span>
+                                <a href="https://docs.zeeve.io" target="_blank" style="color:#8ec6ff;text-decoration:none;">Docs</a>
+                            </p>
+                            <p style="margin:12px 0 0;color:#6f87b7;">© <t t-out="current_year"/> <t t-out="company_name"/>. All rights reserved.</p>
+                        </div>
+                    </div>
+                </div>
+            </field>
+        </record>
+
+        <record id="subscription_management_alert_mail_template" model="mail.template">
+            <field name="name">Subscription Alert Mail</field>
+            <field name="subject">⚠️ ${object.name or 'Subscription'} Expires in ${object.renewal_days or 'a few'} Days</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or object.env.company.email) or 'support@zeeve.io' }}</field>
+            <field name="email_to">{{ object.customer_name.email or object.customer_name.email_formatted }}</field>
+            <field name="model_id" ref="subscription_management.model_subscription_subscription"/>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin:0;padding:32px 0;background-color:#fff7f4;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+                    <t t-set="company" t-value="object.env.company"/>
+                    <t t-if="not company">
+                        <t t-set="company" t-value="object.env['res.company'].sudo().search([], limit=1)"/>
+                    </t>
+                    <t t-set="company_name" t-value="(company and company.name) or 'Zeeve'"/>
+                    <t t-set="company_logo_raw" t-value="company and company.logo"/>
+                    <t t-set="company_logo_data" t-value="company_logo_raw and (company_logo_raw.decode() if hasattr(company_logo_raw, 'decode') else company_logo_raw)"/>
+                    <t t-set="company_website" t-value="(company and company.website) or 'https://www.zeeve.io'"/>
+                    <t t-set="support_email" t-value="(company and company.email) or 'support@zeeve.io'"/>
+                    <t t-set="support_phone" t-value="company and company.phone"/>
+                    <t t-set="current_year" t-value="ctx.get('current_year') or datetime.date.today().year"/>
+                    <t t-set="cta_url" t-value="(company_website and '%s/dashboard' % company_website.rstrip('/')) or 'https://app.zeeve.io/dashboard'"/>
+                    <t t-set="formatted_price" t-value="object.price and formatLang(object.price, currency_obj=object.currency_id or company.currency_id)"/>
+                    <t t-set="renewal_date" t-value="object.end_date and format_date(object.env, object.end_date)"/>
+                    <div style="max-width:640px;margin:0 auto;background-color:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 18px 45px rgba(199,84,53,0.18);">
+                        <div style="background:linear-gradient(120deg,#d84315,#ff7043);padding:28px;text-align:center;color:#ffffff;">
+                            <t t-if="company_logo_data">
+                                <img t-att-src="'data:image/png;base64,%s' % company_logo_data" t-att-alt="company_name + ' logo'" t-att-title="company_name" style="max-height:52px;margin:0 auto 12px auto;display:block;"/>
+                            </t>
+                            <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:0.9;font-weight:600;">
+                                <t t-out="company_name"/>
+                            </div>
+                            <h1 style="margin:12px 0 0;font-size:24px;font-weight:700;letter-spacing:0.4px;">Subscription Renewal Reminder</h1>
+                            <p style="margin:12px 0 0;font-size:13px;letter-spacing:1.6px;text-transform:uppercase;opacity:0.85;">Renew soon to avoid service interruption</p>
+                        </div>
+                        <div style="padding:32px;color:#4a2a1f;">
+                            <p style="font-size:16px;line-height:1.6;margin:0 0 24px 0;">Hello <strong><t t-out="object.customer_name.name or object.customer_name.email"/></strong>,</p>
+                            <p style="font-size:15px;line-height:1.6;margin:0 0 24px 0;">Your subscription <strong><t t-out="object.name"/></strong> will expire in <strong><t t-out="object.renewal_days or 'a few'"/> days</strong>. Renew now to keep infrastructure access uninterrupted.</p>
+                            <div style="border:1px solid #f4d4c8;border-radius:12px;padding:24px;background:#fff3e0;margin-bottom:24px;">
+                                <table style="width:100%;border-collapse:collapse;font-size:14px;">
+                                    <tbody>
+                                        <tr>
+                                            <td style="padding:6px 0;color:#8d4928;">Renewal Date</td>
+                                            <td style="padding:6px 0;text-align:right;color:#5d2d16;"><t t-out="renewal_date or 'N/A'"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:6px 0;color:#8d4928;">Plan</td>
+                                            <td style="padding:6px 0;text-align:right;color:#5d2d16;"><t t-out="object.sub_plan_id.name or 'Custom Plan'"/></td>
+                                        </tr>
+                                        <tr t-if="formatted_price">
+                                            <td style="padding:6px 0;color:#8d4928;">Current Billing</td>
+                                            <td style="padding:6px 0;text-align:right;color:#5d2d16;"><t t-out="formatted_price"/> <t t-if="object.payment_frequency">/<t t-out="object.payment_frequency"/></t></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div style="text-align:center;margin:32px 0;">
+                                <a t-att-href="cta_url" target="_blank" style="display:inline-block;padding:14px 32px;border-radius:12px;background:linear-gradient(120deg,#ff7043,#ffab91);color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">Renew Subscription</a>
+                            </div>
+                            <p style="margin:0;font-size:14px;line-height:1.6;color:#5d2d16;">Need more time or want to adjust capacity? Reply to this email and we’ll arrange the right plan.</p>
+                        </div>
+                        <div style="background-color:#3b1a0f;padding:24px;text-align:center;color:#f8d9c5;font-size:12px;">
+                            <p style="margin:0;font-size:12px;color:#ffe1d2;">
+                                Need help?
+                                <a t-att-href="'mailto:%s' % support_email" style="color:#ffe1d2;text-decoration:none;"><t t-out="support_email"/></a>
+                                <t t-if="support_phone">
+                                    <span> · </span>Call <t t-out="support_phone"/>
+                                </t>
+                                <span> · </span>
+                                <a href="https://docs.zeeve.io" target="_blank" style="color:#ffbfa0;text-decoration:none;">Docs</a>
+                            </p>
+                            <p style="margin:12px 0 0;color:#d69c85;">© <t t-out="current_year"/> <t t-out="company_name"/>. All rights reserved.</p>
+                        </div>
+                    </div>
+                </div>
+            </field>
+        </record>
+    </data>
+</odoo>

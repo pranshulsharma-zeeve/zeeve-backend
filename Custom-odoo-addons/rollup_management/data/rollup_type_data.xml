@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="rollup_type_arbitrum" model="rollup.type">
+        <field name="name">Arbitrum Orbit</field>
+        <field name="description"><![CDATA[
+            <p><strong>Settlement Layer:</strong> Arbitrum Sepolia L2</p>
+            <p><strong>Data Availability:</strong> AnyTrust DA</p>
+            <p><strong>Core Components:</strong> Orbit Bridge, Nitro RPC, Tracehawk Explorer</p>
+        ]]></field>
+    </record>
+
+    <record id="rollup_type_optimism" model="rollup.type">
+        <field name="name">Optimism Stack</field>
+        <field name="description"><![CDATA[
+            <p><strong>Settlement Layer:</strong> Ethereum Sepolia</p>
+            <p><strong>Data Availability:</strong> Ethereum DA</p>
+            <p><strong>Core Components:</strong> OP Stack Bridge, RPC Gateway, Metrics Dashboard</p>
+        ]]></field>
+    </record>
+</odoo>

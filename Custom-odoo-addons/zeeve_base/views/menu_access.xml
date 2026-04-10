@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="zeeve_base.menu_zeeve_base_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager'),
+                ref('access_rights.group_support_staff_manager'),
+                ref('access_rights.group_support_staff')
+            ])]"/>
+        </record>
+
+        <record id="zeeve_base.menu_protocol_master" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_admin'), ref('access_rights.group_technical_manager')])]"/>
+        </record>
+
+        <record id="zeeve_base.menu_server_location" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_admin'), ref('access_rights.group_technical_manager')])]"/>
+        </record>
+
+        <record id="zeeve_base.menu_zeeve_config" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_admin'), ref('access_rights.group_technical_manager')])]"/>
+        </record>
+
+        <record id="zeeve_base.menu_zeeve_network_type" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('access_rights.group_admin'), ref('access_rights.group_technical_manager')])]"/>
+        </record>
+
+        <record id="zeeve_base.contact_us_sub_menu" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('access_rights.group_admin'),
+                ref('access_rights.group_technical_manager'),
+                ref('access_rights.group_support_staff_manager'),
+                ref('access_rights.group_support_staff')
+            ])]"/>
+        </record>
+
+    </data>
+</odoo>

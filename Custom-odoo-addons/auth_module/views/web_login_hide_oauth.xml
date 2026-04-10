@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Remove OAuth buttons from backend login by hiding the slot -->
+        <template id="web_login_hide_oauth" inherit_id="web.login">
+            <xpath expr="//div[hasclass('o_login_auth')]" position="replace">
+                <div class="o_login_auth d-none"/>
+            </xpath>
+        </template>
+    </data>
+</odoo>
